@@ -19,7 +19,14 @@ const router = createRouter({
     {
       path: '/inicio',
       name: 'Secure',
-      component: () => import('../views/Secure.vue')
+      component: () => import('../views/Secure.vue'),
+      beforeEnter: (to, from, next) => {
+        if(store.state.authenticated == false) {
+          next(false);
+        } else {
+          next();
+        }
+      }
     },
     {
       path: '/personal',
@@ -29,7 +36,14 @@ const router = createRouter({
     {
       path: '/vehiculos',
       name: 'Vehiculos',
-      component: () => import('../views/Base_datos/Vehiculos.vue')
+      component: () => import('../views/Base_datos/Vehiculos.vue'),
+      beforeEnter: (to, from, next) => {
+        if(store.state.authenticated == false) {
+          next(false);
+        } else {
+          next();
+        }
+      }
     },
   ]
 })

@@ -8,31 +8,18 @@ import { RouterLink, RouterView } from 'vue-router'
     import Login from "./views/Login.vue"
     export default {
         name: 'App',
-        data() {
-            return {
-                authenticated: false,
-                Account: {
-                    username: "admin",
-                    password: "123",
-                }
-            }
-        },
+
         components: {
             Login,
         },
         mounted() {
             console.log(this.Account)
-            if(!this.authenticated) {
-                //this.$router.replace({ name: "Secure" });
+            if(!this.$store.state.authenticated) {
+                this.$router.replace({ name: "login" });
             }
         },
         methods: {
-            setAuthenticated(status) {
-                this.authenticated = status;
-            },
-            logout() {
-                this.authenticated = false;
-            }
+
         }
         
     }
@@ -40,12 +27,8 @@ import { RouterLink, RouterView } from 'vue-router'
 
 
 <template>
-    <div id="app">
-        <div id="nav">
-            <router-link v-if="authenticated" to="/login" v-on:click.native="logout()" replace>Salir</router-link>
-            <router-link v-else to="/inicio" ></router-link>
-        </div>
-        <router-view @authenticated="setAuthenticated" />
+    <div>
+        <router-view></router-view>
     </div>
 </template>
 

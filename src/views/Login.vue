@@ -21,16 +21,13 @@
             }
         },
 
-        props: ['Account'],
         methods: {
             login() {
-                console.log(this.$parent.$data);
-                console.log(this.input);
-                this.$emit("authenticated", true);
+                //console.log(this.$store.state.authenticated);
                 if(this.input.username != "" && this.input.password != "") {
-                    if(this.input.username ==  this.Account.username && this.input.password ==this.Account.password) {
-                        this.$emit("authenticated", true);
-                        this.$router.replace({ name: "secure" });
+                    if(this.input.username ==  this.$store.state.Account.username && this.input.password == this.$store.state.Account.password) {
+                        this.$store.dispatch('authenticate');
+                        this.$router.replace({ name: "Secure" });
                     } else {
                         
                         console.log("Usuario o contraseña incorrectos");
