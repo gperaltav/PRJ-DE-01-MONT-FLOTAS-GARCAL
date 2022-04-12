@@ -62,12 +62,55 @@ const router = createRouter({
     {
       path: '/personal',
       name: 'Personal',
-      component: () => import('./views/Base_datos/Personal.vue')
+      component: () => import('./views/Base_datos/Personal.vue'),
+      beforeEnter: (to, from, next) => {
+        if(store.state.authenticated == false) {
+          next(false);
+        } else {
+          next();
+        }
+      }
     },
     {
       path: '/vehiculos',
       name: 'Vehiculos',
       component: () => import('./views/Base_datos/Vehiculos.vue'),
+      beforeEnter: (to, from, next) => {
+        if(store.state.authenticated == false) {
+          next(false);
+        } else {
+          next();
+        }
+      }
+    },
+    {
+      path: '/vec_personal',
+      name: 'PermisosPersonal',
+      component: () => import('./views/Permisos/Per_Personal.vue'),
+      beforeEnter: (to, from, next) => {
+        if(store.state.authenticated == false) {
+          next(false);
+        } else {
+          next();
+        }
+      }
+    },
+    {
+      path: '/vec_vehiculos',
+      name: 'PermisosVehiculos',
+      component: () => import('./views/Permisos/Per_Vehiculos.vue'),
+      beforeEnter: (to, from, next) => {
+        if(store.state.authenticated == false) {
+          next(false);
+        } else {
+          next();
+        }
+      }
+    },
+    {
+      path: '/planificacion',
+      name: 'Planificacion',
+      component: () => import('./views/Planificacion.vue'),
       beforeEnter: (to, from, next) => {
         if(store.state.authenticated == false) {
           next(false);
