@@ -27,7 +27,7 @@
                 if(this.input.username != "" && this.input.password != "") {
                     if(this.input.username ==  this.$store.state.Account.username && this.input.password == this.$store.state.Account.password) {
                         this.$store.dispatch('authenticate');
-                        this.$router.replace({ name: "Secure" });
+                        this.$router.replace({ name: "Test" });
                     } else {
                         
                         console.log("Usuario o contraseña incorrectos");

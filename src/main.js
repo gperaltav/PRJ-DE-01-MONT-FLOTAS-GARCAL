@@ -119,6 +119,18 @@ const router = createRouter({
         }
       }
     },
+    {
+      path: '/test',
+      name: 'Test',
+      component: () => import('./views/Test.vue'),
+      beforeEnter: (to, from, next) => {
+        if(store.state.authenticated == false) {
+          next(false);
+        } else {
+          next();
+        }
+      }
+    },
   ]
 })
 
