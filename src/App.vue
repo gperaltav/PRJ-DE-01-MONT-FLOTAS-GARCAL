@@ -34,7 +34,7 @@ import { RouterLink, RouterView } from 'vue-router'
 
 <style>
     body {
-        background-color: #c4c4c4;
+        background-color: #373737;
     }
     h1 {
         padding: 0;
