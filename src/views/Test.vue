@@ -1,6 +1,9 @@
 <script lang="ts" setup>
 import { reactive } from 'vue'
 
+import { ref } from 'vue'
+import { Notebook, OfficeBuilding,DocumentChecked,Operation,TrendCharts} from '@element-plus/icons-vue'
+
 // do not use same name with ref
 const form = reactive({
   name: '',
@@ -16,8 +19,6 @@ const form = reactive({
 const onSubmit = () => {
   console.log('submit!')
 }
-
-import { ref } from 'vue'
 
 const item = {
   date: '2016-05-02',
@@ -90,8 +91,8 @@ const tableData = ref(Array.from({ length: 20 }).fill(item))
             <el-form :model="form" label-width="100px">
               <el-form-item label="Razon social">
                 <el-select v-model="form.region" placeholder="Seleccionar">
-                  <el-option label="Garcal" value="shanghai" />
-                  <el-option label="LC" value="beijing" />
+                  <el-option label="Garcal" value="garcal" />
+                  <el-option label="LC" value="lc" />
                 </el-select>
               </el-form-item>
 
