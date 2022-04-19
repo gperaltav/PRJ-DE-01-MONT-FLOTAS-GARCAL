@@ -47,7 +47,7 @@ const tableData = ref(Array.from({ length: 20 }).fill(item))
       </div>
     </el-header>
     <el-container>
-      <el-aside width="200px" height="600px" >
+      <el-aside width="200px" height="700px" >
           <el-scrollbar>
             <el-menu :default-openeds="['1', '2']">
               <el-menu-item index="0">
@@ -86,7 +86,7 @@ const tableData = ref(Array.from({ length: 20 }).fill(item))
           </el-scrollbar>
         </el-aside>
         <el-main>
-          <el-scrollbar height="600px">
+          <el-scrollbar height="700px">
             
             <el-form :model="form" label-width="100px">
               <el-form-item label="Razon social">
@@ -105,7 +105,7 @@ const tableData = ref(Array.from({ length: 20 }).fill(item))
                   <el-date-picker
                     v-model="form.date1"
                     type="date"
-                    placeholder="Pick a date"
+                    placeholder="Seleccionar fecha inicio"
                     style="width: 100%"
                   />
                 </el-col>
@@ -113,9 +113,10 @@ const tableData = ref(Array.from({ length: 20 }).fill(item))
                   <span class="text-gray-500">-</span>
                 </el-col>
                 <el-col :span="11">
-                  <el-time-picker
-                    v-model="form.date2"
-                    placeholder="Pick a time"
+                  <el-date-picker
+                    v-model="form.date1"
+                    type="date"
+                    placeholder="Seleccionar fecha fin"
                     style="width: 100%"
                   />
                 </el-col>
