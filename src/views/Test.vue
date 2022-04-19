@@ -1,27 +1,111 @@
-<script>
-  import Sidebar from "../components/Sidebar.vue"
-  import TableA from "../components/table.vue"
-    export default {
-        name: 'Test',
-        data() {
-            return {};
-        },
-        components: {
-            Sidebar,
-            TableA
-        }
-    }
+<script lang="ts" setup>
+import { ref } from 'vue'
+import { Notebook, OfficeBuilding,DocumentChecked,Operation,TrendCharts} from '@element-plus/icons-vue'
+
+const item = {
+  date: '2016-05-02',
+  name: 'Tom',
+  address: 'No. 189, Grove St, Los Angeles',
+}
+const tableData = ref(Array.from({ length: 20 }).fill(item))
 </script>
 
+
 <template>
-  <div id="secure">
-    <Sidebar />
-    <TableA />
+  <div class="layout-container">
+    <el-container>
+        <el-header style="text-align: right; font-size: 12px">
+            <div class="toolbar">
+                <el-dropdown>
+                <el-icon style="margin-right: 8px; margin-top: 1px"
+                    ><setting
+                /></el-icon>
+                <template #dropdown>
+                    <el-dropdown-menu>
+                    <el-dropdown-item>View</el-dropdown-item>
+                    <el-dropdown-item>Add</el-dropdown-item>
+                    <el-dropdown-item>Delete</el-dropdown-item>
+                    </el-dropdown-menu>
+                </template>
+                </el-dropdown>
+                <span>Tom</span>
+            </div>
+        </el-header>
+      <el-container>
+        <el-aside width="200px" height="100%">
+            <el-scrollbar>
+              <el-menu :default-openeds="['1', '2']">
+                <el-menu-item index="0">
+                  <template #title>
+                    <el-icon><office-building /></el-icon>Inicio 
+                  </template>
+                </el-menu-item>
+                <el-sub-menu index="1">
+                  <template #title>
+                    <el-icon><notebook /></el-icon>Base de datos
+                  </template>
+                  <el-menu-item index="1-1">Clientes</el-menu-item>
+                  <el-menu-item index="1-2">Personal</el-menu-item>
+                  <el-menu-item index="1-3">Vehiculos</el-menu-item>
+                  <el-menu-item index="1-4">Proveedores</el-menu-item>
+                </el-sub-menu>
+                <el-sub-menu index="2">
+                  <template #title>
+                    <el-icon><document-checked /></el-icon>Documentos
+                  </template>
+                  <el-menu-item index="2-1">Vehiculos</el-menu-item>
+                  <el-menu-item index="2-2">Personal</el-menu-item>
+                </el-sub-menu>
+                <el-menu-item index="3">
+                  <template #title>
+                    <el-icon><trend-charts /></el-icon> Planifiación
+                  </template>
+                </el-menu-item>
+                <el-menu-item index="4">
+                  <template #title>
+                    <el-icon><operation /></el-icon> Operaciones
+                  </template>
+                </el-menu-item>
+      
+              </el-menu>
+            </el-scrollbar>
+          </el-aside>
+          <el-main>
+            <el-scrollbar>
+              <el-table :data="tableData">
+                <el-table-column prop="date" label="Date" width="140" />
+                <el-table-column prop="name" label="Name" width="120" />
+                <el-table-column prop="address" label="Address" />
+              </el-table>
+            </el-scrollbar>
+          </el-main>
+      </el-container>
+    </el-container>
   </div>
 </template>
 
-<style>
-body {
-  padding-left: 190px;
+
+<style scoped>
+.layout-container .el-header {
+  position: relative;
+  background-color: var(--el-color-primary-light-7);
+  color: var(--el-text-color-primary);
+}
+.layout-container .el-aside {
+  color: var(--el-text-color-primary);
+  background: var(--el-color-primary-light-8);
+}
+.layout-container .el-menu {
+  border-right: none;
+}
+.layout-container .el-main {
+  padding: 0;
+}
+.layout-container .toolbar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  right: 20px;
 }
 </style>
