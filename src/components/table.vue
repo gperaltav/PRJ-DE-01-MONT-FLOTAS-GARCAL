@@ -37,11 +37,9 @@ export default {
 </template>
 
 <style>
-body {
-  padding-left: 200px;
-}
+
 .TableA {
-  padding-left: 200px;
+  padding-left: 190px;
   width: 70%;
 }
 .TableA table {

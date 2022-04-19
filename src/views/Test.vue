@@ -21,5 +21,7 @@
 </template>
 
 <style>
-
+body {
+  padding-left: 190px;
+}
 </style>

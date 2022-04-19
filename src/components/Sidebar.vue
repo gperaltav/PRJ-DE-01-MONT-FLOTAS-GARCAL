@@ -1,28 +1,26 @@
 <template>
-  <div id="secure">
-    <div className="sidenav">
 
-      <a href="#"> Inicio </a>
-      <a class="accordion" v-on:click="accord()">Base de datos</a>
-      <div class="panel">
-          <a href="#"> Clientes </a>
-          <a href="#"> Personal </a>
-          <a href="#"> Vehiculos </a>
-          <a href="#"> Proveedores </a>    
-      </div>
-      <a class="accordion" v-on:click="accord()">Documentos</a>
-      <div class="panel">
-          <a href="#"> Vehiculos </a>
-          <a href="#"> Personal </a>
-      </div>
-      <a href="#"> Planificación </a>
-      <a href="#"> Operaciones </a>
-      <a href="#"> Facturación </a>
-      <a href="#"> Mantenimiento </a>
-      <a href="#"> Pagos </a>
-      <a href="#"> Reportes </a>
-      
+  <div className="sidenav">
+
+    <a href="#"> Inicio </a>
+    <a class="accordion" v-on:click="accord()">Base de datos</a>
+    <div class="panel">
+        <a href="#"> Clientes </a>
+        <a href="#"> Personal </a>
+        <a href="#"> Vehiculos </a>
+        <a href="#"> Proveedores </a>    
     </div>
+    <a class="accordion" v-on:click="accord()">Documentos</a>
+    <div class="panel">
+        <a href="#"> Vehiculos </a>
+        <a href="#"> Personal </a>
+    </div>
+    <a href="#"> Planificación </a>
+    <a href="#"> Operaciones </a>
+    <a href="#"> Facturación </a>
+    <a href="#"> Mantenimiento </a>
+    <a href="#"> Pagos </a>
+    <a href="#"> Reportes </a>
     
   </div>
 
@@ -30,7 +28,7 @@
 
 <script>
 export default {
-  name: 'Secure',
+  name: 'Sidebar',
   data() {
   return {};
   },
@@ -57,12 +55,7 @@ export default {
 </script>
 
 <style scoped>
-  #secure {
-    background-color: #FFFFFF;
-    border: 1px solid #ffffff;
-    padding: 20px;
-    margin-top: 10px;
-  }
+
   .sidenav {
     padding-top: 25px;
     height: 90%;
