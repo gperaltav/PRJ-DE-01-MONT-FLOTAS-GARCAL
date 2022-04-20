@@ -76,6 +76,30 @@ const router = createRouter({
       }
     },
     {
+      path: '/proveedores',
+      name: 'Proveedores',
+      component: () => import('./views/Base_datos/Proveedores.vue'),
+      beforeEnter: (to, from, next) => {
+        if(store.state.authenticated == false) {
+          next(false);
+        } else {
+          next();
+        }
+      }
+    },
+    {
+      path: '/clientes',
+      name: 'Clientes',
+      component: () => import('./views/Base_datos/Clientes.vue'),
+      beforeEnter: (to, from, next) => {
+        if(store.state.authenticated == false) {
+          next(false);
+        } else {
+          next();
+        }
+      }
+    },
+    {
       path: '/vehiculos',
       name: 'Vehiculos',
       component: () => import('./views/Base_datos/Vehiculos.vue'),
