@@ -1,6 +1,8 @@
 <script setup>
 import { reactive } from 'vue'
 
+import axios from 'axios'
+
 import { ref } from 'vue'
 import { Notebook, OfficeBuilding,DocumentChecked,Operation,TrendCharts} from '@element-plus/icons-vue'
 
@@ -28,7 +30,25 @@ import Sidebar from "../components/Sidebar.vue"
 export default {
   components: {
     Sidebar,
-  }
+  },
+  data(){
+  return {
+    users:[]
+    
+    }
+  },
+  methods: {
+    
+  },
+  mounted () {
+    //api caling
+     axios
+      .get('http://localhost:5000/usuarios')
+      .then((resp) => {
+        console.log(resp);
+        this.users = resp.data;
+      })
+  },
 }
 </script>
 
@@ -78,10 +98,14 @@ export default {
                 <el-button type="success">Exportar a Excel</el-button>
               </el-form-item>
             </el-form>
-            <el-table :data="tableData">
-              <el-table-column prop="date" label="Date" width="140" />
-              <el-table-column prop="name" label="Name" width="120" />
-              <el-table-column prop="address" label="Address" />
+            <el-table :data="users">
+              <el-table-column prop="usu_codigo" label="Codigo" width="140" />
+              <el-table-column prop="usu_nombre" label="Nombre" width="120" />
+              <el-table-column prop="usu_apepaterno" label="Ap. Paterno" />
+              <el-table-column prop="usu_apematerno" label="Ap. Materno" />
+              <el-table-column prop="usu_nrodocumento" label="Nro. de doc." />
+              <el-table-column prop="usu_telefono" label="Telefono" />
+              <el-table-column prop="usu_direccion" label="Direccion" />
             </el-table>
           </el-scrollbar>
         </el-main>
