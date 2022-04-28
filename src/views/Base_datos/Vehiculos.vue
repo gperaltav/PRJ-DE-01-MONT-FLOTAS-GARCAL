@@ -1,8 +1,7 @@
 <script setup>
 import { reactive } from 'vue'
+import axios from 'axios'
 
-import { ref } from 'vue'
-import { Notebook, OfficeBuilding,DocumentChecked,Operation,TrendCharts} from '@element-plus/icons-vue'
 
 const form = reactive({
   id: '',
@@ -12,15 +11,9 @@ const form = reactive({
 })
 
 const onSubmit = () => {
-  console.log('submit!')
+  console.log('funcion de filtrado! bep bop bip bop')
 }
 
-const item = {
-  rs: 'Garcal',
-  name: 'Example',
-  id: 'R3T-1232',
-}
-const tableData = ref(Array.from({ length: 15 }).fill(item))
 </script>
 
 <script>
@@ -28,7 +21,24 @@ import Sidebar from "../../components/Sidebar.vue"
 export default {
   components: {
     Sidebar,
-  }
+  },
+  data(){
+    return {
+      datax:[]
+    }
+  },
+  methods: {
+    
+  },
+  mounted () {
+    //llamada a API
+     axios
+      .get('http://localhost:5000/vehiculos')
+      .then((resp) => {
+        console.log(resp);
+        this.datax = resp.data;
+      })
+  },
 }
 </script>
 
@@ -107,17 +117,19 @@ export default {
                 
               </el-col>
               
-              
-              
             </el-form>
-            <el-table :data="tableData">
-              <el-table-column prop="rs" label="Razon social aso." width="140" />
-              <el-table-column prop="id" label="Id" width="120" />
-              <el-table-column prop="clase" label="Clase" />
-              <el-table-column prop="marca" label="Marca" />
-              <el-table-column prop="modelo" label="Modelo" />
-              <el-table-column prop="year" label="Año" />
-              <el-table-column prop="km_est" label="Km. estimado" />
+            <el-table :data="datax">
+              <el-table-column prop="emp_razonsocial" label="Razon soc. asoc. "/>
+              <el-table-column prop="veh_placa" label="Placa" width="120" />
+              <el-table-column prop="vcl_nombre" label="Clase" />
+              <el-table-column prop="vti_nombre" label="Tipo" />
+              <el-table-column prop="vma_nombre" label="Marca" />
+              <el-table-column prop="vmo_nombre" label="Modelo" />
+              <el-table-column prop="veh_anno" label="Año" />
+              <el-table-column prop="veh_serie" label="Nro. serie" />
+              <el-table-column prop="veh_mtc" label="MTC" />
+              <el-table-column prop="veh_cargautil" label="Carga util" />
+              <el-table-column prop="veh_kilometraje" label="Kilometraje" />
             </el-table>
           </el-scrollbar>
         </el-main>

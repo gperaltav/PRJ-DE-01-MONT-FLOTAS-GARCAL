@@ -1,8 +1,6 @@
 <script setup>
 import { reactive } from 'vue'
-
-import { ref } from 'vue'
-import { Notebook, OfficeBuilding,DocumentChecked,Operation,TrendCharts} from '@element-plus/icons-vue'
+import axios from 'axios'
 
 const form = reactive({
   rs: '',
@@ -18,15 +16,9 @@ const onSubmit = () => {
   console.log(form.id)
   console.log(form.nombre)
   console.log(form.fpago)
-
 }
 
-const item = {
-  rs: 'Garcal',
-  name: 'Example',
-  id: 'R3T-1232',
-}
-const tableData = ref(Array.from({ length: 15 }).fill(item))
+
 </script>
 
 <script>
@@ -34,7 +26,24 @@ import Sidebar from "../../components/Sidebar.vue"
 export default {
   components: {
     Sidebar,
-  }
+  },
+  data(){
+    return {
+      datax:[]
+    }
+  },
+  methods: {
+    
+  },
+  mounted () {
+    //llamada a API
+     axios
+      .get('http://localhost:5000/clientes')
+      .then((resp) => {
+        console.log(resp);
+        this.datax = resp.data;
+      })
+  },
 }
 </script>
 
@@ -96,7 +105,7 @@ export default {
               
               
             </el-form>
-            <el-table :data="tableData">
+            <el-table :data="datax">
               <el-table-column prop="rs" label="Razon social aso." width="140" />
               <el-table-column prop="id" label="Id" width="120" />
               <el-table-column prop="clase" label="Clase" />

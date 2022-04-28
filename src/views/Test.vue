@@ -32,18 +32,17 @@ export default {
     Sidebar,
   },
   data(){
-  return {
-    users:[]
-    
+    return {
+      users:[]
     }
   },
   methods: {
     
   },
   mounted () {
-    //api caling
+    //llamada a API
      axios
-      .get('http://localhost:5000/usuarios')
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/usuario')
       .then((resp) => {
         console.log(resp);
         this.users = resp.data;
@@ -99,7 +98,7 @@ export default {
               </el-form-item>
             </el-form>
             <el-table :data="users">
-              <el-table-column prop="usu_codigo" label="Codigo" width="140" />
+              <el-table-column prop="codigo" label="Codigo" width="140" />
               <el-table-column prop="usu_nombre" label="Nombre" width="120" />
               <el-table-column prop="usu_apepaterno" label="Ap. Paterno" />
               <el-table-column prop="usu_apematerno" label="Ap. Materno" />

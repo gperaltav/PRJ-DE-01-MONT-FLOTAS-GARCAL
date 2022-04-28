@@ -1,3 +1,75 @@
+--**** Selecciones avanzadas ****
+
+-- Seleccionar vehiculos
+SELECT
+veh_id,
+emp_razonsocial,
+veh_placa,
+vcl_nombre,
+vti_nombre,
+vma_nombre,
+vmo_nombre,
+veh_anno,
+veh_serie,
+veh_mtc,
+veh_cargautil,
+veh_kilometraje,
+veh_feccreacion
+FROM
+((((operaciones.vehiculos_veh
+inner join
+operaciones.vehiculosmarcas_vma 
+USING (vma_id))
+inner join
+operaciones.vehiculostipos_vti
+USING (vti_id))
+inner join
+operaciones.vehiculosclases_vcl
+USING (vcl_id))
+inner join
+operaciones.vehiculosmodelos_vmo
+USING (vmo_id))
+inner join
+(select emp_id,emp_razonsocial from public.empresas_emp ) as empresas
+using (emp_id)
+order by veh_feccreacion desc
+
+-- Seleccionar clientes
+SELECT
+*,concat_ws(' ',ent_nombre,ent_apellidopaterno, ent_apellidomaterno) as nnombre
+FROM
+(((select * from public.entidadestiposxentidades_exe WHERE ext_id='cli') as exe
+inner join
+public.entidades_ent
+using (ent_id))
+inner join
+public.entidadestipos_ext
+using (ext_id))
+inner join 
+(select emp_id,emp_razonsocial from public.empresas_emp ) as empresas
+using (emp_id)
+order by ent_feccreacion desc
+
+-- Seleccionar proveedores
+SELECT
+*,concat_ws(' ',ent_nombre,ent_apellidopaterno, ent_apellidomaterno) as nnombre
+FROM
+(((select * from public.entidadestiposxentidades_exe WHERE ext_id='prv') as exe
+inner join
+public.entidades_ent
+using (ent_id))
+inner join
+public.entidadestipos_ext
+using (ext_id))
+inner join 
+(select emp_id,emp_razonsocial from public.empresas_emp ) as empresas
+using (emp_id)
+order by ent_feccreacion desc
+
+
+
+
+--||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||--
 
 --Constructor Funcion para crear usuarios
 
@@ -45,6 +117,53 @@ VALUES (
 );
 end;
 $$
+
+-- Constructor: Funcion para crear vehiculos
+
+CREATE OR REPLACE FUNCTION public.fun_insertar_vehiculo( nrs integer,
+                                                        nplaca character varying,
+                                                        nvmaid integer,
+                                                        nvmoid integer,
+                                                        nvtiid character varying,
+                                                        nvclid character varying,
+                                                        nvanno integer,
+                                                        nusucrea character varying
+                                                        )
+
+RETURNS void
+LANGUAGE 'plpgsql'
+COST 100
+VOLATILE PARALLEL UNSAFE
+AS
+$$
+declare 
+begin
+INSERT INTO 
+operaciones.vehiculos_veh (
+  emp_id,
+  veh_placa,
+  vma_id,
+  vmo_id,
+  vti_id,
+  vcl_id,
+  veh_anno,
+  veh_usucreacion
+)
+VALUES (
+  nrs,
+  nplaca,
+  nvmaid, 
+  nvmoid, 
+  nvtiid,
+  nvclid,
+  nvanno,
+  nusucrea 
+);
+end;
+$$
+--select fun_insertar_vehiculo(1,'n4a-1234',2,2,'smr','sem',2002,'admin')
+
+
 
 
 --Constructor: Funcion para crear empresas
@@ -281,12 +400,6 @@ END IF;
 UPDATE public.entidades_ent SET usu_usumodificacion='admin', usu_fecmodificacion=CURRENT_DATE WHERE usu_codigo=codigo;
 end;
 $$
-
-
-
-
-
-
 
 
 --rev
