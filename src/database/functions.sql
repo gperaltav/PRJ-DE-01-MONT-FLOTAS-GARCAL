@@ -92,7 +92,7 @@ $$
 
 -- Seleccionar clientes
 SELECT
-*,concat_ws(' ',ent_nombre,ent_apellidopaterno, ent_apellidomaterno) as nnombre
+*
 FROM
 (((select * from public.entidadestiposxentidades_exe WHERE ext_id='cli') as exe
 inner join
@@ -215,6 +215,148 @@ inner join
 (select emp_id,emp_razonsocial from public.empresas_emp ) as empresas
 using (emp_id)
 order by tra_feccreacion desc;
+
+-- todos los trabajadores
+
+CREATE OR REPLACE FUNCTION public.fun_get_trabajadores_all(
+	)
+    RETURNS TABLE(tid integer, rs character varying, tnombre text, nrodoc character varying, puesto character varying, tipocontrato character varying, fechaingreso date, fechacese date) 
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+declare 
+begin
+
+RETURN QUERY 
+SELECT
+tra_id,
+emp_razonsocial,
+concat_ws(' ',tra_nombres,tra_apellidopaterno,tra_apellidomaterno) as tnommbre,
+tra_nrodocumento,
+pue_nombre,
+tra_tipocontrati,
+tra_fechaingreso,
+tra_fechacese
+FROM
+(rrhh.trabajadores_tra
+inner join
+rrhh.puestos_pue
+using (pue_id))
+inner join
+(select emp_id,emp_razonsocial from public.empresas_emp ) as empresas
+using (emp_id)
+order by tra_feccreacion desc;
+
+end;
+$BODY$;
+
+-- buscar trabajadores
+
+create or replace function fun_get_trabajadorestst(rsa int ,nom varchar, doc varchar, puesto varchar, contrato varchar, f_in date, f_out date) 
+returns table(
+	tid integer,
+	rs varchar,
+	tnombre text,
+	ndoc varchar,
+	npuesto varchar,
+	tcontrato varchar,
+	fechin date,
+	fechout date
+)
+LANGUAGE 'plpgsql'
+as
+$$
+declare 
+req varchar;
+needand bool;
+begin
+
+
+needand = false;
+req = 'SELECT tra_id, emp_razonsocial, concat_ws('' '',tra_nombres,tra_apellidopaterno,tra_apellidomaterno) as tnommbre, tra_nrodocumento, pue_nombre, tra_tipocontrati, tra_fechaingreso, tra_fechacese FROM ((rrhh.trabajadores_tra inner join rrhh.puestos_pue using (pue_id)) inner join (select emp_id,emp_razonsocial from public.empresas_emp ) as empresas using (emp_id))';
+select concat_ws(' ',req, 'WHERE') into req;
+RAISE INFO 'parte 1';
+
+IF nom <> '' THEN
+RAISE INFO 'nombre';
+select concat_ws(' ',req,'concat_ws('' '',tra_nombres,tra_apellidopaterno,tra_apellidomaterno) ilike') into req;
+select concat(req,'''','%',nom,'%','''') into req;
+needand=true;
+end IF;
+
+IF doc <> '' THEN
+RAISE INFO 'documento';
+if needand = true then
+select concat_ws(' ',req,'and ') into req;
+end if;
+select concat_ws(' ',req,'tra_nrodocumento ilike') into req;
+select concat(req,'''','%',doc,'%','''') into req;
+needand=true;
+end IF;
+
+IF puesto <> '' THEN
+RAISE INFO 'puesto';
+if needand = true then
+select concat_ws(' ',req,'and ') into req;
+end if;
+select concat_ws(' ',req,'pue_nombre ilike') into req;
+select concat(req,'''','%',puesto,'%','''') into req;
+needand=true;
+end IF;
+
+IF contrato <> '' THEN
+RAISE INFO 'contrato';
+if needand = true then
+select concat_ws(' ',req,'and ') into req;
+end if;
+select concat_ws(' ',req,'tra_tipocontrati ilike') into req;
+select concat(req,'''','%',contrato,'%','''') into req;
+needand=true;
+end IF;
+
+IF rsa <> -1 THEN
+RAISE INFO 'razon s';
+if needand = true then
+select concat_ws(' ',req,'and ') into req;
+end if;
+select concat_ws(' ',req,'emp_id =',rsa) into req;
+needand=true;
+end IF;
+
+IF f_in is not null THEN
+RAISE INFO 'fecha in';
+if needand = true then
+select concat_ws(' ',req,'and ') into req;
+end if;
+select concat_ws(' ',req,'tra_fechaingreso > ') into req;
+select concat(req,'''',f_in,'''',' and ') into req;
+select concat_ws(' ',req,'tra_fechacese > ') into req;
+select concat(req,'''',f_in,'''') into req;
+needand=true;
+end IF;
+
+IF f_out is not null THEN
+RAISE INFO 'fecha out';
+if needand = true then
+select concat_ws(' ',req,'and ') into req;
+end if;
+select concat_ws(' ',req,'tra_fechaingreso < ') into req;
+select concat(req,'''',f_out,'''',' and ') into req;
+select concat_ws(' ',req,'tra_fechacese < ') into req;
+select concat(req,'''',f_out,'''') into req;
+needand=true;
+end IF;
+
+RETURN QUERY 
+execute req;
+
+end;
+$$
+
+
 
 --||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||--
 
@@ -475,6 +617,90 @@ END IF;
 UPDATE public.usuarios_usu SET usu_usumodificacion='admin', usu_fecmodificacion=CURRENT_DATE WHERE usu_codigo=codigo;
 end;
 $$
+
+--fix
+
+create or replace function fun_actualizar_usuario(codigo varchar,
+                                                  nclave varchar,
+                                                  nnombre varchar, 
+                                                  nappater varchar, 
+                                                  napmat varchar,
+                                                  nnrodoc varchar,
+                                                  nnrotelf varchar,
+                                                  ndirec varchar)
+returns void
+language plpgsql
+as
+$$
+declare 
+req varchar;
+needand bool;
+begin
+req ='UPDATE public.usuarios_usu SET ';
+needand = false;
+
+IF nclave <> '' THEN
+select concat_ws(' ',req,'usu_clave=',nclave) into req;
+needand=true;
+end IF;
+
+IF nnombre <> '' THEN
+if needand = true then
+select concat_ws(' ',req,', ') into req;
+end if;
+select concat_ws(' ',req,'usu_nombre=',nnombre) into req;
+needand=true;
+end IF;
+
+IF nappater <> '' THEN
+if needand = true then
+select concat_ws(' ',req,', ') into req;
+end if;
+select concat_ws(' ',req,'usu_apepaterno=',nappater) into req;
+needand=true;
+end IF;
+
+
+IF napmat <> '' THEN
+if needand = true then
+select concat_ws(' ',req,', ') into req;
+end if;
+select concat_ws(' ',req,'usu_apematerno=',napmat) into req;
+needand=true;
+end IF;
+
+IF nnrodoc <> '' THEN
+if needand = true then
+select concat_ws(' ',req,', ') into req;
+end if;
+select concat_ws(' ',req,'usu_nrodocumento=',nnrodoc) into req;
+needand=true;
+end IF;
+
+IF nnrotelf <> '' THEN
+if needand = true then
+select concat_ws(' ',req,', ') into req;
+end if;
+select concat_ws(' ',req,'usu_telefono=',nnrotelf) into req;
+needand=true;
+end IF;
+
+IF ndirec <> '' THEN
+if needand = true then
+select concat_ws(' ',req,', ') into req;
+end if;
+select concat_ws(' ',req,'usu_direccion=',ndirec) into req;
+needand=true;
+end IF;
+
+select concat(req,' usu_usumodificacion=''admin'', usu_fecmodificacion=CURRENT_DATE ') into req;
+select concat(req,' WHERE usu_codigo=',codigo) into req;
+
+execute req;
+
+end;
+$$
+
 
 --Constructor Funcion para editar entidades
 
