@@ -31,11 +31,22 @@ pool.connect((err, client, release) => {
   })
 })
   
-app.get('/usuarios', (req, res, next) => {
+app.get('/usuarios_a', (req, res, next) => {
   console.log("Datos de usuarios :");
-  pool.query('Select * from public.usuarios_usu')
+  pool.query('Select * from fun_get_usuarios_all()')
     .then(testData => {
       console.log(testData);
+      res.send(testData.rows);
+    })
+})
+
+app.get('/usuarios', (req, res, next) => {
+  console.log("Datos de usuarios 2 :");
+  nam=req.query.name;
+  
+  qu="Select * from fun_get_usuarios('"+String(nam)+"','','')"
+  pool.query(qu)
+    .then(testData => {
       res.send(testData.rows);
     })
 })

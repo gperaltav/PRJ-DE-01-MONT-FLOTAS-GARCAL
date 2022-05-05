@@ -1,28 +1,20 @@
 <script setup>
 import { reactive } from 'vue'
-
 import axios from 'axios'
 
-import { ref } from 'vue'
-import { Notebook, OfficeBuilding,DocumentChecked,Operation,TrendCharts} from '@element-plus/icons-vue'
-
 const form = reactive({
-  id: '',
-  razon: '',
   nombre: '',
-  fpago: '',
 })
 
 const onSubmit = () => {
-  console.log('submit!')
+  axios
+      .get('http://localhost:5000/usuarios?nombre='+String(form.nombre))
+      .then((resp) => {
+        console.log(resp);
+        this.users = resp.data;
+      })
 }
 
-const item = {
-  date: '2016-05-02',
-  name: 'Tom',
-  address: 'No. 189, Grove St, Los Angeles',
-}
-const tableData = ref(Array.from({ length: 15 }).fill(item))
 </script>
 
 <script>
@@ -33,16 +25,28 @@ export default {
   },
   data(){
     return {
-      users:[]
+      users:[],
+      form : reactive({
+        nombre: '',
+    })
     }
   },
   methods: {
+    onSubmit2 (){
+      console.log(this.form.nombre);
+      axios
+          .get('http://localhost:5000/usuarios?name='+String(this.form.nombre))
+          .then((resp) => {
+            console.log(resp);
+            this.users = resp.data;
+          })
+    }
     
   },
   mounted () {
     //llamada a API
      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/usuario')
+      .get('http://localhost:5000/usuarios_a')
       .then((resp) => {
         console.log(resp);
         this.users = resp.data;
@@ -69,42 +73,23 @@ export default {
           <el-scrollbar height="700px">
             
             <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
-              <el-form-item label="Razon social">
-                <el-select v-model="form.region" placeholder="Seleccionar">
-                  <el-option label="Garcal" value="garcal" />
-                  <el-option label="LC" value="lc" />
-                </el-select>
-              </el-form-item>
-
-              <el-form-item label="Nro. de documento">
-                <el-input v-model="form.id" />
-              </el-form-item>
 
               <el-form-item label="Nombre">
-                <el-input v-model="form.name" />
+                <el-input v-model="this.form.nombre" />
               </el-form-item>
 
-              <el-form-item label="Forma de pago preferido">
-                <el-select v-model="form.pagop" placeholder="Seleccionar">
-                  <el-option label="Deposito" value="dep" />
-                  <el-option label="Credito" value="cred" />
-                </el-select>
-              </el-form-item>
-              
               <el-form-item>
-                <el-button type="primary" @click="onSubmit">Filtrar</el-button>
+                <el-button type="primary" @click="onSubmit2">Filtrar</el-button>
                 <el-button type="info">Crear</el-button>
                 <el-button type="success">Exportar a Excel</el-button>
               </el-form-item>
             </el-form>
             <el-table :data="users">
-              <el-table-column prop="codigo" label="Codigo" width="140" />
-              <el-table-column prop="usu_nombre" label="Nombre" width="120" />
-              <el-table-column prop="usu_apepaterno" label="Ap. Paterno" />
-              <el-table-column prop="usu_apematerno" label="Ap. Materno" />
-              <el-table-column prop="usu_nrodocumento" label="Nro. de doc." />
-              <el-table-column prop="usu_telefono" label="Telefono" />
-              <el-table-column prop="usu_direccion" label="Direccion" />
+              <el-table-column prop="uid" label="Codigo" width="140" />
+              <el-table-column prop="unombre" label="Nombre" width="240" />
+              <el-table-column prop="unrodocumento" label="Nro. de doc." />
+              <el-table-column prop="utelefono" label="Telefono" />
+              <el-table-column prop="udireccion" label="Direccion" />
             </el-table>
           </el-scrollbar>
         </el-main>
