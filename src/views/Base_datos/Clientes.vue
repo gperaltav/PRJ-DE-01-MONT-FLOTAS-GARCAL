@@ -1,24 +1,6 @@
-<script setup>
+<script  setup>
 import { reactive } from 'vue'
 import axios from 'axios'
-
-const form = reactive({
-  rs: '',
-  id: '',
-  razon: '',
-  nombre: '',
-  fpago: '',
-})
-
-const onSubmit = () => {
-  console.log('submit!')
-  console.log(form.rs)
-  console.log(form.id)
-  console.log(form.nombre)
-  console.log(form.fpago)
-}
-
-
 </script>
 
 <script>
@@ -29,42 +11,69 @@ export default {
   },
   data(){
     return {
-      datax:[]
+      datax:[],
+      form : reactive({
+        nombre: '',
+    })
     }
   },
   methods: {
+    check() {
+      //verificar campos
+      if (nombre=='') {
+        this.onSubmitall();
+      }
+      else {
+        this.onSubmit2();
+      }
+    },
+    onSubmit2 (){
+      console.log(this.form.nombre);
+      axios
+          .get('http://localhost:5000/clientes?name='+String(this.form.nombre))
+          .then((resp) => {
+            console.log(resp);
+            this.datax = resp.data;
+          })
+    },
+    onSubmitall (){
+      //llamada a API
+     axios
+        .get('http://localhost:5000/clientes_a')
+        .then((resp) => {
+          console.log(resp);
+          this.datax = resp.data;
+        })
+    }
     
   },
   mounted () {
     //llamada a API
-     axios
-      .get('http://localhost:5000/clientes')
-      .then((resp) => {
-        console.log(resp);
-        this.datax = resp.data;
-      })
+     this.onSubmitall();
   },
 }
 </script>
 
 
 <template>
-  <el-container class="layout-container" style="height: 900px">
-    <el-header style="text-align: right; font-size: 12px">
-      <div class="toolbar">
-        <span>ERP GARCAL</span>
-      </div>
-    </el-header>
+  <el-container class="layout-container" style="height: calc( 100vh - 20px );">
+    <el-aside width="200px">
+      <el-scrollbar>
+        <Sidebar />
+      </el-scrollbar>
+    </el-aside>
+
     <el-container>
-      <el-aside width="200px" height="700px" >
-          <el-scrollbar>
-            <Sidebar />
-          </el-scrollbar>
-        </el-aside>
-        <el-main>
-          <el-scrollbar height="700px">
-            
-            <el-form :inline="true" :model="formInline" label-width="auto" :size="small" label-position="right">
+      <el-header style="text-align: left; font-size: 24px">
+        <div class="toolbar">
+          
+          <span>ERP Garcal</span>
+        </div>
+      </el-header>
+
+      <el-main style="background-color:white">
+        <el-scrollbar>
+          <el-form :inline="true" :model="formInline" label-width="auto" :size="small" label-position="right">
               <el-col :span="21">
                 <el-form-item label="Razon social">
                 <el-select v-model="form.rs" placeholder="Seleccionar">
@@ -101,21 +110,16 @@ export default {
                 </el-row>
                 
               </el-col>
-              
-              
-              
             </el-form>
-            <el-table :data="datax">
-              <el-table-column prop="rs" label="Razon social aso." width="140" />
-              <el-table-column prop="id" label="Id" width="120" />
-              <el-table-column prop="clase" label="Clase" />
-              <el-table-column prop="marca" label="Marca" />
-              <el-table-column prop="modelo" label="Modelo" />
-              <el-table-column prop="year" label="Año" />
-              <el-table-column prop="km_est" label="Km. estimado" />
+            
+          <el-table :data="datax">
+              <el-table-column prop="rs" label="Razon soc. aso." width="140" />
+              <el-table-column prop="cnombre" label="Nombre" />
+              <el-table-column prop="pnatural" label="P. Natural" />
+              <el-table-column prop="ndoc" label="Nro. de documento" />
             </el-table>
-          </el-scrollbar>
-        </el-main>
+        </el-scrollbar>
+      </el-main>
     </el-container>
   </el-container>
 </template>
@@ -125,43 +129,29 @@ export default {
 .layout-container .el-header {
   position: relative;
   background-color: rgb(8, 68, 164);
-  color: var(--el-text-color-primary);
+  color: rgb(240, 240, 240);
+  text-align: left;
 }
 .layout-container .el-aside {
   color: var(--el-text-color-primary);
-  background: var(--el-color-primary-light-8);
-  height: 80%;
+  background: white;
 }
 .layout-container .el-menu {
   border-right: none;
 }
 .layout-container .el-main {
   padding: 0;
-  height: 80%;
-  padding-left: 10px;
-}
-.layout-container .el-form {
-  background-color: white;
-  color: var(--el-text-color-primary);
-  size: 20px;
-  border-top: 20px;
-}
-
-.layout-container .el-form .el-col {
-  background-color: white;
-  color: var(--el-text-color-primary);
-  size: 20px;
-  border-top: 20px;
 }
 .layout-container .toolbar {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 80%;
+  height: 100%;
   right: 20px;
 }
-.el-form-item {
-  size: 2px;
+.layout-container .el-form {
+  padding-top: 15px;
+  padding-bottom: 15px;
+  background-color: white;
 }
-
 </style>

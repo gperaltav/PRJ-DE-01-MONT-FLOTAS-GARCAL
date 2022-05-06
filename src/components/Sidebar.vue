@@ -17,7 +17,7 @@ export default {
 <template>
 
 <el-menu :default-openeds="['1', '2']" router=true>
-  <el-menu-item index="0">
+  <el-menu-item index="inicio">
     <template #title>
       <el-icon><office-building /></el-icon>Inicio 
     </template>

@@ -50,9 +50,9 @@ const router = createRouter({
       component: () => import('./views/Login.vue')
     },
     {
-      path: '/inicio',
-      name: 'Secure',
-      component: () => import('./views/Secure.vue'),
+      path: '/t_inter',
+      name: 'Test interface',
+      component: () => import('./views/Testinterface.vue'),
       beforeEnter: (to, from, next) => {
         if(store.state.authenticated == false) {
           next(false);
@@ -146,9 +146,9 @@ const router = createRouter({
       }
     },
     {
-      path: '/test',
-      name: 'Test',
-      component: () => import('./views/Test.vue'),
+      path: '/inicio',
+      name: 'Usuarios',
+      component: () => import('./views/Usuarios.vue'),
       beforeEnter: (to, from, next) => {
         if(store.state.authenticated == false) {
           next(false);

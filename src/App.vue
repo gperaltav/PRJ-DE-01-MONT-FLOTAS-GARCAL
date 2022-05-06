@@ -13,7 +13,7 @@ import { RouterLink, RouterView } from 'vue-router'
             Login,
         },
         mounted() {
-            console.log(this.Account)
+            console.log(this.$store.state.authenticated)
             if(!this.$store.state.authenticated) {
                 this.$router.replace({ name: "login" });
             }
@@ -33,12 +33,7 @@ import { RouterLink, RouterView } from 'vue-router'
 </template>
 
 <style>
-    body {
-        background-color: #373737;
-    }
-    h1 {
-        padding: 0;
-        margin-top: 0;
-    }
-
+html, body {
+  background-color: #373737;
+}
 </style>
