@@ -39,7 +39,7 @@ export default {
     onSubmitall (){
       //llamada a API
      axios
-        .get('http://localhost:5000/usuarios_a')
+        .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/usuarios')
         .then((resp) => {
           console.log(resp);
           this.users = resp.data;
