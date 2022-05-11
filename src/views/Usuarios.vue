@@ -57,19 +57,20 @@ export default {
 
 <template>
   <el-container class="layout-container" style="height: calc( 100vh - 20px );">
-    <el-aside width="200px">
-      <el-scrollbar>
-        <Sidebar />
-      </el-scrollbar>
-    </el-aside>
-
-    <el-container>
-      <el-header style="text-align: left; font-size: 24px">
+    <el-header style="text-align: left; font-size: 24px">
         <div class="toolbar">
           
           <span>ERP Garcal</span>
         </div>
       </el-header>
+    
+
+    <el-container>
+      <el-aside width="200px">
+      <el-scrollbar>
+        <Sidebar />
+      </el-scrollbar>
+    </el-aside>
 
       <el-main style="background-color:white">
         <el-scrollbar>
@@ -85,12 +86,18 @@ export default {
                 <el-button type="success">Exportar a Excel</el-button>
               </el-form-item>
             </el-form>
-          <el-table :data="users">
-            <el-table-column prop="uid" label="Codigo" width="140" />
+          <el-table :data="users" border header-row-style="color:black; ">
+            <el-table-column style="background-color:black" prop="uid" label="Codigo" width="120" />
             <el-table-column prop="unombre" label="Nombre" width="240" />
             <el-table-column prop="unrodocumento" label="Nro. de doc." />
             <el-table-column prop="utelefono" label="Telefono" />
             <el-table-column prop="udireccion" label="Direccion" />
+            <el-table-column fixed="right" label="" width="120">
+              <template #default>
+                <el-button type="text" size="small" @click="handleClick">Detalles</el-button>
+                <el-button type="text" size="small">Editar</el-button>
+              </template>
+            </el-table-column>
           </el-table>
         </el-scrollbar>
       </el-main>
@@ -127,4 +134,10 @@ export default {
   padding-top: 15px;
   background-color: white;
 }
+
+.el-table {
+  font-family: "Roboto", sans-serif;
+  --el-table-header-bg-color:rgb(199, 199, 199);
+}
+
 </style>
