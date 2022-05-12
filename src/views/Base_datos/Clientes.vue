@@ -1,6 +1,7 @@
 <script  setup>
 import { reactive } from 'vue'
 import axios from 'axios'
+import { EditPen, Filter, Plus, Download} from '@element-plus/icons-vue'
 </script>
 
 <script>
@@ -57,19 +58,18 @@ export default {
 
 <template>
   <el-container class="layout-container" style="height: calc( 100vh - 20px );">
-    <el-aside width="200px">
-      <el-scrollbar>
-        <Sidebar />
-      </el-scrollbar>
-    </el-aside>
+    <el-header style="text-align: left; font-size: 24px">
+      <div class="toolbar">
+        <span>ERP Garcal</span>
+      </div>
+    </el-header>
 
-    <el-container>
-      <el-header style="text-align: left; font-size: 24px">
-        <div class="toolbar">
-          
-          <span>ERP Garcal</span>
-        </div>
-      </el-header>
+    <el-container style="height: calc( 100vh - 100px );">
+      <el-aside width="200px">
+        <el-scrollbar>
+          <Sidebar />
+        </el-scrollbar>
+      </el-aside>
 
       <el-main style="background-color:white">
         <el-scrollbar>
@@ -99,25 +99,32 @@ export default {
               
               </el-col>
               <el-col :span="3">
-                <el-row>
-                  <el-button type="primary" @click="onSubmit">Filtrar</el-button>
+                <el-row class="mb-4">
+                  <el-button color="#0844a4" :width="200" :icon="Filter" @click="onSubmit">Filtrar</el-button>
                 </el-row>
-                <el-row>
-                  <el-button type="info">Crear</el-button>
+                <el-row class="mb-4">
+                  <el-button color="#008db1"  :icon="Plus" >Crear</el-button>
                 </el-row>
-                <el-row>
-                  <el-button type="success">Exportar a Excel</el-button>
+                <el-row class="mb-4">
+                  <el-button color="#95d475"  :icon=" Download">A Excel</el-button>
                 </el-row>
                 
               </el-col>
             </el-form>
-            
-          <el-table :data="datax">
-              <el-table-column prop="rs" label="Razon soc. aso." width="140" />
-              <el-table-column prop="cnombre" label="Nombre" />
-              <el-table-column prop="pnatural" label="P. Natural" />
-              <el-table-column prop="ndoc" label="Nro. de documento" />
-            </el-table>
+          
+          <div class="table-container">
+          <el-table :data="datax" border header-row-style="color:black;" >
+            <el-table-column prop="rs" label="Razon soc. aso." width="140" />
+            <el-table-column prop="cnombre" label="Nombre" />
+            <el-table-column prop="pnatural" label="P. Natural" />
+            <el-table-column prop="ndoc" label="Nro. de documento" />
+            <el-table-column fixed="right" label="" width="40">
+              <template #default>
+                <el-button type="text" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+          </div>
         </el-scrollbar>
       </el-main>
     </el-container>
@@ -125,33 +132,6 @@ export default {
 </template>
 
 
-<style scoped>
-.layout-container .el-header {
-  position: relative;
-  background-color: rgb(8, 68, 164);
-  color: rgb(240, 240, 240);
-  text-align: left;
-}
-.layout-container .el-aside {
-  color: var(--el-text-color-primary);
-  background: white;
-}
-.layout-container .el-menu {
-  border-right: none;
-}
-.layout-container .el-main {
-  padding: 0;
-}
-.layout-container .toolbar {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  right: 20px;
-}
-.layout-container .el-form {
-  padding-top: 15px;
-  padding-bottom: 15px;
-  background-color: white;
-}
+<style scoped src="../styles/basededatos.css">
+
 </style>

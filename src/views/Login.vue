@@ -71,6 +71,7 @@
     background-color: rgb(8, 68, 164);
     color: rgb(240, 240, 240);
     text-align: left;
+    font-family: "Roboto", sans-serif;
   }
   .layout-container .toolbar {
   display: inline-flex;

@@ -57,5 +57,6 @@ export default {
 <style scoped>
 .el-menu {
   border-right: none;
+  font-family: "Roboto", sans-serif;
 }
 </style>

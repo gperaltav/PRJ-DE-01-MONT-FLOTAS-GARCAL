@@ -1,0 +1,50 @@
+.layout-container .el-header {
+  position: relative;
+  background-color: rgb(8, 68, 164);
+  color: rgb(240, 240, 240);
+  text-align: left;
+  font-family: "Roboto", sans-serif;
+}
+.layout-container .el-aside {
+  color: var(--el-text-color-primary);
+  background: white;
+}
+.layout-container .el-menu {
+  border-right: none;
+}
+.layout-container .el-main {
+  padding: 0;
+}
+.layout-container .toolbar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  right: 20px;
+}
+.layout-container .el-form {
+  padding-top: 15px;
+  background-color: white;
+}
+
+.table-container {
+  padding: 20px;
+}
+
+.el-table {
+  font-family: "Roboto", sans-serif;
+  --el-table-header-bg-color:rgb(199, 199, 199);
+}
+
+.el-col {
+  text-align:center;
+}
+
+.el-row {
+  margin-bottom: 5px;
+}
+
+.el-button {
+  width: 100px;
+  border-radius: 20px;
+}
