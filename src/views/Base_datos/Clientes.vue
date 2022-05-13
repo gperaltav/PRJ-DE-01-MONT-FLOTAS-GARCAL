@@ -59,9 +59,20 @@ export default {
 <template>
   <el-container class="layout-container" style="height: calc( 100vh - 20px );">
     <el-header style="text-align: left; font-size: 24px">
-      <div class="toolbar">
-        <span>ERP Garcal</span>
+      <el-col :span="8" style="text-align=left">
+        <div class="toolbar">
+          <span>ERP Garcal</span>
+        </div>
+      </el-col>
+      <el-col :span="8" style="text-align=center">
+        <div class="sitebar">
+        <el-tag style="color:white;" color="#0c59cf">
+          Base de datos > Clientes
+        </el-tag>
       </div>
+      </el-col>
+      <el-col :span="8" style="text-align=center">
+      </el-col>
     </el-header>
 
     <el-container style="height: calc( 100vh - 100px );">

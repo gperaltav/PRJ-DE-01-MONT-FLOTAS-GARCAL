@@ -35,8 +35,8 @@ export default {
     <template #title>
       <el-icon><document-checked /></el-icon>Documentos
     </template>
-    <el-menu-item index="2-1">Vehiculos</el-menu-item>
-    <el-menu-item index="2-2">Personal</el-menu-item>
+    <el-menu-item index="vec_vehiculos">Vehiculos</el-menu-item>
+    <el-menu-item index="vec_personal">Personal</el-menu-item>
   </el-sub-menu>
   <el-menu-item index="3">
     <template #title>

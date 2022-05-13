@@ -15,21 +15,24 @@
 .layout-container .el-main {
   padding: 0;
 }
-.layout-container .toolbar {
+.layout-container .el-header {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 100%;
-  right: 20px;
 }
 .layout-container .el-form {
   padding-top: 15px;
   background-color: white;
 }
 
+.form-container {
+  width: 100%;
+}
+
 .table-container {
   padding: 20px;
 }
+
 
 .el-table {
   font-family: "Roboto", sans-serif;
@@ -47,4 +50,18 @@
 .el-button {
   width: 100px;
   border-radius: 20px;
+}
+
+.layout-container .toolbar {
+  display: block;
+  text-align: left;
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.layout-container .sitebar {
+  display: block;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
 }

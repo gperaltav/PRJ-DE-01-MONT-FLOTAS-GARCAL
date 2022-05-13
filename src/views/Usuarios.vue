@@ -68,14 +68,22 @@ export default {
 <template>
   <el-container class="layout-container" style="height: calc( 100vh - 20px );">
     <el-header style="text-align: left; font-size: 24px">
-      <div class="toolbar">
-        <span>ERP Garcal</span>
-      </div>
-      <div class="sitebar">
+      <el-col :span="8" style="text-align=left">
+        <div class="toolbar">
+          <span>ERP Garcal</span>
+        </div>
+      </el-col>
+      <el-col :span="8" style="text-align=center">
+        <div class="sitebar">
         <el-tag style="color:white;" color="#0c59cf">
           Usuarios
         </el-tag>
       </div>
+      </el-col>
+      <el-col :span="8" style="text-align=center">
+      </el-col>
+      
+      
     </el-header>
 
     <el-container style="height: calc( 100vh - 100px );">
@@ -145,6 +153,12 @@ export default {
   justify-content: center;
 }
 
+.layout-container .toolbar {
+  display: block;
+  text-align: left;
+  margin-left: 0;
+  margin-right: auto;
+}
 
 .layout-container .sitebar {
   display: block;
@@ -152,8 +166,6 @@ export default {
   margin-left: auto;
   margin-right: auto;
 }
-
-
 
 .layout-container .el-form {
   padding-top: 15px;
@@ -176,3 +188,4 @@ export default {
 }
 
 </style>
+

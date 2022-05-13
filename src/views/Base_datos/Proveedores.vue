@@ -59,9 +59,20 @@ export default {
 <template>
   <el-container class="layout-container" style="height: calc( 100vh - 20px );">
     <el-header style="text-align: left; font-size: 24px">
-      <div class="toolbar">
-        <span>ERP Garcal</span>
-      </div>
+      <el-col :span="8" style="text-align=left">
+        <div class="toolbar">
+          <span>ERP Garcal</span>
+        </div>
+      </el-col>
+      <el-col :span="8" style="text-align=center">
+        <div class="sitebar">
+          <el-tag style="color:white;" color="#0c59cf">
+            Base de datos > Proveedores
+          </el-tag>
+        </div>
+        </el-col>
+        <el-col :span="8" style="text-align=center">
+      </el-col>
     </el-header>
   
     <el-container style="height: calc( 100vh - 100px );">
@@ -74,7 +85,7 @@ export default {
       <el-main style="background-color:white">
         <el-scrollbar>
           <el-form :inline="true" :model="formInline" label-width="auto" :size="small" label-position="right">
-              <el-col :span="20">
+              <el-col :span="21">
                 <el-form-item label="Razon social">
                 <el-select v-model="form.rs" placeholder="Seleccionar">
                   <el-option label="Garcal" value="garcal" />
@@ -99,7 +110,7 @@ export default {
               
               </el-col>
 
-              <el-col :span="4" style="text-align=center">
+              <el-col :span="3" style="text-align=center">
                 <el-row class="mb-4">
                   <el-button color="#0844a4" :width="200" :icon="Filter" @click="onSubmit">Filtrar</el-button>
                 </el-row>
