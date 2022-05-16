@@ -33,7 +33,6 @@ const store = createStore({
   
 })
 
-
 const router = createRouter({
   history: createWebHashHistory(),
   routes: [
