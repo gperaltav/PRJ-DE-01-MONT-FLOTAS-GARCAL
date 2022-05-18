@@ -6,16 +6,36 @@ import { EditPen, Filter, Plus, Download} from '@element-plus/icons-vue'
 
 <script>
 import Sidebar from "../../components/Sidebar.vue"
+import modal from "../../components/modal.vue"
 export default {
   components: {
     Sidebar,
+    modal
   },
   data(){
     return {
       datap:[],
-      form : reactive({
+      form_b : reactive({
+        rs: '',
         nombre: '',
-    })
+        nro_doc: '',
+        apellidos: '',
+        tipo: '',
+        contrato: '',
+        date_i: '',
+        date_f: '',
+      }),
+      form_c : reactive({
+        rs: '',
+        nombre: '',
+        tipo: '',
+        nro_doc: '',
+        apellidos: '',
+        tipo: '',
+        contrato: '',
+        date_i: '',
+        date_f: '',
+      }),
     }
   },
   methods: {
@@ -29,9 +49,8 @@ export default {
       }
     },
     onSubmit2 (){
-      console.log(this.form.nombre);
       axios
-          .get('http://localhost:5000/personal_a'+String(this.form.nombre))
+          .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/trabajadores/1')
           .then((resp) => {
             console.log(resp);
             this.datap = resp.data;
@@ -45,6 +64,23 @@ export default {
           console.log(resp);
           this.datap = resp.data;
         })
+    },
+    Sendnuevo(){
+      //llamada a API
+     axios
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/trabajadores/nuevo', 
+        { "are_id": 1,
+          "pue_id": 1,
+          "emp_id": 1,
+          "tra_nombres":"Cesar Gabriel",
+          "tra_apellidopaterno":"Huisa",
+          "tra_apellidomaterno":"Flores",
+          "tra_nrodocumento": "14141414",
+          "tra_identificador": "000",
+          "tra_fechanacimiento":"1990-01-01",
+          "tra_tipocontrato":"reg",
+          "tra_fechaingreso":"2022-01-01",
+          "tra_usucreacion":"admin" })
     }
     
   },
@@ -87,33 +123,33 @@ export default {
           <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
               <el-col :span="21">
                 <el-form-item label="Razon social">
-                  <el-select v-model="form.region" placeholder="Seleccionar">
+                  <el-select v-model="form_b.rs" placeholder="Seleccionar">
                     <el-option label="Garcal" value="garcal" />
                     <el-option label="LC" value="lc" />
                   </el-select>
                 </el-form-item>
 
                 <el-form-item label="Nro. de DNI">
-                  <el-input v-model="form.dni" />
+                  <el-input v-model="form_b.nro_doc" />
                 </el-form-item>
 
-                <el-form-item label="Nombres">
-                  <el-input v-model="form.name" />
+                <el-form-item label="Nombre">
+                  <el-input v-model="form_b.nombre" />
                 </el-form-item>
 
-                <el-form-item label="Apellidos">
-                  <el-input v-model="form.lastname" />
+                <el-form-item label=" Apellidos">
+                  <el-input v-model="form_b.apellidos" />
                 </el-form-item>
 
                 <el-form-item label="Tipo">
-                  <el-select v-model="form.tipo" placeholder="Seleccionar">
+                  <el-select v-model="form_b.tipo" placeholder="Seleccionar">
                     <el-option label="Administrativo" value="adm" />
                     <el-option label="Operario" value="op" />
                   </el-select>
                 </el-form-item>
 
                 <el-form-item label="Contrato">
-                  <el-select v-model="form.contra" placeholder="Seleccionar">
+                  <el-select v-model="form_b.contrato" placeholder="Seleccionar">
                     <el-option label="En prueba" value="pr" />
                     <el-option label="Planilla" value="pl" />
                   </el-select>
@@ -121,7 +157,7 @@ export default {
 
                 <el-form-item label="Fecha inicio">
                   <el-date-picker
-                    v-model="form.datei"
+                    v-model="form_b.datei"
                     type="date"
                     placeholder="Seleccionar fecha inicio"
                     style="width: 100%"
@@ -130,7 +166,7 @@ export default {
 
                 <el-form-item label="Fecha fin">
                   <el-date-picker
-                    v-model="form.datef"
+                    v-model="form_b.datef"
                     type="date"
                     placeholder="Seleccionar fecha fin"
                     style="width: 100%"
@@ -139,15 +175,17 @@ export default {
               </el-col>
               <el-col :span="3">
                 
+                <div class="button-container">
                 <el-row class="mb-4">
-                  <el-button color="#0844a4" :width="200" :icon="Filter" @click="onSubmit">Filtrar</el-button>
+                  <el-button color="#0844a4" :icon="Filter" @click="onSubmit2">Filtrar</el-button>
                 </el-row>
                 <el-row class="mb-4">
-                  <el-button color="#008db1"  :icon="Plus" >Crear</el-button>
+                  <el-button color="#008db1" :icon="Plus"  @click="this.$refs.mo_create_per.open()">Crear</el-button>
                 </el-row>
                 <el-row class="mb-4">
-                  <el-button color="#95d475"  :icon=" Download">A Excel</el-button>
+                  <el-button color="#95d475" :icon=" Download" disabled>A Excel</el-button>
                 </el-row>
+                </div>
                 
               </el-col>
               
@@ -173,6 +211,91 @@ export default {
       </el-main>
     </el-container>
   </el-container>
+
+<modal ref="mo_create_per" title="Agregar Trabajador" width="500px" @ok="Sendnuevo" cancel-title="Cancelar" centered>
+<el-form :model="form" label-width="150px" >
+
+    <el-form-item  label="Razón soc. asoc.">
+      <el-select   placeholder="Seleccionar">
+        <el-option label="Garcal " value="0" />
+        <el-option label="LC " value="1" />
+      </el-select>
+    </el-form-item>
+    <el-form-item label="Tipo">
+        <el-select  v-model="form_c.tipo" default-first-option>
+          <el-option label="Administrativo " value="0" />
+          <el-option label="Operario " value="1" />
+          
+        </el-select>
+    </el-form-item>
+    <el-form-item label="DNI o carnet de extranjería">
+      <el-input />
+    </el-form-item>
+    <hr size="1" color="gray"> 
+    <el-form-item label="Nombres">
+      <el-input />
+    </el-form-item>
+    <el-form-item label="Apellido Paterno">
+      <el-input />
+    </el-form-item>
+    <el-form-item label="Apellido Materno">
+      <el-input />
+    </el-form-item>
+    <hr> 
+    <el-form-item label="Fecha de nac.">
+      <el-date-picker />
+    </el-form-item>
+
+    <el-form-item label="Tipo de contrato">
+        <el-select   default-first-option>
+          <el-option label="A prueba " value="0" />
+          <el-option label="Planilla " value="1" />
+          
+        </el-select>
+    </el-form-item>
+    <el-form-item label="Fecha de ingreso">
+      <el-date-picker />
+    </el-form-item>
+    <el-form-item label="Fecha de ingreso planilla">
+      <el-date-picker />
+    </el-form-item>
+    <el-form-item label="Fecha de cese">
+      <el-date-picker />
+    </el-form-item>
+    <!-- <el-form-item label="Clase">
+      <el-radio-group v-model="form.resource">
+        <el-radio label="Administrativo" />
+        <el-radio label="Conductor" />
+      </el-radio-group>
+    </el-form-item> -->
+    <hr>  
+    <div v-if="form_c.tipo==1" class="form-worker">
+      <el-form-item label="Nro. de licencia">
+        <el-input />
+      </el-form-item>
+      <el-form-item label="Categoria de licencia">
+        <el-input />
+      </el-form-item>
+      <el-form-item label="Fecha de venc. licencia">
+        <el-date-picker />
+      </el-form-item>
+      <el-form-item label="Especialidad">
+        <el-select   default-first-option>
+          <el-option label="Volvo " value="0" />
+          <el-option label="Americano " value="1" />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="">
+        <el-checkbox  label="Inscrito en SUNAT-IQBF" />
+    </el-form-item>
+      
+    </div>
+    
+    
+
+  </el-form>
+</modal>
+
 </template>
 
 

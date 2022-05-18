@@ -47,10 +47,13 @@
   margin-bottom: 5px;
 }
 
-.el-button {
+
+.button-container .el-button {
   width: 100px;
   border-radius: 20px;
 }
+
+
 
 .layout-container .toolbar {
   display: block;

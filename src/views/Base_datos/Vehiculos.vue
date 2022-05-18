@@ -6,9 +6,11 @@ import { EditPen, Filter, Plus, Download} from '@element-plus/icons-vue'
 
 <script>
 import Sidebar from "../../components/Sidebar.vue"
+import modal from "../../components/modal.vue"
 export default {
   components: {
     Sidebar,
+    modal
   },
   data(){
     return {
@@ -132,16 +134,17 @@ export default {
 
               </el-col>
               <el-col :span="3">
+                <div class="button-container">
                 <el-row class="mb-4">
-                  <el-button color="#0844a4" :width="200" :icon="Filter" @click="onSubmit">Filtrar</el-button>
+                  <el-button color="#0844a4" :icon="Filter" @click="onSubmit">Filtrar</el-button>
                 </el-row>
                 <el-row class="mb-4">
-                  <el-button color="#008db1"  :icon="Plus" >Crear</el-button>
+                  <el-button color="#008db1" :icon="Plus" @click="this.$refs.mo_create_veh.open()" >Crear</el-button>
                 </el-row>
                 <el-row class="mb-4">
-                  <el-button color="#95d475"  :icon=" Download">A Excel</el-button>
+                  <el-button color="#95d475" :icon=" Download" disabled>A Excel</el-button>
                 </el-row>
-                
+                </div>
               </el-col>
               
             </el-form>
@@ -170,6 +173,53 @@ export default {
       </el-main>
     </el-container>
   </el-container>
+
+<modal ref="mo_create_veh" title="Agregar vehiculo" width="500px" cancel-title="Cancelar" centered>
+<el-form :model="form" label-width="150px">
+
+    <el-form-item  label="Razón soc. asoc.">
+      <el-select  v-model="form.region" placeholder="Seleccionar">
+        <el-option label="Garcal " value="0" />
+        <el-option label="LC " value="1" />
+      </el-select>
+    </el-form-item>
+    <el-form-item label="ID">
+        <el-input  />
+    </el-form-item>
+    <el-form-item label="Clase">
+      <!-- Aca se deberia jalar de la BD las clases -->
+      <el-select  v-model="form.region" placeholder="Seleccionar">
+        <el-option label="Semirremolque " value="0" />
+        <el-option label="Trailer " value="1" />
+      </el-select>
+    </el-form-item>
+    <el-form-item label="Marca">
+      <el-input />
+    </el-form-item>
+    <el-form-item label="Modelo">
+      <el-input />
+    </el-form-item>
+    <el-form-item label="Año">
+      <el-input />
+    </el-form-item>
+    <el-form-item label="Tipo">
+      <el-input />
+    </el-form-item>
+    <el-form-item label="Nro de serie">
+      <el-input />
+    </el-form-item>
+    <el-form-item label="Código MTC">
+      <el-input />
+    </el-form-item>
+    <el-form-item label="Carga útil">
+      <el-input />
+    </el-form-item>
+    <el-form-item label="Km. estimado">
+      <el-input />
+    </el-form-item>
+  </el-form>
+</modal>
+
 </template>
 
 

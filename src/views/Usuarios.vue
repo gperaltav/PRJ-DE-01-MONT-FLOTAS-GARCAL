@@ -15,16 +15,23 @@ const testdata = ref(Array.from({ length: 20 }).fill(item))
 
 <script>
 import Sidebar from "../components/Sidebar.vue"
+import modal from "../components/modal.vue"
 export default {
   components: {
     Sidebar,
+    modal,
   },
   data(){
     return {
       users:[],
+      open_m:false,
+      puntero_edit:1,
       form : reactive({
         nombre: '',
-    })
+      }),
+      form_edit : reactive({
+        nombre: '',
+      })
     }
   },
   methods: {
@@ -37,6 +44,9 @@ export default {
         this.onSubmit2();
       }
     },
+    set_actual(usr) {
+      this.$refs.myRef.open();
+    }, 
     onSubmit2 (){
       console.log(this.form.nombre);
       axios
@@ -83,7 +93,6 @@ export default {
       <el-col :span="8" style="text-align=center">
       </el-col>
       
-      
     </el-header>
 
     <el-container style="height: calc( 100vh - 100px );">
@@ -103,10 +112,11 @@ export default {
 
               <el-form-item>
                 <el-button color="#0844a4"  :icon="Filter" @click="onSubmit2">Filtrar</el-button>
-                <el-button color="#008db1"  :icon="Plus" >Crear</el-button>
+                <el-button color="#008db1"  :icon="Plus"  @click="this.$refs.CreateMo.open()" >Crear</el-button>
                 <el-button color="#95d475"  :icon=" Download">A Excel</el-button>
               </el-form-item>
             </el-form>
+          
           <div class="table-container">
           <el-table :data="users" border header-row-style="color:black;" >
             <el-table-column prop="uid" label="Codigo" width="120" />
@@ -115,8 +125,8 @@ export default {
             <el-table-column prop="utelefono" label="Telefono" />
             <el-table-column prop="udireccion" label="Direccion" />
             <el-table-column fixed="right" label="" width="40">
-              <template #default>
-                <el-button type="text" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
+              <template #default="scope">
+                <el-button type="text" size="small" @click="setactual(scope.row)"><el-icon :size="17"><EditPen /></el-icon></el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -125,6 +135,95 @@ export default {
       </el-main>
     </el-container>
   </el-container>
+
+
+<modal ref="EditMo" title="Editar usuario" width="600px"  hide-footer centered>
+<el-form :model="form" label-width="150px">
+
+    <el-form-item style="z-index: 10000" label="Razón soc. asoc.">
+      <el-select  v-model="form.region" placeholder="Seleccionar">
+        <el-option label="Garcal " value="0" />
+        <el-option label="LC " value="1" />
+      </el-select>
+    </el-form-item>
+    <el-form-item label="Nro. de documento">
+      
+      <el-col :span="8">
+        <el-select   default-first-option>
+          <el-option label="RUC " value="0" />
+          <el-option label="DNI " value="1" />
+        </el-select>
+      </el-col>
+
+      <el-col :span="16">
+        <el-input  />
+      </el-col>
+    </el-form-item>
+    <el-form-item label="Nombre de cliente">
+      <el-input />
+    </el-form-item>
+    <el-form-item label="Condicion de pago">
+      <el-select   default-first-option>
+          <el-option label="15 dias " value="0" />
+          <el-option label="10 dias " value="1" />
+        </el-select>
+    </el-form-item>
+    <el-form-item label="Dirección de cliente">
+      <el-input />
+    </el-form-item>
+    <el-form-item label="Correo">
+      <el-input />
+    </el-form-item>
+    <el-form-item label="Telefono">
+      <el-input />
+    </el-form-item>
+  </el-form>
+</modal>
+
+
+<modal ref="CreateMo" title="Crear usuario" width="600px"  hide-footer centered>
+<el-form :model="form" label-width="150px">
+
+    <el-form-item style="z-index: 10000" label="Razón soc. asoc.">
+      <el-select  v-model="form.region" placeholder="Seleccionar">
+        <el-option label="Garcal " value="0" />
+        <el-option label="LC " value="1" />
+      </el-select>
+    </el-form-item>
+    <el-form-item label="Nro. de documento">
+      
+      <el-col :span="8">
+        <el-select   default-first-option>
+          <el-option label="RUC " value="0" />
+          <el-option label="DNI " value="1" />
+        </el-select>
+      </el-col>
+
+      <el-col :span="16">
+        <el-input  />
+      </el-col>
+    </el-form-item>
+    <el-form-item label="Nombre de cliente">
+      <el-input />
+    </el-form-item>
+    <el-form-item label="Condicion de pago">
+      <el-select   default-first-option>
+          <el-option label="15 dias " value="0" />
+          <el-option label="10 dias " value="1" />
+        </el-select>
+    </el-form-item>
+    <el-form-item label="Dirección de cliente">
+      <el-input />
+    </el-form-item>
+    <el-form-item label="Correo">
+      <el-input />
+    </el-form-item>
+    <el-form-item label="Telefono">
+      <el-input />
+    </el-form-item>
+  </el-form>
+</modal>
+
 </template>
 
 
@@ -186,6 +285,7 @@ export default {
 .el-row {
   margin-bottom: 5px;
 }
+
 
 </style>
 
