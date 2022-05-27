@@ -78,7 +78,9 @@ export default {
         this.api_get_filt();
       }
     },
-
+    openedit() {
+      this.$refs.mo_create_per.open();
+    },
     load_rs() {
       axios
       .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas')
@@ -104,18 +106,22 @@ export default {
           console.log(resp);
           this.data_edit = resp.data;
           console.log(this.data_edit)
-        })
-      
+        })      
     },
 
     load_data_edit() {
+      this.form_e.rs=this.data_edit[0].emp_id;
       this.form_e.tipo=this.data_edit[0].pue_id;
       this.form_e.nro_doc=this.data_edit[0].tra_nrodocumento;
       this.form_e.nombre=this.data_edit[0].tra_nombres;
       this.form_e.apellido_p=this.data_edit[0].tra_apellidomaterno;
       this.form_e.apellido_m=this.data_edit[0].tra_apellidopaterno;
-      //this.form_e.fecha_nac=this.data_edit[0].tra_fechanacimiento;
+      this.form_e.fecha_nac=this.data_edit[0].tra_fechanacimiento;
       this.form_e.contrato=this.data_edit[0].tra_tipocontrato;
+      this.form_e.fecha_i=this.data_edit[0].tra_fechaingreso;
+      this.form_e.fecha_ip=this.data_edit[0].tra_fechaingresoplanilla;
+      this.form_e.fecha_c=this.data_edit[0].tra_fechacese;
+
       
     },
 
@@ -142,7 +148,8 @@ export default {
           "tra_fechacese":this.form_b.date_f
         })
         .then((resp) => {
-          if (resp.data.status==true) {
+          this.succes=resp.data.status;
+          if (this.succes) {
 
             this.$refs.mo_create_per.hide();
             
@@ -224,7 +231,6 @@ export default {
     button_handle(number){
       this.editpointer=number;
       this.load_edit(number);
-      
       //console.log(this.data_edit[0].tra_nombres);
       this.load_data_edit();
       this.$refs.mo_editar_per.open();
@@ -331,7 +337,7 @@ export default {
                   <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
                 </el-row>
                 <el-row class="mb-4">
-                  <el-button color="#008db1" :icon="Plus"  @click="this.$refs.mo_create_per.open()">Crear</el-button>
+                  <el-button color="#008db1" :icon="Plus"  @click="openedit">Crear</el-button>
                 </el-row>
                 <el-row class="mb-4">
                   <el-button color="#95d475" :icon=" Download" disabled>A Excel</el-button>
