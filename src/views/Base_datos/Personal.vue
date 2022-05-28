@@ -22,6 +22,7 @@ export default {
       opt_rs : [],
       opt_tc : [],
       data_edit : [],
+      wait:false,
       form_b : reactive({
         rs: '',
         nombre: '',
@@ -40,10 +41,10 @@ export default {
         apellido_p: '',
         apellido_m: '',
         contrato: '',
-        fecha_nac:'',
-        fecha_i: '',
-        fecha_ip: '',
-        fecha_c: '',
+        fecha_nac:null,
+        fecha_i: null,
+        fecha_ip: null,
+        fecha_c: null,
       }),
       form_e : reactive({
         rs: '',
@@ -72,13 +73,20 @@ export default {
       //verificar campos
       if (this.form_b.nombre=='') {
         this.api_get_all();
-        
       }
       else {
         this.api_get_filt();
       }
     },
     openedit() {
+      this.$refs.mo_editar_per.open();
+    },
+    closeedit() {
+      this.$refs.mo_editar_per.hide();
+    },
+    opencrear() {
+      this.load_rs();
+      this.load_tc();
       this.$refs.mo_create_per.open();
     },
     load_rs() {
@@ -87,6 +95,7 @@ export default {
         .then((resp) => {
           console.log(resp);
           this.opt_rs = resp.data;
+          console.log(this.opt_rs)
         })
     },
 
@@ -96,6 +105,7 @@ export default {
         .then((resp) => {
           console.log(resp);
           this.opt_tc = resp.data;
+          console.log(this.opt_tc)
         })
     },
 
@@ -114,15 +124,13 @@ export default {
       this.form_e.tipo=this.data_edit[0].pue_id;
       this.form_e.nro_doc=this.data_edit[0].tra_nrodocumento;
       this.form_e.nombre=this.data_edit[0].tra_nombres;
-      this.form_e.apellido_p=this.data_edit[0].tra_apellidomaterno;
-      this.form_e.apellido_m=this.data_edit[0].tra_apellidopaterno;
+      this.form_e.apellido_m=this.data_edit[0].tra_apellidomaterno;
+      this.form_e.apellido_p=this.data_edit[0].tra_apellidopaterno;
       this.form_e.fecha_nac=this.data_edit[0].tra_fechanacimiento;
       this.form_e.contrato=this.data_edit[0].tra_tipocontrato;
       this.form_e.fecha_i=this.data_edit[0].tra_fechaingreso;
       this.form_e.fecha_ip=this.data_edit[0].tra_fechaingresoplanilla;
       this.form_e.fecha_c=this.data_edit[0].tra_fechacese;
-
-      
     },
 
     api_get_all(){
@@ -161,6 +169,8 @@ export default {
     
     create_usr(){
       //llamada a API
+    console.log(this.form_c.fecha_nac);
+
      axios
         .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/trabajadores/nuevo', 
         { 
@@ -184,6 +194,9 @@ export default {
           this.succes=resp.data.status;
           if (this.succes) {
             this.$refs.mo_realizado.open(); 
+          }
+          else {
+            this.$refs.mo_error.open(); 
           }
           console.log(resp);
         })
@@ -223,26 +236,32 @@ export default {
           if (this.succes) {
             this.$refs.mo_realizado.open(); 
           }
+          else {
+            this.$refs.mo_error.open(); 
+          }
           console.log(resp);
         })
         return false;
     },
 
     button_handle(number){
-      this.editpointer=number;
-      this.load_edit(number);
-      //console.log(this.data_edit[0].tra_nombres);
-      this.load_data_edit();
       this.$refs.mo_editar_per.open();
+      this.wait = true;
+      this.load_edit(number);
       
+      setTimeout(() => {
+        this.load_data_edit();
+        this.wait = false;
+        
+      }, 500)
     }
     
   },
   mounted () {
     //llamada a API
-     this.api_get_all();
-     this.load_rs();
-     this.load_tc();
+    this.api_get_all();
+    this.load_rs();
+    this.load_tc();
   },
 }
 
@@ -337,7 +356,7 @@ export default {
                   <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
                 </el-row>
                 <el-row class="mb-4">
-                  <el-button color="#008db1" :icon="Plus"  @click="openedit">Crear</el-button>
+                  <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
                 </el-row>
                 <el-row class="mb-4">
                   <el-button color="#95d475" :icon=" Download" disabled>A Excel</el-button>
@@ -354,12 +373,12 @@ export default {
               <el-table-column prop="tra_nombreyapellidos" label="Nombre" />
               <el-table-column prop="tra_nrodocumento" label="Nro. de doc." />
               <el-table-column prop="pue_nombre" label="Tipo" />
-              <el-table-column prop="tipocontrato" label="Tipo de contrato" />
-              <el-table-column prop="fechaingreso" label="Fecha de ingreso" />
-              <el-table-column prop="fechacese" label="Fecha de cese" />
+              <el-table-column prop="tra_tipocontrato" label="Tipo de contrato" />
+              <el-table-column prop="tra_fechaingreso" label="Fecha de ingreso" />
+              <el-table-column prop="tra_fechacese" label="Fecha de cese" />
               <el-table-column fixed="right" label="" width="40">
               <template #default="scope">
-                <el-button type="text"  @click="button_handle(scope.row.tra_id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
+                <el-button  type="text"  @click="button_handle(scope.row.tra_id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
               </template>
             </el-table-column>
             </el-table>
@@ -404,7 +423,7 @@ export default {
     </el-form-item>
     <hr> 
     <el-form-item label="Fecha de nac.">
-      <el-date-picker v-model="form_c.fecha_nac" />
+      <el-date-picker  format="YYYY-MM-DD" value-format="YYYY-MM-DD" v-model="form_c.fecha_nac" />
     </el-form-item>
 
     <el-form-item label="Tipo de contrato">
@@ -419,13 +438,13 @@ export default {
         </el-select>
     </el-form-item>
     <el-form-item label="Fecha de ingreso">
-      <el-date-picker v-model="form_c.fecha_i" />
+      <el-date-picker format="YYYY-MM-DD" value-format="YYYY-MM-DD" v-model="form_c.fecha_i" />
     </el-form-item>
     <el-form-item label="Fecha de ingreso planilla">
-      <el-date-picker v-model="form_c.fecha_ip" />
+      <el-date-picker format="YYYY-MM-DD" value-format="YYYY-MM-DD" v-model="form_c.fecha_ip" />
     </el-form-item>
     <el-form-item label="Fecha de cese">
-      <el-date-picker v-model="form_c.fecha_c" />
+      <el-date-picker format="YYYY-MM-DD" value-format="YYYY-MM-DD" v-model="form_c.fecha_c" />
     </el-form-item>
     <!-- <el-form-item label="Clase">
       <el-radio-group v-model="form.resource">
@@ -463,12 +482,12 @@ export default {
   Operación completada satisfactoriamente
 </modal>
 
-<modal ref="mo_error" error title="Error al ejecutar operación" centered  @ok="$refs.mo_error.hide()" >
-  Hubo un error al ejecutar la operación
+<modal ref="mo_error" error title="Error al ejecutar operación" centered >
+  Hubo un error interno al ejecutar la operación
 </modal>
 
-<modal ref="mo_editar_per" title="Editar datos de Trabajador" width="500px" @ok="editar_usr" cancel-title="Cancelar" centered>
-<el-form ref="form_edit_ref" :rules="rules" :model="form" label-width="150px" >
+<modal ref="mo_editar_per" title="Editar datos de Trabajador" width="500px" @ok="editar_usr" cancel-title="Cancelar" @cancel="closeedit"  centered>
+<el-form v-loading="wait" ref="form_edit_ref" :rules="rules" :model="form" label-width="150px" >
 
     <el-form-item  label="Razón soc. asoc.">
       <el-select v-model="form_e.rs" placeholder="Seleccionar">
