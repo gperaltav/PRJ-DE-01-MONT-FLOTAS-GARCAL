@@ -22,7 +22,12 @@ export default {
       opt_rs : [],
       opt_tc : [],
       data_edit : [],
+      data_edit2 : [],
       wait:false,
+      wait2:false,
+      alert_mo:'',
+      id_tmp:-1,
+      emp_cont:'1',
       form_b : reactive({
         rs: '',
         nombre: '',
@@ -30,8 +35,8 @@ export default {
         apellidos: '',
         tipo: '',
         contrato: '',
-        date_i: '',
-        date_f: '',
+        date_i: null,
+        date_f: null,
       }),
       form_c : reactive({
         rs: '',
@@ -46,6 +51,15 @@ export default {
         fecha_ip: null,
         fecha_c: null,
       }),
+      form_c_op : reactive({
+        rs: '',
+        nro_lic: '',
+        cat_lic: '',
+        esp:'',
+        ins_iqbf:null,
+        venc_lic: null,
+
+      }),
       form_e : reactive({
         rs: '',
         nombre: '',
@@ -58,6 +72,13 @@ export default {
         fecha_i: '',
         fecha_ip: '',
         fecha_c: '',
+      }),
+      form_e_op : reactive({
+        nro_lic: '',
+        cat_lic: '',
+        esp:'',
+        ins_iqbf:null,
+        venc_lic: null,
       }),
       rules : reactive<FormRules>({
         nombre: [
@@ -78,6 +99,29 @@ export default {
         this.api_get_filt();
       }
     },
+    rs_changer() {
+      this.emp_cont=this.form_c.rs;
+      this.form_c.contrato="";
+      this.load_tc();
+    },
+    rs_changer2() {
+      this.emp_cont=this.form_e.rs;
+      this.load_tc();
+    },
+    open_succes(msg) {
+      this.alert_mo=msg;
+      this.$refs.mo_realizado.open(); 
+    },
+    close_succes() {
+      this.$refs.mo_realizado.hide(); 
+    },
+    open_fail(msg) {
+      this.alert_mo=msg;
+      this.$refs.mo_error.open(); 
+    },
+    close_fail() {
+      this.$refs.mo_error.hide(); 
+    },
     openedit() {
       this.$refs.mo_editar_per.open();
     },
@@ -88,6 +132,9 @@ export default {
       this.load_rs();
       this.load_tc();
       this.$refs.mo_create_per.open();
+    },
+    closecrear() {
+      this.$refs.mo_create_per.hide();
     },
     load_rs() {
       axios
@@ -101,7 +148,7 @@ export default {
 
     load_tc() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/contratos/1')
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/contratos/'+String(this.emp_cont))
         .then((resp) => {
           console.log(resp);
           this.opt_tc = resp.data;
@@ -115,9 +162,17 @@ export default {
         .then((resp) => {
           console.log(resp);
           this.data_edit = resp.data;
-          console.log(this.data_edit)
         })      
     },
+    load_edit_op(id) {
+      axios
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/tripulacion/"+String(id))
+        .then((resp) => {
+          console.log(resp);
+          this.data_edit2 = resp.data;
+        })      
+    },
+
 
     load_data_edit() {
       this.form_e.rs=this.data_edit[0].emp_id;
@@ -133,6 +188,14 @@ export default {
       this.form_e.fecha_c=this.data_edit[0].tra_fechacese;
     },
 
+    load_data_edit_op() {
+      this.form_e_op.cat_lic=this.data_edit2[0].tri_licenciacategoria;
+      this.form_e_op.nro_lic=this.data_edit2[0].tri_licencianro;
+      this.form_e_op.esp=this.data_edit2[0].tri_especialidad;
+      this.form_e_op.venc_lic=this.data_edit2[0].tri_licenciafechavencimiento;
+      this.form_e_op.ins_iqbf=this.data_edit2[0].tri_inscritossunatiqbf;
+    },
+
     api_get_all(){
       //llamada a API
      axios
@@ -140,10 +203,13 @@ export default {
         .then((resp) => {
           console.log(resp);
           this.datap = resp.data;
+          console.log(this.datap);
         })
     },
 
     api_get_filt(){
+      console.log(this.form_b.datef);
+      console.log(this.form_b.datei);
       axios
         .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/trabajadores', 
         { 
@@ -156,12 +222,6 @@ export default {
           "tra_fechacese":this.form_b.date_f
         })
         .then((resp) => {
-          this.succes=resp.data.status;
-          if (this.succes) {
-
-            this.$refs.mo_create_per.hide();
-            
-          }
           console.log(resp);
           this.datap = resp.data;
         })
@@ -169,8 +229,6 @@ export default {
     
     create_usr(){
       //llamada a API
-    console.log(this.form_c.fecha_nac);
-
      axios
         .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/trabajadores/nuevo', 
         { 
@@ -193,19 +251,61 @@ export default {
           console.log(resp.data.status);
           this.succes=resp.data.status;
           if (this.succes) {
-            this.$refs.mo_realizado.open(); 
+            if(this.form_c.tipo=='2') {
+              console.log("Tripulacion")
+              this.id_tmp=resp.data.idValue;
+              var tmpop=this.create_usr_op();
+              console.log("Yolo");
+              console.log(tmpop);
+              if(tmpop) {
+                return true;
+              }
+              else {
+                return false;
+              }
+            }
+            else {
+              this.open_succes("Operación realizada satisfactoriamente");
+              return true;
+            }
           }
           else {
-            this.$refs.mo_error.open(); 
+            this.open_fail("Hubo un error con el servidor al ejecutar la operación");
+            return false;
           }
-          console.log(resp);
         })
         return false;
-    },
+    },  
 
-    close_succes() {
+    create_usr_op(){
+      //llamada a API
+     axios
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/tripulacion/nuevo', 
+        {
+          "tra_id": this.id_tmp,
+          "tri_licenciacategoria":this.form_c_op.cat_lic,
+          "tri_licencianro":this.form_c_op.nro_lic,
+          "tri_especialidad":this.form_c_op.esp,
+          "tri_licenciafechavencimiento": this.form_c_op.venc_lic,
+          "tri_inscritossunatiqbf": this.form_c_op.ins_iqbf,
+          "tri_usucreacion":"admin"
+        })
+        .then((resp) => {
+          console.log(resp.data.status);
+          this.succes=resp.data.status;
+          if (this.succes) {
+            this.open_succes("Operación realizada satisfactoriamente");
+            return true;
+          }
+          else {
+            this.open_fail("Hubo un error con el servidor al ejecutar la operación");
+            return false;
+          }
+        });
+    },  
+
+    close_create() {
       this.$refs.form_create_ref.resetFields();
-      this.$refs.mo_realizado.hide();
       this.$refs.mo_create_per.hide(); 
     },
 
@@ -243,19 +343,58 @@ export default {
         })
         return false;
     },
+    editar_usr_op() {
+      axios
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/tripulacion/actualizar', 
+        { 
+          "tra_id": this.editpointer,
+          "tri_licenciacategoria":"A3DC",
+          "tri_licencianro":"1452",
+          "tri_especialidad":"CARGA",
+          "tri_licenciafechavencimiento": "2022-01-01",
+          "tri_inscritossunatiqbf": false,
+          "tri_usumodificacion":"admin"
+        })
+        .then((resp) => {
+          console.log(resp.data.status);
+          this.succes=resp.data.status;
+          if (this.succes) {
+            this.$refs.mo_realizado.open(); 
+          }
+          else {
+            this.$refs.mo_error.open(); 
+          }
+          console.log(resp);
+        })
+        return false;
+    },
 
     button_handle(number){
+      console.log(number);
+      this.editpointer=number;
       this.$refs.mo_editar_per.open();
       this.wait = true;
       this.load_edit(number);
-      
       setTimeout(() => {
         this.load_data_edit();
-        this.wait = false;
-        
-      }, 500)
+        if (this.form_e.tipo==2) {
+          this.load_edit_op(number);
+          setTimeout(() => {
+          try {
+            this.load_data_edit_op();
+          }
+          catch(err) {
+            this.open_fail("Hubo un error con el servidor al cargar los datos de operario");
+          }
+          
+          this.wait = false;
+          }, 400)
+        }
+        else {
+          this.wait = false;
+        }
+      }, 400)
     }
-    
   },
   mounted () {
     //llamada a API
@@ -332,22 +471,27 @@ export default {
                 </el-form-item>
 
                 <el-form-item label="Fecha inicio">
-                  <el-date-picker
-                    v-model="form_b.datei"
+                  <el-col :span="11">
+                  <el-date-picker format="YYYY-MM-DD" value-format="YYYY-MM-DD"
+                    v-model="form_b.date_i"
                     type="date"
-                    placeholder="Seleccionar fecha inicio"
+                    placeholder="Seleccionar limite inicio"
                     style="width: 100%"
                   />
+                  </el-col>
+                  <el-col :span="2" class="text-center">
+                    <span class="text-gray-500">-</span>
+                  </el-col>
+                  <el-col :span="11">
+                  <el-date-picker format="YYYY-MM-DD" value-format="YYYY-MM-DD"
+                    v-model="form_b.date_f"
+                    type="date"
+                    placeholder="Seleccionar limite fin"
+                    style="width: 100%"
+                  />
+                  </el-col>
                 </el-form-item>
 
-                <el-form-item label="Fecha fin">
-                  <el-date-picker
-                    v-model="form_b.datef"
-                    type="date"
-                    placeholder="Seleccionar fecha fin"
-                    style="width: 100%"
-                  />
-                </el-form-item>
               </el-col>
               <el-col :span="3">
                 
@@ -388,13 +532,13 @@ export default {
     </el-container>
   </el-container>
 
-<modal ref="mo_create_per" title="Agregar Trabajador" width="500px" @ok="create_usr" cancel-title="Cancelar" centered>
-<el-form ref="form_create_ref" :rules="rules" :model="form" label-width="150px" >
+<modal ref="mo_create_per" no-close-on-backdrop title="Agregar Trabajador" width="500px" @ok="create_usr" @cancel="closecrear" cancel-title="Atras" centered>
+<el-form  ref="form_create_ref" :rules="rules" :model="form" label-width="150px" >
 
     <el-form-item  label="Razón soc. asoc.">
-      <el-select v-model="form_c.rs" placeholder="Seleccionar">
+      <el-select v-model="form_c.rs" @change="rs_changer" placeholder="Seleccionar">
         <el-option
-          v-for="item in this.opt_rs"
+          v-for="item in opt_rs"
           :key="item.emp_id"
           :label="item.emp_razonsocial"
           :value="item.emp_id"
@@ -403,8 +547,8 @@ export default {
     </el-form-item>
     <el-form-item label="Tipo">
         <el-select  v-model="form_c.tipo" default-first-option>
-          <el-option label="Administrativo " value="0" />
-          <el-option label="Operario " value="1" />
+          <el-option label="Administrativo " value="1" />
+          <el-option label="Operario " value="2" />
           
         </el-select>
     </el-form-item>
@@ -429,7 +573,7 @@ export default {
     <el-form-item label="Tipo de contrato">
         <el-select v-model="form_c.contrato"  default-first-option>
           <el-option
-            v-for="item in this.opt_tc"
+            v-for="item in opt_tc"
             :key="item.tco_id"
             :label="item.tco_nombre"
             :value="item.tco_id"
@@ -453,24 +597,24 @@ export default {
       </el-radio-group>
     </el-form-item> -->
     <hr>  
-    <div v-if="form_c.tipo==1" class="form-worker">
+    <div v-if="form_c.tipo=='2'" class="form-worker">
       <el-form-item label="Nro. de licencia">
-        <el-input />
+        <el-input v-model="form_c_op.nro_lic"/>
       </el-form-item>
       <el-form-item label="Categoria de licencia">
-        <el-input />
+        <el-input v-model="form_c_op.cat_lic" />
       </el-form-item>
       <el-form-item label="Fecha de venc. licencia">
-        <el-date-picker />
+        <el-date-picker v-model="form_c_op.venc_lic" />
       </el-form-item>
       <el-form-item label="Especialidad">
-        <el-select   default-first-option>
+        <el-select v-model="form_c_op.esp"  default-first-option>
           <el-option label="Volvo " value="0" />
           <el-option label="Americano " value="1" />
         </el-select>
       </el-form-item>
       <el-form-item label="">
-        <el-checkbox  label="Inscrito en SUNAT-IQBF" />
+        <el-checkbox v-model="form_c_op.ins_iqbf" label="Inscrito en SUNAT-IQBF" />
     </el-form-item>
       
     </div>
@@ -478,28 +622,25 @@ export default {
   </el-form>
 </modal>
 
-<modal ref="mo_realizado" success title="Operacion completada" centered @ok="close_succes" cancel-title="Atras" >
-  Operación completada satisfactoriamente
-</modal>
 
-<modal ref="mo_error" error title="Error al ejecutar operación" centered >
-  Hubo un error interno al ejecutar la operación
-</modal>
 
-<modal ref="mo_editar_per" title="Editar datos de Trabajador" width="500px" @ok="editar_usr" cancel-title="Cancelar" @cancel="closeedit"  centered>
+<modal ref="mo_editar_per" no-close-on-backdrop title="Editar datos de Trabajador" width="500px" @ok="editar_usr" cancel-title="Cancelar" @cancel="closeedit"  centered>
 <el-form v-loading="wait" ref="form_edit_ref" :rules="rules" :model="form" label-width="150px" >
 
     <el-form-item  label="Razón soc. asoc.">
-      <el-select v-model="form_e.rs" placeholder="Seleccionar">
-        <el-option label="Garcal " value="0" />
-        <el-option label="LC " value="1" />
+      <el-select disabled v-model="form_e.rs" placeholder="Seleccionar">
+        <el-option
+          v-for="item in opt_rs"
+          :key="item.emp_id"
+          :label="item.emp_razonsocial"
+          :value="item.emp_id"
+        > </el-option>
       </el-select>
     </el-form-item>
     <el-form-item label="Tipo">
-        <el-select  v-model="form_e.tipo" default-first-option>
-          <el-option label="Administrativo " value="0" />
-          <el-option label="Operario " value="1" />
-          
+        <el-select disabled  v-model="form_e.tipo" >
+          <el-option label="Administrativo " value=1 />
+          <el-option label="Operario " value=2 />
         </el-select>
     </el-form-item>
     <el-form-item label="DNI o carnet de extranjería">
@@ -521,9 +662,13 @@ export default {
     </el-form-item>
 
     <el-form-item label="Tipo de contrato">
-        <el-select v-model="form_e.contrato"  default-first-option>
-          <el-option label="A prueba " value="prueba" />
-          <el-option label="Planilla " value="planilla" />
+        <el-select v-model="form_e.contrato" >
+          <el-option
+            v-for="item in opt_tc"
+            :key="item.tco_id"
+            :label="item.tco_nombre"
+            :value="item.tco_id"
+          > </el-option>
           
         </el-select>
     </el-form-item>
@@ -543,29 +688,38 @@ export default {
       </el-radio-group>
     </el-form-item> -->
     <hr>  
-    <div v-if="form_c.tipo==1" class="form-worker">
+    <div v-if="form_e.tipo==2" class="form-worker">
       <el-form-item label="Nro. de licencia">
-        <el-input />
+        <el-input v-model="form_e_op.nro_lic" />
       </el-form-item>
       <el-form-item label="Categoria de licencia">
-        <el-input />
+        <el-input v-model="form_e_op.cat_lic"/>
       </el-form-item>
       <el-form-item label="Fecha de venc. licencia">
-        <el-date-picker />
+        <el-date-picker v-model="form_e_op.venc_lic"/>
       </el-form-item>
       <el-form-item label="Especialidad">
-        <el-select   default-first-option>
+        <el-select v-model="form_e_op.esp"  default-first-option>
           <el-option label="Volvo " value="0" />
           <el-option label="Americano " value="1" />
         </el-select>
       </el-form-item>
       <el-form-item label="">
-        <el-checkbox  label="Inscrito en SUNAT-IQBF" />
-    </el-form-item>
+        <el-checkbox v-model="form_e_op.ins_iqbf" label="Inscrito en SUNAT-IQBF" />
+      </el-form-item>
       
     </div>
 
   </el-form>
+</modal>
+
+
+<modal ref="mo_realizado" hide-cancel success title="Operacion completada" centered @ok="close_succes" cancel-title="Atras" >
+  {{alert_mo}}
+</modal>
+
+<modal ref="mo_error"  hide-cancel error title="Error al ejecutar operación" centered @ok="close_fail">
+  {{alert_mo}}
 </modal>
 
 </template>
