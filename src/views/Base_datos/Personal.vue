@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { reactive } from 'vue'
 import axios from 'axios'
-import { EditPen, Filter, Plus, Download} from '@element-plus/icons-vue'
+import { EditPen, Filter, Plus, Download, CloseBold} from '@element-plus/icons-vue'
 
 import type { FormInstance, FormRules } from 'element-plus'
 </script>
@@ -18,13 +18,16 @@ export default {
     return {
       editpointer:0,
       succes: false,
+      operarios_id:[2,4],
       datap:[],
       opt_rs : [],
       opt_tc : [],
+      opt_pues : [],
       data_edit : [],
       data_edit2 : [],
       wait:false,
       wait2:false,
+      open_op:false,
       alert_mo:'',
       id_tmp:-1,
       emp_cont:'1',
@@ -99,21 +102,91 @@ export default {
         this.api_get_filt();
       }
     },
+    check_op()  {
+      for ( var xd in this.operarios_id) {
+        if (this.form_c.tipo == this.operarios_id[xd]) {
+          this.open_op=true;
+          return;
+        }
+      }
+      this.open_op=false;
+      return;
+    },
+    check_op2()  {
+      for ( var xd in this.operarios_id) {
+        if (this.form_e.tipo == this.operarios_id[xd]) {
+          this.open_op=true;
+          return;
+        }
+      }
+      this.open_op=false;
+      return;
+    },
+    search_rs_ch() {
+      this.emp_cont=this.form_b.rs;
+      this.form_b.contrato="";
+      this.form_b.tipo="";
+      this.load_tc();
+      this.load_pues();
+    },
+    clear_c() {
+      this.form_c.rs= '';
+      this.form_c.nombre= '';
+      this.form_c.tipo= '';
+      this.form_c.nro_doc= '';
+      this.form_c.apellido_p= '';
+      this.form_c.apellido_m= '';
+      this.form_c.contrato= '';
+      this.form_c.fecha_nac=null;
+      this.form_c.fecha_i= null;
+      this.form_c.fecha_ip= null;
+      this.form_c.fecha_c= null;
+      this.form_c_op.rs= '';
+      this.form_c_op.nro_lic= '';
+      this.form_c_op.cat_lic= '';
+      this.form_c_op.esp='';
+      this.form_c_op.ins_iqbf=null;
+      this.form_c_op.venc_lic= null;
+    },
+
     rs_changer() {
       this.emp_cont=this.form_c.rs;
       this.form_c.contrato="";
+      this.form_c.tipo="";
+      this.open_op=false;
       this.load_tc();
+      this.load_pues();
     },
-    rs_changer2() {
-      this.emp_cont=this.form_e.rs;
-      this.load_tc();
-    },
+
     open_succes(msg) {
       this.alert_mo=msg;
       this.$refs.mo_realizado.open(); 
     },
+    open_succes_ed(msg) {
+      this.alert_mo=msg;
+      this.$refs.mo_realizado_ed.open();
+    },
+    open_confirmar(msg) {
+      this.alert_mo=msg;
+      this.$refs.mo_advertencia_eliim.open(); 
+    },
+    close_confirmar() {
+      this.$refs.mo_advertencia_eliim.hide();
+    },
     close_succes() {
-      this.$refs.mo_realizado.hide(); 
+      this.$refs.mo_realizado.hide();
+      this.api_get_all();
+    },
+    close_succes_all() {
+      this.$refs.mo_realizado.hide();
+      this.clear_c();
+      this.$refs.mo_create_per.hide();
+      this.api_get_all();
+    },
+    close_succes_ed() {
+      this.$refs.mo_realizado_ed.hide(); 
+      this.$refs.mo_editar_per.hide();
+      this.api_get_all();
     },
     open_fail(msg) {
       this.alert_mo=msg;
@@ -129,8 +202,10 @@ export default {
       this.$refs.mo_editar_per.hide();
     },
     opencrear() {
+      this.open_op=false;
       this.load_rs();
       this.load_tc();
+      this.load_pues();
       this.$refs.mo_create_per.open();
     },
     closecrear() {
@@ -142,7 +217,6 @@ export default {
         .then((resp) => {
           console.log(resp);
           this.opt_rs = resp.data;
-          console.log(this.opt_rs)
         })
     },
 
@@ -152,7 +226,15 @@ export default {
         .then((resp) => {
           console.log(resp);
           this.opt_tc = resp.data;
-          console.log(this.opt_tc)
+        })
+    },
+
+    load_pues() {
+      axios
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/puestos/'+String(this.emp_cont))
+        .then((resp) => {
+          console.log(resp);
+          this.opt_pues = resp.data;
         })
     },
 
@@ -171,6 +253,55 @@ export default {
           console.log(resp);
           this.data_edit2 = resp.data;
         })      
+    },
+
+    send_delete_op() {
+    axios
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/tripulacion/borrar/'+String(this.editpointer))
+        .then((resp) => {
+          console.log(resp.data.status);
+          this.succes=resp.data.status;
+          if (this.succes) {
+            this.open_succes_ed("Trabajador (operario) eliminado correctamente");
+            return true;
+          }
+          else {
+            this.open_fail("Hubo un error con el servidor al ejecutar la operación");
+            return false;
+          }
+        });
+    },  
+
+    send_delete() {
+      this.$refs.mo_advertencia_eliim.hide();
+      axios
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/trabajadores/borrar/'+String(this.editpointer))
+        .then((resp) => {
+          console.log(resp.data.status);
+          this.succes=resp.data.status;
+          if (this.succes) {
+            if(this.check_op2) {
+              console.log("Tripulacion")
+              var tmpop=this.send_delete_op();
+              console.log(tmpop);
+              if(tmpop) {
+                return true;
+              }
+              else {
+                return false;
+              }
+            }
+            else {
+              this.open_succes("Trabajador eliminado correctamente");
+              return true;
+            }
+          }
+          else {
+            this.open_fail("Hubo un error con el servidor al ejecutar la operación");
+            return false;
+          }
+        })
+        return false;
     },
 
 
@@ -208,16 +339,15 @@ export default {
     },
 
     api_get_filt(){
-      console.log(this.form_b.datef);
-      console.log(this.form_b.datei);
+      console.log(this.form_b.rs);
       axios
         .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/trabajadores', 
         { 
-          "emp_id": this.form_b.rs,
+          "emp_id": String(this.form_b.rs),
           "tra_nombreyapellidos":this.form_b.nombre,
           "tra_nrodocumento": this.form_b.nro_doc,
-          "pue_nombre": this.form_b.tipo,
-          "tra_tipocontrato":this.form_b.contrato,
+          "pue_nombre":String( this.form_b.tipo),
+          "tra_tipocontrato":String(this.form_b.contrato),
           "tra_fechaingreso":this.form_b.date_i,
           "tra_fechacese":this.form_b.date_f
         })
@@ -334,7 +464,7 @@ export default {
           console.log(resp.data.status);
           this.succes=resp.data.status;
           if (this.succes) {
-            this.$refs.mo_realizado.open(); 
+            this.open_succes_ed("Uusario modificado satisfactoriamente");
           }
           else {
             this.$refs.mo_error.open(); 
@@ -348,11 +478,11 @@ export default {
         .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/tripulacion/actualizar', 
         { 
           "tra_id": this.editpointer,
-          "tri_licenciacategoria":"A3DC",
-          "tri_licencianro":"1452",
-          "tri_especialidad":"CARGA",
-          "tri_licenciafechavencimiento": "2022-01-01",
-          "tri_inscritossunatiqbf": false,
+          "tri_licenciacategoria":this.form_e_op.cat_lic,
+          "tri_licencianro":this.form_e_op.nro_lic,
+          "tri_especialidad":this.form_e_op.esp,
+          "tri_licenciafechavencimiento": this.form_e_op.venc_lic,
+          "tri_inscritossunatiqbf": this.form_e_op.ins_iqbf,
           "tri_usumodificacion":"admin"
         })
         .then((resp) => {
@@ -386,21 +516,28 @@ export default {
           catch(err) {
             this.open_fail("Hubo un error con el servidor al cargar los datos de operario");
           }
-          
+          this.emp_cont=this.form_e.rs;
+          this.load_tc();
+          this.check_op2() ;
           this.wait = false;
           }, 400)
         }
         else {
+          this.emp_cont=this.form_e.rs;
+          this.load_tc();
+          this.check_op2() ;
           this.wait = false;
         }
       }, 400)
     }
   },
+
   mounted () {
     //llamada a API
     this.api_get_all();
     this.load_rs();
     this.load_tc();
+    this.load_pues();
   },
 }
 
@@ -438,37 +575,51 @@ export default {
           <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
               <el-col :span="21">
                 <el-form-item label="Razon social">
-                  <el-select v-model="form_b.rs" placeholder="Seleccionar">
-                    <el-option label="Garcal" value="garcal" />
-                    <el-option label="LC" value="lc" />
+                  <el-select v-model="form_b.rs" @change="search_rs_ch" placeholder="Seleccionar" clearable>
+                    <el-option
+                      v-for="item in opt_rs"
+                      :key="item.emp_id"
+                      :label="item.emp_razonsocial"
+                      :value="item.emp_id"
+                    > </el-option>
                   </el-select>
                 </el-form-item>
 
-                <el-form-item label="Nro. de DNI">
-                  <el-input v-model="form_b.nro_doc" />
-                </el-form-item>
-
-                <el-form-item label="Nombre">
-                  <el-input v-model="form_b.nombre" />
-                </el-form-item>
-
-                <el-form-item label=" Apellidos">
-                  <el-input v-model="form_b.apellidos" />
-                </el-form-item>
-
                 <el-form-item label="Tipo">
-                  <el-select v-model="form_b.tipo" placeholder="Seleccionar">
-                    <el-option label="Administrativo" value="adm" />
-                    <el-option label="Operario" value="op" />
+                  <el-select v-model="form_b.tipo" placeholder="Seleccionar" clearable>
+                    <el-option
+                      v-for="item in opt_pues"
+                      :key="item.pue_id"
+                      :label="item.pue_nombre"
+                      :value="item.pue_id"
+                    > </el-option>
                   </el-select>
                 </el-form-item>
 
                 <el-form-item label="Contrato">
-                  <el-select v-model="form_b.contrato" placeholder="Seleccionar">
-                    <el-option label="En prueba" value="pr" />
-                    <el-option label="Planilla" value="pl" />
+                  <el-select v-model="form_b.contrato" placeholder="Seleccionar" clearable>
+                    <el-option
+                      v-for="item in opt_tc"
+                      :key="item.tco_id"
+                      :label="item.tco_nombre"
+                      :value="item.tco_id"
+                    > </el-option>
                   </el-select>
                 </el-form-item>
+
+                <el-form-item label="Nro. de DNI">
+                  <el-input v-model="form_b.nro_doc" clearable/>
+                </el-form-item>
+
+                <el-form-item label="Nombre">
+                  <el-input v-model="form_b.nombre" clearable/>
+                </el-form-item>
+
+                <el-form-item label=" Apellidos">
+                  <el-input v-model="form_b.apellidos" clearable/>
+                </el-form-item>
+
+                
 
                 <el-form-item label="Fecha inicio">
                   <el-col :span="11">
@@ -514,8 +665,8 @@ export default {
           <div class="table-container">
           <el-table :data="datap" border header-row-style="color:black;" >
               <el-table-column prop="emp_razonsocial" label="Razon soc. asoc." width="140" />
-              <el-table-column prop="tra_nombreyapellidos" label="Nombre" />
-              <el-table-column prop="tra_nrodocumento" label="Nro. de doc." />
+              <el-table-column prop="tra_nombreyapellidos" label="Nombre" width="200"/>
+              <el-table-column prop="tra_nrodocumento" label="Nro. de doc."  />
               <el-table-column prop="pue_nombre" label="Tipo" />
               <el-table-column prop="tra_tipocontrato" label="Tipo de contrato" />
               <el-table-column prop="tra_fechaingreso" label="Fecha de ingreso" />
@@ -546,11 +697,14 @@ export default {
       </el-select>
     </el-form-item>
     <el-form-item label="Tipo">
-        <el-select  v-model="form_c.tipo" default-first-option>
-          <el-option label="Administrativo " value="1" />
-          <el-option label="Operario " value="2" />
-          
-        </el-select>
+      <el-select  v-model="form_c.tipo"  @change="check_op" default-first-option>
+        <el-option
+          v-for="item in opt_pues"
+          :key="item.pue_id"
+          :label="item.pue_nombre"
+          :value="item.pue_id"
+        > </el-option>
+      </el-select>
     </el-form-item>
     <el-form-item label="DNI o carnet de extranjería">
       <el-input v-model="form_c.nro_doc" />
@@ -577,9 +731,9 @@ export default {
             :key="item.tco_id"
             :label="item.tco_nombre"
             :value="item.tco_id"
-          > </el-option>
-          
+        > </el-option>       
         </el-select>
+        
     </el-form-item>
     <el-form-item label="Fecha de ingreso">
       <el-date-picker format="YYYY-MM-DD" value-format="YYYY-MM-DD" v-model="form_c.fecha_i" />
@@ -597,7 +751,7 @@ export default {
       </el-radio-group>
     </el-form-item> -->
     <hr>  
-    <div v-if="form_c.tipo=='2'" class="form-worker">
+    <div v-if="open_op" class="form-worker">
       <el-form-item label="Nro. de licencia">
         <el-input v-model="form_c_op.nro_lic"/>
       </el-form-item>
@@ -639,8 +793,12 @@ export default {
     </el-form-item>
     <el-form-item label="Tipo">
         <el-select disabled  v-model="form_e.tipo" >
-          <el-option label="Administrativo " value=1 />
-          <el-option label="Operario " value=2 />
+          <el-option
+          v-for="item in opt_pues"
+          :key="item.pue_id"
+          :label="item.pue_nombre"
+          :value="item.pue_id"
+        > </el-option>
         </el-select>
     </el-form-item>
     <el-form-item label="DNI o carnet de extranjería">
@@ -688,7 +846,7 @@ export default {
       </el-radio-group>
     </el-form-item> -->
     <hr>  
-    <div v-if="form_e.tipo==2" class="form-worker">
+    <div v-if="open_op" class="form-worker">
       <el-form-item label="Nro. de licencia">
         <el-input v-model="form_e_op.nro_lic" />
       </el-form-item>
@@ -709,12 +867,20 @@ export default {
       </el-form-item>
       
     </div>
+    <el-button color="#E21747" :icon="CloseBold" @click="open_confirmar('Desea eliminar a este trabajador?')">Eliminar</el-button>
 
   </el-form>
 </modal>
 
+<modal ref="mo_advertencia_eliim" title="Confirmar" centered @ok="send_delete" @cancel="close_confirmar" ok-title="Si" cancel-title="Cancelar" >
+  {{alert_mo}}
+</modal>
 
-<modal ref="mo_realizado" hide-cancel success title="Operacion completada" centered @ok="close_succes" cancel-title="Atras" >
+<modal ref="mo_realizado" success title="Operacion completada" centered @ok="close_succes_all" @cancel="close_succes" ok-title="Cerrar" cancel-title="Atras" >
+  {{alert_mo}}
+</modal>
+
+<modal ref="mo_realizado_ed" hide-cancel success title="Operacion completada" centered @ok="close_succes_ed" cancel-title="Atras" >
   {{alert_mo}}
 </modal>
 
