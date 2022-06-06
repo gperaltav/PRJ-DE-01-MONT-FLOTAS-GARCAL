@@ -19,12 +19,13 @@ export default {
       editpointer:0,
       succes: false,
       operarios_id:[2,4],
-      datap:[],
-      opt_rs : [],
-      opt_tc : [],
-      opt_pues : [],
-      data_edit : [],
-      data_edit2 : [],
+      datap: [],
+      opt_rs: [],
+      opt_tc: [],
+      opt_pues: [],
+      opt_esp: [],
+      data_edit: [],
+      data_edit2: [],
       wait:false,
       wait2:false,
       open_op:false,
@@ -129,6 +130,12 @@ export default {
       this.load_tc();
       this.load_pues();
     },
+    search_rs_clear() {
+      this.form_b.contrato="";
+      this.form_b.tipo="";
+      this.opt_tc = [];
+      this.opt_pues = [];
+    },
     clear_c() {
       this.form_c.rs= '';
       this.form_c.nombre= '';
@@ -148,14 +155,24 @@ export default {
       this.form_c_op.ins_iqbf=null;
       this.form_c_op.venc_lic= null;
     },
+    clear_eop() {
+      this.form_e_op.nro_lic= '';
+      this.form_e_op.cat_lic= '';
+      this.form_e_op.esp= '';
+      this.form_e_op.ins_iqbf= null;
+      this.form_e_op.venc_lic= null;
+
+    },
 
     rs_changer() {
       this.emp_cont=this.form_c.rs;
       this.form_c.contrato="";
       this.form_c.tipo="";
+      this.form_c_op.esp="";
       this.open_op=false;
       this.load_tc();
       this.load_pues();
+      this.load_esp();
     },
 
     open_succes(msg) {
@@ -217,6 +234,14 @@ export default {
         .then((resp) => {
           console.log(resp);
           this.opt_rs = resp.data;
+        })
+    },
+    load_esp() {
+      axios
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/especialidad/'+String(this.emp_cont))
+        .then((resp) => {
+          console.log(resp);
+          this.opt_esp = resp.data;
         })
     },
 
@@ -307,6 +332,10 @@ export default {
 
     load_data_edit() {
       this.form_e.rs=this.data_edit[0].emp_id;
+      this.emp_cont=this.form_e.rs;
+      this.load_tc();
+      this.load_pues();
+      this.load_esp();
       this.form_e.tipo=this.data_edit[0].pue_id;
       this.form_e.nro_doc=this.data_edit[0].tra_nrodocumento;
       this.form_e.nombre=this.data_edit[0].tra_nombres;
@@ -378,14 +407,13 @@ export default {
           "tra_usucreacion":"admin" 
         })
         .then((resp) => {
-          console.log(resp.data.status);
+          console.log(resp.data);
           this.succes=resp.data.status;
           if (this.succes) {
-            if(this.form_c.tipo=='2') {
+            if(this.open_op) {
               console.log("Tripulacion")
               this.id_tmp=resp.data.idValue;
               var tmpop=this.create_usr_op();
-              console.log("Yolo");
               console.log(tmpop);
               if(tmpop) {
                 return true;
@@ -428,7 +456,7 @@ export default {
             return true;
           }
           else {
-            this.open_fail("Hubo un error con el servidor al ejecutar la operación");
+            this.open_fail("Se creó el trabajador pero no los datos de operario");
             return false;
           }
         });
@@ -464,10 +492,26 @@ export default {
           console.log(resp.data.status);
           this.succes=resp.data.status;
           if (this.succes) {
-            this.open_succes_ed("Uusario modificado satisfactoriamente");
+            
+            if(this.open_op) {
+              console.log("Tripulacion")
+              this.id_tmp=resp.data.idValue;
+              var tmpop=this.editar_usr_op();
+              
+              console.log(tmpop);
+              if(tmpop) {
+                return true;
+              }
+              else {
+                return false;
+              }
+            }
+            else {
+              this.open_succes_ed("Uusario modificado satisfactoriamente");
+            }
           }
           else {
-            this.$refs.mo_error.open(); 
+            this.open_fail("Hubo un error al comunicarse con el servidor");
           }
           console.log(resp);
         })
@@ -489,26 +533,32 @@ export default {
           console.log(resp.data.status);
           this.succes=resp.data.status;
           if (this.succes) {
-            this.$refs.mo_realizado.open(); 
+            this.open_succes_ed("Uusario modificado satisfactoriamente");
+            return true;
           }
           else {
-            this.$refs.mo_error.open(); 
+            this.open_fail("Hubo un error al comunicarse con el servidor (No se edito los datos de operario)");
+            return false;
           }
           console.log(resp);
         })
-        return false;
     },
 
     button_handle(number){
       console.log(number);
+      this.clear_eop;
       this.editpointer=number;
       this.$refs.mo_editar_per.open();
       this.wait = true;
       this.load_edit(number);
+      
       setTimeout(() => {
         this.load_data_edit();
-        if (this.form_e.tipo==2) {
+        this.check_op2();
+        this.load_esp();
+        if (this.open_op) {
           this.load_edit_op(number);
+          
           setTimeout(() => {
           try {
             this.load_data_edit_op();
@@ -519,6 +569,10 @@ export default {
           this.emp_cont=this.form_e.rs;
           this.load_tc();
           this.check_op2() ;
+          
+          this.load_pues();
+          
+          
           this.wait = false;
           }, 400)
         }
@@ -536,8 +590,9 @@ export default {
     //llamada a API
     this.api_get_all();
     this.load_rs();
-    this.load_tc();
-    this.load_pues();
+    //this.load_tc();
+    //this.load_pues();
+    //this.load_esp();
   },
 }
 
@@ -575,7 +630,7 @@ export default {
           <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
               <el-col :span="21">
                 <el-form-item label="Razon social">
-                  <el-select v-model="form_b.rs" @change="search_rs_ch" placeholder="Seleccionar" clearable>
+                  <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
                     <el-option
                       v-for="item in opt_rs"
                       :key="item.emp_id"
@@ -762,9 +817,13 @@ export default {
         <el-date-picker v-model="form_c_op.venc_lic" />
       </el-form-item>
       <el-form-item label="Especialidad">
-        <el-select v-model="form_c_op.esp"  default-first-option>
-          <el-option label="Volvo " value="0" />
-          <el-option label="Americano " value="1" />
+        <el-select v-model="form_c_op.esp">
+          <el-option
+            v-for="item in opt_esp"
+            :key="item.tes_id"
+            :label="item.tes_nombre"
+            :value="item.tes_id"
+          > </el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="">
@@ -857,9 +916,13 @@ export default {
         <el-date-picker v-model="form_e_op.venc_lic"/>
       </el-form-item>
       <el-form-item label="Especialidad">
-        <el-select v-model="form_e_op.esp"  default-first-option>
-          <el-option label="Volvo " value="0" />
-          <el-option label="Americano " value="1" />
+        <el-select v-model="form_e_op.esp">
+          <el-option
+            v-for="item in opt_esp"
+            :key="item.tes_id"
+            :label="item.tes_nombre"
+            :value="item.tes_id"
+          > </el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="">

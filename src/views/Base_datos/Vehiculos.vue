@@ -1,10 +1,12 @@
-<script  setup>
+<script lang="ts" setup>
 import { reactive } from 'vue'
 import axios from 'axios'
-import { EditPen, Filter, Plus, Download} from '@element-plus/icons-vue'
+import { EditPen, Filter, Plus, Download, CloseBold} from '@element-plus/icons-vue'
+
+import type { FormInstance, FormRules } from 'element-plus'
 </script>
 
-<script>
+<script lang="ts">
 import Sidebar from "../../components/Sidebar.vue"
 import modal from "../../components/modal.vue"
 export default {
@@ -14,47 +16,406 @@ export default {
   },
   data(){
     return {
-      datav:[],
-      form : reactive({
-        nombre: '',
-    })
+      editpointer:0,
+      succes: false,
+      operarios_id:[2,4],
+      datap: [],
+      opt_rs: [],
+
+      opt_mar:[],
+      opt_mod:[],
+      opt_cla:[],
+      opt_ti:[],
+
+      data_edit: [],
+      data_edit2: [],
+      wait:false,
+      wait2:false,
+      open_op:false,
+      alert_mo:'',
+      id_tmp:-1,
+      emp_cont:'1',
+
+      form_b : reactive({
+        rs: '',
+        placa: '',
+        marca: '',
+        modelo: '',
+        fecha_i: '',
+        fecha_f: '',
+      }),
+
+      form_c : reactive({
+        rs: '',
+        placa: '',
+        marca: '',
+        modelo: '',
+        tipo: '',
+        clase: '',
+        year: '',
+        serie: '',
+        mtc: '',
+        carga_util:'',
+        kilometraje: '',
+      }),
+
+      form_e : reactive({
+        rs: '',
+        placa: '',
+        marca: '',
+        modelo: '',
+        tipo: '',
+        clase: '',
+        year: '',
+        serie: '',
+        mtc: '',
+        carga_util:'',
+        kilometraje: '',
+      }),
+
+      rules : reactive<FormRules>({
+        nombre: [
+          { required: true, message: 'Please input Activity name', trigger: 'blur' },
+          { min: 3, max: 5, message: 'Length should be 3 to 5', trigger: 'blur' },
+        ],
+        
+      })
     }
   },
+
   methods: {
-    check() {
-      //verificar campos
-      if (nombre=='') {
-        this.onSubmitall();
-      }
-      else {
-        this.onSubmit2();
-      }
+
+    search_rs_ch() {
+      this.emp_cont=this.form_b.rs;
+      this.form_b.modelo="";
+      this.form_b.marca="";
+
+      //cargar listas
+      this.load_mar();
+      this.load_mod();
+
     },
-    onSubmit2 (){
-      console.log(this.form.nombre);
+    search_rs_clear() {
+      this.form_b.contrato="";
+      this.form_b.tipo="";
+      this.opt_tc = [];
+      this.opt_pues = [];
+    },
+    clear_c() {
+      this.form_c.rs='';
+      this.form_c.placa='';
+      this.form_c.marca='';
+      this.form_c.modelo='';
+      this.form_c.tipo='';
+      this.form_c.clase='';
+      this.form_c.year='';
+      this.form_c.serie='';
+      this.form_c.mtc='';
+      this.form_c.carga_uti='';
+      this.form_c.kilometraje='';
+    },
+
+    clear_eop() {
+      this.form_e_op.nro_lic= '';
+      this.form_e_op.cat_lic= '';
+      this.form_e_op.esp= '';
+      this.form_e_op.ins_iqbf= null;
+      this.form_e_op.venc_lic= null;
+    },
+
+    rs_changer() {
+      this.emp_cont=this.form_c.rs;
+      this.form_c.modelo="";
+      this.form_c.marca="";
+      this.form_c.clase="";
+      this.form_c.tipo="";
+      //cargar listas
+      this.load_mar();
+      this.load_mod();
+      this.load_cla();
+      this.load_ti();
+    },
+
+    open_succes(msg) {
+      this.alert_mo=msg;
+      this.$refs.mo_realizado.open(); 
+    },
+    open_succes_ed(msg) {
+      this.alert_mo=msg;
+      this.$refs.mo_realizado_ed.open();
+    },
+    open_confirmar(msg) {
+      this.alert_mo=msg;
+      this.$refs.mo_advertencia_eliim.open(); 
+    },
+    close_confirmar() {
+      this.$refs.mo_advertencia_eliim.hide();
+    },
+    close_succes() {
+      this.$refs.mo_realizado.hide();
+      this.api_get_all();
+    },
+    close_succes_all() {
+      this.$refs.mo_realizado.hide();
+      this.clear_c();
+      this.$refs.mo_create_per.hide();
+      this.api_get_all();
+    },
+    close_succes_ed() {
+      this.$refs.mo_realizado_ed.hide(); 
+      this.$refs.mo_editar_per.hide();
+      this.api_get_all();
+    },
+    open_fail(msg) {
+      this.alert_mo=msg;
+      this.$refs.mo_error.open(); 
+    },
+    close_fail() {
+      this.$refs.mo_error.hide(); 
+    },
+    openedit() {
+      this.$refs.mo_editar_per.open();
+    },
+    closeedit() {
+      this.$refs.mo_editar_per.hide();
+    },
+    opencrear() {
+      this.open_op=false;
+      this.load_rs();
+      this.$refs.mo_create_per.open();
+    },
+    closecrear() {
+      this.$refs.mo_create_per.hide();
+    },
+    load_rs() {
       axios
-          .get('http://localhost:5000/vehiculos_a'+String(this.form.nombre))
-          .then((resp) => {
-            console.log(resp);
-            this.datav = resp.data;
-          })
-    },
-    onSubmitall (){
-      //llamada a API
-     axios
-        .get('http://localhost:5000/vehiculos_a')
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas')
         .then((resp) => {
           console.log(resp);
-          this.datav = resp.data;
+          this.opt_rs = resp.data;
         })
-    }
+    },
+    load_mar() {
+      axios
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api//vehiculosmarcas/'+String(this.emp_cont))
+        .then((resp) => {
+          console.log(resp);
+          this.opt_mar = resp.data;
+        })
+    },
+    load_mod() {
+      axios
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api//vehiculosmodelos/'+String(this.emp_cont))
+        .then((resp) => {
+          console.log(resp);
+          this.opt_mod = resp.data;
+        })
+    },
+    load_cla() {
+      axios
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api//vehiculosclases/'+String(this.emp_cont))
+        .then((resp) => {
+          console.log(resp);
+          this.opt_cla = resp.data;
+        })
+    },
+    load_ti() {
+      axios
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api//vehiculostipos/'+String(this.emp_cont))
+        .then((resp) => {
+          console.log(resp);
+          this.opt_ti = resp.data;
+        })
+    },
+    load_esp() {
+      axios
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/especialidad/'+String(this.emp_cont))
+        .then((resp) => {
+          console.log(resp);
+          this.opt_esp = resp.data;
+        })
+    },
+
+    load_edit(id) {
+      axios
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos/"+String(id))
+        .then((resp) => {
+          console.log(resp);
+          this.data_edit = resp.data;
+        })      
+    },
+
+    send_delete() {
+      this.$refs.mo_advertencia_eliim.hide();
+      axios
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos/borrar/'+String(this.editpointer))
+        .then((resp) => {
+          console.log(resp.data.status);
+          this.succes=resp.data.status;
+          if (this.succes) {
+            this.open_succes("Vehiculo eliminado correctamente");
+            return true;
+          }
+          else {
+            this.open_fail("Hubo un error con el servidor al ejecutar la operación");
+            return false;
+          }
+        })
+        return false;
+    },
+
+
+    load_data_edit() {
+      this.form_e.rs=this.data_edit[0].emp_id;
+      this.emp_cont=this.form_e.rs;
+      //carga de listas
+      this.load_mar();
+      this.load_mod();
+      this.load_cla();
+      this.load_ti();
+
+      this.form_e.placa=this.data_edit[0].veh_placa;
+      this.form_e.marca=this.data_edit[0].vma_id;
+      this.form_e.modelo=this.data_edit[0].vmo_id;
+      this.form_e.tipo=this.data_edit[0].vti_id;
+      this.form_e.clase=this.data_edit[0].vcl_id;
+      this.form_e.year=String(this.data_edit[0].veh_anno);
+      this.form_e.serie=this.data_edit[0].veh_serie;
+      this.form_e.mtc=this.data_edit[0].veh_mtc;
+      this.form_e.carga_util=this.data_edit[0].veh_cargautil;
+      this.form_e.kilometraje=this.data_edit[0].veh_kilometraje;
+    },
+
+    api_get_all(){
+      //llamada a API
+     axios
+        .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos')
+        .then((resp) => {
+          console.log(resp);
+          this.datap = resp.data;
+          console.log(this.datap);
+        })
+    },
+
+    api_get_filt(){
+      console.log(this.form_b.rs);
+      axios
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos', 
+        {
+          "emp_id": String(this.form_b.rs),
+          "veh_placa":this.form_b.placa,
+          "vma_nombre":this.form_b.marca,
+          "vmo_nombre":this.form_b.modelo,
+          "veh_anno_inicio":String(this.form_b.fecha_i),
+          "veh_anno_fin":String(this.form_b.fecha_f)
+        })
+        .then((resp) => {
+          console.log(resp);
+          this.datap = resp.data;
+        })
+    },
     
+    create_usr(){
+      //llamada a API
+      console.log(this.form_c.year);
+
+      axios
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos/nuevo', 
+        { 
+          "emp_id": String(this.form_c.rs),
+          "veh_placa":this.form_c.placa,
+          "vma_id": String(this.form_c.marca),
+          "vmo_id": String(this.form_c.modelo),
+          "vti_id": this.form_c.tipo,
+          "vcl_id": this.form_c.clase,
+          "veh_anno":this.form_c.year,
+          "veh_usucreacion":"admin",
+          "veh_serie":this.form_c.serie,
+          "veh_mtc":this.form_c.mtc,
+          "veh_cargautil":String(this.form_c.carga_util),
+          "veh_kilometraje":String(this.form_c.kilometraje)
+        })
+        .then((resp) => {
+          console.log(resp.data);
+          this.succes=resp.data.status;
+          if (this.succes) {
+            this.open_succes("Operación realizada satisfactoriamente");
+            return true;
+            
+          }
+          else {
+            this.open_fail("Hubo un error con el servidor al ejecutar la operación");
+            return false;
+          }
+        })
+        return false;
+    },  
+
+    close_create() {
+      this.$refs.form_create_ref.resetFields();
+      this.$refs.mo_create_per.hide(); 
+    },
+
+    editar_usr(){
+      //llamada a API
+    
+    axios
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos/actualizar', 
+        { 
+          "veh_id":String(this.editpointer),
+          "emp_id": String(this.form_e.rs),
+          "veh_placa":this.form_e.placa,
+          "vma_id":String(this.form_e.marca),
+          "vmo_id":String(this.form_e.modelo),
+          "vti_id": this.form_e.tipo,
+          "vcl_id": this.form_e.clase,
+          "veh_anno":this.form_e.year,
+          "veh_usucreacion":"admin",
+          "veh_serie":this.form_e.serie,
+          "veh_mtc":this.form_e.mtc,
+          "veh_cargautil":String(this.form_e.carga_util),
+          "veh_kilometraje":String(this.form_e.kilometraje)
+        })
+        .then((resp) => {
+          console.log(resp.data.status);
+          this.succes=resp.data.status;
+          if (this.succes) {
+            this.open_succes_ed("Uusario modificado satisfactoriamente");
+          }
+          else {
+            this.open_fail("Hubo un error al comunicarse con el servidor");
+          }
+          console.log(resp);
+        })
+        return false;
+    },
+
+    button_handle(number){
+      console.log(number);
+      this.clear_eop;
+      this.editpointer=number;
+      this.$refs.mo_editar_per.open();
+      this.wait = true;
+      this.load_edit(number);
+      
+      setTimeout(() => {
+        this.load_data_edit();
+        this.emp_cont=this.form_e.rs;
+        this.wait = false;
+      }, 400)
+    }
   },
+
   mounted () {
     //llamada a API
-     this.onSubmitall();
+    this.api_get_all();
+    this.load_rs();
+    //this.load_tc();
+    //this.load_pues();
+    //this.load_esp();
   },
 }
+
 </script>
 
 
@@ -68,12 +429,12 @@ export default {
       </el-col>
       <el-col :span="8" style="text-align=center">
         <div class="sitebar">
-          <el-tag style="color:white;" color="#0c59cf">
-            Base de datos > Vehiculos
-          </el-tag>
-        </div>
-        </el-col>
-        <el-col :span="8" style="text-align=center">
+        <el-tag style="color:white;" color="#0c59cf">
+          Base de datos > Personal
+        </el-tag>
+      </div>
+      </el-col>
+      <el-col :span="8" style="text-align=center">
       </el-col>
     </el-header>
 
@@ -86,138 +447,318 @@ export default {
 
       <el-main style="background-color:white">
         <el-scrollbar>
-         
-         
-         <el-form :inline="true" :model="formInline" label-width="auto" :size="small" label-position="right">
-              <el-col :span="21">
-                <el-form-item label="Razon social">
-                  <el-select v-model="form.rs" placeholder="Seleccionar">
-                    <el-option label="Garcal" value="garcal" />
-                    <el-option label="LC" value="lc" />
+          <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
+            <el-col :span="21">
+              <el-form-item label="Razón social">
+                  <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
+                    <el-option
+                      v-for="item in opt_rs"
+                      :key="item.emp_id"
+                      :label="item.emp_razonsocial"
+                      :value="item.emp_id"
+                    > </el-option>
                   </el-select>
                 </el-form-item>
 
-                <el-form-item label="Placa">
-                  <el-input v-model="form.placa" />
-                </el-form-item>
+              <el-form-item label="Placa">
+                <el-input v-model="form_b.placa" />
+              </el-form-item>
 
-                <el-form-item label="Marca">
-                  <el-input v-model="form.marca" />
-                </el-form-item>
+              <el-form-item label="Marca">
+                <el-select  v-model="form_b.marca" >
+                  <el-option
+                    v-for="item in opt_mar"
+                    :key="item.vma_id"
+                    :label="item.vma_nombre"
+                    :value="item.vma_id"
+                  > </el-option>
+                </el-select>
+              </el-form-item>
 
-                <el-form-item label="Modelo">
-                  <el-input v-model="form.model" />
-                </el-form-item>
+              <el-form-item label="Modelo">
+                <el-select  v-model="form_b.modelo" >
+                  <el-option
+                    v-for="item in opt_mod"
+                    :key="item.vmo_id"
+                    :label="item.vmo_nombre"
+                    :value="item.vmo_id"
+                  > </el-option>
+                </el-select>
+              </el-form-item>
 
-                <el-form-item label="Año">
-                  <el-col :span="11">
-                    <el-date-picker
-                      v-model="form.date1"
-                      type="year"
-                      placeholder="Seleccionar año inicio"
-                      style="width: 100%"
-                    />
-                  </el-col>
-                  <el-col :span="2" class="text-center">
-                    <span class="text-gray-500">-</span>
-                  </el-col>
-                  <el-col :span="11">
-                    <el-date-picker
-                      v-model="form.date2"
-                      type="year"
-                      placeholder="Seleccionar año fin"
-                      style="width: 100%"
-                    />
-                  </el-col>
+              <el-form-item label="Año">
+                <el-col :span="11">
+                  <el-date-picker
+                    v-model="form_b.fecha_i"
+                    format="YYYY"
+                    value-format="YYYY"
+                    type="year"
+                    placeholder="Seleccionar año inicio"
+                    style="width: 100%"
+                  />
+                </el-col>
+                <el-col :span="2" class="text-center">
+                  <span class="text-gray-500">-</span>
+                </el-col>
+                <el-col :span="11">
+                  <el-date-picker
+                    v-model="form_b.fecha_f"
+                    format="YYYY"
+                    value-format="YYYY"
+                    type="year"
+                    placeholder="Seleccionar año fin"
+                    style="width: 100%"
+                  />
+                </el-col>
 
-                </el-form-item>
+              </el-form-item>
 
-              </el-col>
+            </el-col>
               <el-col :span="3">
+                
                 <div class="button-container">
                 <el-row class="mb-4">
-                  <el-button color="#0844a4" :icon="Filter" @click="onSubmit">Filtrar</el-button>
+                  <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
                 </el-row>
                 <el-row class="mb-4">
-                  <el-button color="#008db1" :icon="Plus" @click="this.$refs.mo_create_veh.open()" >Crear</el-button>
+                  <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
                 </el-row>
                 <el-row class="mb-4">
                   <el-button color="#95d475" :icon=" Download" disabled>A Excel</el-button>
                 </el-row>
                 </div>
+                
               </el-col>
               
             </el-form>
 
           <div class="table-container">
-          <el-table :data="datav" border header-row-style="color:black;" >
-            <el-table-column prop="rs" label="Razon soc. asoc. " width="140" />
-            <el-table-column prop="placa" label="Placa" width="90" />
-            <el-table-column prop="clase" label="Clase" />
-            <el-table-column prop="tipo" label="Tipo" />
-            <el-table-column prop="marca" label="Marca" />
-            <el-table-column prop="modelo" label="Modelo" />
-            <el-table-column prop="anno" label="Año" width="60"  />
-            <el-table-column prop="serie" label="Nro. serie" />
-            <el-table-column prop="mtc" label="MTC" />
-            <el-table-column prop="cargautil" label="Carga util" />
-            <el-table-column prop="km" label="Km" />   
-            <el-table-column fixed="right" label="" width="40">
-              <template #default>
-                <el-button type="text" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
+          <el-table :data="datap" border header-row-style="color:black;" >
+              <el-table-column prop="emp_razonsocial" label="Razon soc. asoc. " width="140" />
+              <el-table-column prop="veh_placa" label="Placa" width="90" />
+              <el-table-column prop="vcl_nombre" label="Clase" />
+              <el-table-column prop="vti_nombre" label="Tipo" />
+              <el-table-column prop="vma_nombre" label="Marca" />
+              <el-table-column prop="vmo_nombre" label="Modelo" />
+              <el-table-column prop="veh_anno" label="Año" width="60"  />
+              <el-table-column prop="veh_serie" label="Nro. serie" />
+              <el-table-column prop="veh_mtc" label="MTC" />
+              <el-table-column prop="veh_cargautil" label="Carga util" />
+              <el-table-column prop="veh_kilometraje" label="Km" />   
+              <el-table-column fixed="right" label="" width="40">
+              <template #default="scope">
+                <el-button  type="text"  @click="button_handle(scope.row.veh_id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
               </template>
-            </el-table-column>             
-          </el-table>
+            </el-table-column>
+            </el-table>
           </div>
         </el-scrollbar>
       </el-main>
     </el-container>
   </el-container>
 
-<modal ref="mo_create_veh" title="Agregar vehiculo" width="500px" cancel-title="Cancelar" centered>
-<el-form :model="form" label-width="150px">
+<modal ref="mo_create_per" no-close-on-backdrop title="Agregar Vehiculo" width="500px" @ok="create_usr" @cancel="closecrear" cancel-title="Atras" centered>
+  <el-form  ref="form_create_ref" :rules="rules" :model="form" label-width="150px" >
 
     <el-form-item  label="Razón soc. asoc.">
-      <el-select  v-model="form.region" placeholder="Seleccionar">
-        <el-option label="Garcal " value="0" />
-        <el-option label="LC " value="1" />
+      <el-select v-model="form_c.rs" @change="rs_changer" placeholder="Seleccionar">
+        <el-option
+          v-for="item in opt_rs"
+          :key="item.emp_id"
+          :label="item.emp_razonsocial"
+          :value="item.emp_id"
+        > </el-option>
       </el-select>
     </el-form-item>
-    <el-form-item label="ID">
-        <el-input  />
+    <el-form-item label="Placa o ID">
+      <el-input v-model="form_c.placa" />
     </el-form-item>
-    <el-form-item label="Clase">
-      <!-- Aca se deberia jalar de la BD las clases -->
-      <el-select  v-model="form.region" placeholder="Seleccionar">
-        <el-option label="Semirremolque " value="0" />
-        <el-option label="Trailer " value="1" />
-      </el-select>
-    </el-form-item>
+    
+    
+    <hr size="1" color="gray"> 
     <el-form-item label="Marca">
-      <el-input />
+      <el-select  v-model="form_c.marca" default-first-option>
+        <el-option
+          v-for="item in opt_mar"
+          :key="item.vma_id"
+          :label="item.vma_nombre"
+          :value="item.vma_id"
+        > </el-option>
+      </el-select>
     </el-form-item>
     <el-form-item label="Modelo">
-      <el-input />
+      <el-select  v-model="form_c.modelo" default-first-option>
+        <el-option
+          v-for="item in opt_mod"
+          :key="item.vmo_id"
+          :label="item.vmo_nombre"
+          :value="item.vmo_id"
+        > </el-option>
+      </el-select>
     </el-form-item>
     <el-form-item label="Año">
-      <el-input />
+      <el-date-picker
+          v-model="form_c.year"
+          format="YYYY"
+          value-format="YYYY"
+          type="year"
+          placeholder="Seleccione año"
+      />
+    </el-form-item>
+    <el-form-item label="Clase">
+      <el-select  v-model="form_c.clase"  @change="check_op" default-first-option>
+        <el-option
+          v-for="item in opt_cla"
+          :key="item.vcl_id"
+          :label="item.vcl_nombre"
+          :value="item.vcl_id"
+        > </el-option>
+      </el-select>
     </el-form-item>
     <el-form-item label="Tipo">
-      <el-input />
+      <el-select  v-model="form_c.tipo"  @change="check_op" default-first-option>
+        <el-option
+          v-for="item in opt_ti"
+          :key="item.vti_id"
+          :label="item.vti_nombre"
+          :value="item.vti_id"
+        > </el-option>
+      </el-select>
     </el-form-item>
-    <el-form-item label="Nro de serie">
-      <el-input />
+    
+    <el-form-item label="Nro. de serie">
+      <el-input v-model="form_c.serie" />
     </el-form-item>
+
     <el-form-item label="Código MTC">
-      <el-input />
+      <el-input v-model="form_c.mtc" />
     </el-form-item>
+
     <el-form-item label="Carga útil">
-      <el-input />
+      <el-input v-model="form_c.carga_util" />
     </el-form-item>
+    <hr> 
+    
     <el-form-item label="Km. estimado">
-      <el-input />
+      <el-input v-model="form_c.kilometraje" />
     </el-form-item>
+    
+    <hr>  
+
   </el-form>
+</modal>
+
+
+
+<modal ref="mo_editar_per" no-close-on-backdrop title="Editar datos de Vehiculo" width="500px" @ok="editar_usr" cancel-title="Cancelar" @cancel="closeedit"  centered>
+  <el-form v-loading="wait" ref="form_edit_ref" :rules="rules" :model="form" label-width="150px" >
+
+    <el-form-item  label="Razón soc. asoc.">
+      <el-select v-model="form_e.rs" @change="rs_changer" placeholder="Seleccionar">
+        <el-option
+          v-for="item in opt_rs"
+          :key="item.emp_id"
+          :label="item.emp_razonsocial"
+          :value="item.emp_id"
+        > </el-option>
+      </el-select>
+    </el-form-item>
+    <el-form-item label="Placa o ID">
+      <el-input v-model="form_e.placa" />
+    </el-form-item>
+    
+    
+    <hr size="1" color="gray"> 
+    <el-form-item label="Marca">
+      <el-select  v-model="form_e.marca" default-first-option>
+        <el-option
+          v-for="item in opt_mar"
+          :key="item.vma_id"
+          :label="item.vma_nombre"
+          :value="item.vma_id"
+        > </el-option>
+      </el-select>
+    </el-form-item>
+    <el-form-item label="Modelo">
+      <el-select  v-model="form_e.modelo" default-first-option>
+        <el-option
+          v-for="item in opt_mod"
+          :key="item.vmo_id"
+          :label="item.vmo_nombre"
+          :value="item.vmo_id"
+        > </el-option>
+      </el-select>
+    </el-form-item>
+    <el-form-item label="Año">
+      <el-date-picker
+          v-model="form_e.year"
+          format="YYYY"
+          value-format="YYYY"
+          type="year"
+          placeholder="Seleccione año"
+      />
+    </el-form-item>
+    <el-form-item label="Clase">
+      <el-select  v-model="form_e.clase"  @change="check_op" default-first-option>
+        <el-option
+          v-for="item in opt_cla"
+          :key="item.vcl_id"
+          :label="item.vcl_nombre"
+          :value="item.vcl_id"
+        > </el-option>
+      </el-select>
+    </el-form-item>
+    <el-form-item label="Tipo">
+      <el-select  v-model="form_e.tipo"  @change="check_op" default-first-option>
+        <el-option
+          v-for="item in opt_ti"
+          :key="item.vti_id"
+          :label="item.vti_nombre"
+          :value="item.vti_id"
+        > </el-option>
+      </el-select>
+    </el-form-item>
+    
+    <el-form-item label="Nro. de serie">
+      <el-input v-model="form_e.serie" />
+    </el-form-item>
+
+    <el-form-item label="Código MTC">
+      <el-input v-model="form_e.mtc" />
+    </el-form-item>
+
+    <el-form-item label="Carga útil">
+      <el-input v-model="form_e.carga_util" />
+    </el-form-item>
+    <hr> 
+    
+    <el-form-item label="Km. estimado">
+      <el-input v-model="form_e.kilometraje" />
+    </el-form-item>
+    
+    <hr>  
+    <el-row style="text-align=center">
+      <el-button color="#E21747" :icon="CloseBold" @click="open_confirmar('Realmente desea eliminar este vehiculo?')">Eliminar</el-button>
+    </el-row>
+    
+
+  </el-form>
+</modal>
+
+<modal ref="mo_advertencia_eliim" title="Confirmar" centered @ok="send_delete" @cancel="close_confirmar" ok-title="Si" cancel-title="Cancelar" >
+  {{alert_mo}}
+</modal>
+
+<modal ref="mo_realizado" success title="Operacion completada" centered @ok="close_succes_all" @cancel="close_succes" ok-title="Cerrar" cancel-title="Atras" >
+  {{alert_mo}}
+</modal>
+
+<modal ref="mo_realizado_ed" hide-cancel success title="Operacion completada" centered @ok="close_succes_ed" cancel-title="Atras" >
+  {{alert_mo}}
+</modal>
+
+<modal ref="mo_error"  hide-cancel error title="Error al ejecutar operación" centered @ok="close_fail">
+  {{alert_mo}}
 </modal>
 
 </template>
