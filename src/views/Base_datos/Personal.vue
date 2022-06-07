@@ -198,6 +198,7 @@ export default {
       this.$refs.mo_realizado.hide();
       this.clear_c();
       this.$refs.mo_create_per.hide();
+      this.$refs.mo_editar_per.hide();
       this.api_get_all();
     },
     close_succes_ed() {
@@ -555,7 +556,7 @@ export default {
       setTimeout(() => {
         this.load_data_edit();
         this.check_op2();
-        this.load_esp();
+        
         if (this.open_op) {
           this.load_edit_op(number);
           
@@ -569,6 +570,7 @@ export default {
           this.emp_cont=this.form_e.rs;
           this.load_tc();
           this.check_op2() ;
+          this.load_esp();
           
           this.load_pues();
           

@@ -159,6 +159,7 @@ export default {
       this.$refs.mo_realizado.hide();
       this.clear_c();
       this.$refs.mo_create_per.hide();
+      this.$refs.mo_editar_per.hide();
       this.api_get_all();
     },
     close_succes_ed() {
