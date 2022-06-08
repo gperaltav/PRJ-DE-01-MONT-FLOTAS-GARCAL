@@ -85,19 +85,14 @@ export default {
 
     search_rs_ch() {
       this.emp_cont=this.form_b.rs;
-      this.form_b.modelo="";
-      this.form_b.marca="";
+      this.form_b.f_pago="";
 
       //cargar listas
-      this.load_mar();
-      this.load_mod();
-
+      this.load_fpago();
     },
     search_rs_clear() {
-      this.form_b.contrato="";
-      this.form_b.tipo="";
-      this.opt_tc = [];
-      this.opt_pues = [];
+      this.form_b.f_pago="";
+      this.opt_fpago = [];
     },
     clear_c() {
       this.form_c.rs='';
@@ -411,7 +406,7 @@ export default {
           console.log(resp.data.status);
           this.succes=resp.data.status;
           if (this.succes) {
-            this.open_succes_ed("Uusario modificado satisfactoriamente");
+            this.open_succes_ed("Cliente modificado satisfactoriamente");
           }
           else {
             this.open_fail("Hubo un error al comunicarse con el servidor");
@@ -499,10 +494,15 @@ export default {
               </el-form-item>
 
               <el-form-item label="Forma de pago preferido">
-                <el-select v-model="form_b.f_pago" placeholder="Seleccionar">
-                  <el-option label="Deposito" value="dep" />
-                  <el-option label="Credito" value="cred" />
-                </el-select>
+                <el-select v-model="form_b.f_pago" placeholder="Seleccionar" clearable>
+                    <el-option
+                      v-for="item in opt_fpago"
+                      :key="item.fdp_id"
+                      :label="item.fdp_descripcion"
+                      :value="item.fdp_id"
+                    > </el-option>
+                  </el-select>
+
               </el-form-item>
 
             </el-col>

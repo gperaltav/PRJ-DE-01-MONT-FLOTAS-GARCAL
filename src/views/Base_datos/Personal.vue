@@ -285,11 +285,24 @@ export default {
     axios
         .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/tripulacion/borrar/'+String(this.editpointer))
         .then((resp) => {
-          console.log(resp.data.status);
+          console.log(resp.data);
           this.succes=resp.data.status;
+          
           if (this.succes) {
-            this.open_succes_ed("Trabajador (operario) eliminado correctamente");
-            return true;
+            axios
+            .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/trabajadores/borrar/'+String(this.editpointer))
+            .then((resp) => {
+              console.log(resp.data);
+              this.succes=resp.data.status;
+              if (this.succes) {
+                this.open_succes("Datos de operario eliminado correctamente");
+                return true;
+              }
+              else {
+                this.open_fail("Hubo un error con el servidor al ejecutar la operación");
+                return false;
+              }
+            })
           }
           else {
             this.open_fail("Hubo un error con el servidor al ejecutar la operación");
@@ -298,29 +311,30 @@ export default {
         });
     },  
 
-    send_delete() {
+    send_delete_master() {
       this.$refs.mo_advertencia_eliim.hide();
+      this.check_op2();
+      if(this.open_op) {
+        console.log("Eliminando operario");
+        this.send_delete_op();
+      }
+      else {
+        console.log("Eliminando trabajador");
+        this.send_delete();
+      }
+    },
+
+    send_delete() {
+      
       axios
         .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/trabajadores/borrar/'+String(this.editpointer))
         .then((resp) => {
-          console.log(resp.data.status);
+          console.log(resp.data);
           this.succes=resp.data.status;
           if (this.succes) {
-            if(this.check_op2) {
-              console.log("Tripulacion")
-              var tmpop=this.send_delete_op();
-              console.log(tmpop);
-              if(tmpop) {
-                return true;
-              }
-              else {
-                return false;
-              }
-            }
-            else {
-              this.open_succes("Trabajador eliminado correctamente");
-              return true;
-            }
+            this.open_succes("Trabajador eliminado correctamente");
+            return true;
+            
           }
           else {
             this.open_fail("Hubo un error con el servidor al ejecutar la operación");
@@ -534,7 +548,7 @@ export default {
           console.log(resp.data.status);
           this.succes=resp.data.status;
           if (this.succes) {
-            this.open_succes_ed("Uusario modificado satisfactoriamente");
+            this.open_succes_ed("Trabajador modificado satisfactoriamente");
             return true;
           }
           else {
@@ -937,7 +951,7 @@ export default {
   </el-form>
 </modal>
 
-<modal ref="mo_advertencia_eliim" title="Confirmar" centered @ok="send_delete" @cancel="close_confirmar" ok-title="Si" cancel-title="Cancelar" >
+<modal ref="mo_advertencia_eliim" title="Confirmar" centered @ok="send_delete_master" @cancel="close_confirmar" ok-title="Si" cancel-title="Cancelar" >
   {{alert_mo}}
 </modal>
 

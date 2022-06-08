@@ -381,7 +381,7 @@ export default {
           console.log(resp.data.status);
           this.succes=resp.data.status;
           if (this.succes) {
-            this.open_succes_ed("Uusario modificado satisfactoriamente");
+            this.open_succes_ed("Vehiculo modificado satisfactoriamente");
           }
           else {
             this.open_fail("Hubo un error al comunicarse con el servidor");
@@ -461,11 +461,11 @@ export default {
                   </el-select>
                 </el-form-item>
 
-              <el-form-item label="Placa">
+              <el-form-item label="Placa" clearable>
                 <el-input v-model="form_b.placa" />
               </el-form-item>
 
-              <el-form-item label="Marca">
+              <el-form-item label="Marca" clearable>
                 <el-select  v-model="form_b.marca" >
                   <el-option
                     v-for="item in opt_mar"
@@ -476,7 +476,7 @@ export default {
                 </el-select>
               </el-form-item>
 
-              <el-form-item label="Modelo">
+              <el-form-item label="Modelo" clearable>
                 <el-select  v-model="form_b.modelo" >
                   <el-option
                     v-for="item in opt_mod"
@@ -487,7 +487,7 @@ export default {
                 </el-select>
               </el-form-item>
 
-              <el-form-item label="Año">
+              <el-form-item label="Año" clearable>
                 <el-col :span="11">
                   <el-date-picker
                     v-model="form_b.fecha_i"

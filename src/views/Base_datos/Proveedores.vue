@@ -48,6 +48,7 @@ export default {
         nro_doc: '',
         nombre: '',
         f_pago: '',
+        prod:'',
       }),
 
       form_c : reactive({
@@ -86,15 +87,32 @@ export default {
 
   methods: {
 
+    get_descarga() {
+       axios
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdepago/'+String(this.emp_cont))
+        .then((resp) => {
+          console.log(resp);  
+          //Download(resp.data.message,"Descargar");
+          const url = window.URL
+                .createObjectURL(new Blob([resp.data.message]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', 'reporte.csv');
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        })
+      
+    },
+
     search_rs_ch() {
       this.emp_cont=this.form_b.rs;
-      this.form_b.modelo="";
-      this.form_b.marca="";
+      this.form_b.prod="";
+      this.form_b.f_pago="";
 
       //cargar listas
-      this.load_mar();
-      this.load_mod();
-
+      this.load_prod();
+      this.load_fpago();
     },
     search_rs_clear() {
       this.form_b.contrato="";
@@ -249,8 +267,8 @@ export default {
           console.log(resp.data);
           this.succes=resp.data.status;
           if (this.succes) {
-            this.open_succes("Vehiculo eliminado correctamente");
-            console.log("Yo deberia estar primero");
+            this.open_succes("Proveedor eliminado correctamente");
+
             this.err_code = true;
           }
           else {
@@ -261,7 +279,7 @@ export default {
         if (this.err_code==false) {
           this.open_fail("Hubo un error al comunicarse con el servidor, revise su conexión");
         }
-        console.log("Yo deberia estar segundo");
+
         }, 700)
         
         return this.err_code;
@@ -283,6 +301,7 @@ export default {
       this.form_e.correo=this.data_edit[0].ent_correo;
       this.form_e.telefono=this.data_edit[0].ent_telefono;
       this.form_e.c_pago=this.data_edit[0].fdp_id;
+      this.form_e.prod=this.data_edit[0].pro_id;
     },
 
     api_get_all(){
@@ -306,7 +325,7 @@ export default {
           "ent_nombre":this.form_b.nombre, 
           "ent_nrodocumento":this.form_b.nro_doc,
           "fdp_id":this.form_b.f_pago,
-          "pro_id":""
+          "pro_id":this.form_b.prod
         })
         .then((resp) => {
           console.log(resp);
@@ -394,7 +413,7 @@ export default {
           console.log(resp.data.status);
           this.succes=resp.data.status;
           if (this.succes) {
-            this.open_succes_ed("Uusario modificado satisfactoriamente");
+            this.open_succes_ed("Proveedor modificado satisfactoriamente");
           }
           else {
             this.open_fail("Hubo un error al comunicarse con el servidor");
@@ -482,9 +501,24 @@ export default {
               </el-form-item>
 
               <el-form-item label="Forma de pago preferido">
-                <el-select v-model="form_b.f_pago" placeholder="Seleccionar">
-                  <el-option label="Deposito" value="dep" />
-                  <el-option label="Credito" value="cred" />
+                <el-select v-model="form_b.f_pago" placeholder="Seleccionar" clearable>
+                  <el-option
+                      v-for="item in opt_fpago"
+                      :key="item.fdp_id"
+                      :label="item.fdp_descripcion"
+                      :value="item.fdp_id"
+                    > </el-option>
+                </el-select>
+              </el-form-item>
+
+              <el-form-item label="Producto o servicio">
+                <el-select v-model="form_b.prod" placeholder="Seleccionar" clearable>
+                  <el-option
+                      v-for="item in opt_prod"
+                      :key="item.pro_id"
+                      :label="item.pro_nombre"
+                      :value="item.pro_id"
+                    > </el-option>
                 </el-select>
               </el-form-item>
 
@@ -499,7 +533,7 @@ export default {
                   <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
                 </el-row>
                 <el-row class="mb-4">
-                  <el-button color="#95d475" :icon=" Download" disabled>A Excel</el-button>
+                  <el-button color="#95d475" :icon=" Download" @click="get_descarga" disabled>A Excel</el-button>
                 </el-row>
                 </div>
               
@@ -527,7 +561,7 @@ export default {
     </el-container>
   </el-container>
 
-<modal ref="mo_create_per" no-close-on-backdrop title="Agregar Cliente" width="500px" @ok="create_usr" @cancel="closecrear" cancel-title="Atras" centered>
+<modal ref="mo_create_per" no-close-on-backdrop title="Agregar Proveedor" width="500px" @ok="create_usr" @cancel="closecrear" cancel-title="Atras" centered>
   <el-form  ref="form_create_ref" :rules="rules" :model="form" label-width="150px" >
 
     <el-form-item  label="Razón soc. asoc.">
@@ -598,7 +632,7 @@ export default {
 
 
 
-<modal ref="mo_editar_per" no-close-on-backdrop title="Editar datos de Cliente" width="500px" @ok="editar_usr" cancel-title="Cancelar" @cancel="closeedit"  centered>
+<modal ref="mo_editar_per" no-close-on-backdrop title="Editar datos de Proveedor" width="500px" @ok="editar_usr" cancel-title="Cancelar" @cancel="closeedit"  centered>
   <el-form v-loading="wait" ref="form_edit_ref" :rules="rules" :model="form" label-width="150px" >
 
     <el-form-item  label="Razón soc. asoc.">
@@ -632,6 +666,17 @@ export default {
       <el-input v-model="form_e.nombre" />
     </el-form-item>
 
+    <el-form-item label="Bien o servicio">
+      <el-select  v-model="form_e.prod" >
+        <el-option
+          v-for="item in opt_prod"
+          :key="item.pro_id"
+          :label="item.pro_nombre"
+          :value="item.pro_id"
+        > </el-option>
+      </el-select>
+    </el-form-item>
+
     <el-form-item label="Condición de pago">
       <el-select  v-model="form_e.c_pago" >
         <el-option
@@ -654,7 +699,7 @@ export default {
     </el-form-item>
 
     <el-row style="text-align=center">
-      <el-button color="#E21747" :icon="CloseBold" @click="open_confirmar('Realmente desea eliminar a este cliente?')">Eliminar</el-button>
+      <el-button color="#E21747" :icon="CloseBold" @click="open_confirmar('Realmente desea eliminar a este proveedor?')">Eliminar</el-button>
     </el-row>
     
 
