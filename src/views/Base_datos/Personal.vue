@@ -1,9 +1,100 @@
 <script lang="ts" setup>
-import { reactive } from 'vue'
+import { reactive,ref } from 'vue'
 import axios from 'axios'
 import { EditPen, Filter, Plus, Download, CloseBold} from '@element-plus/icons-vue'
 
 import type { FormInstance, FormRules } from 'element-plus'
+
+const checknombre = (rule: any, value: any, callback: any) => {
+  if (!value) {
+    callback();
+  }
+  setTimeout(() => {
+    if (!/^[a-zA-Z\u00C0-\u00D6\u00D9-\u00F6\u00F9-\u00FF ]+$/.test(value)) {
+      callback(new Error('Sólo se permiten letras y espacios'));
+    }
+    else {
+      callback();
+    }
+  }, 500)
+}
+const checknumeros = (rule: any, value: any, callback: any) => {
+  if (!value) {
+    return callback();
+  }
+  setTimeout(() => {
+    if (!/^[0-9\u0000]+$/.test(value)) {
+      callback(new Error('Sólo se permiten números'));
+    }
+    else {
+      callback()
+    }
+  }, 500)
+}
+
+const form_cref = ref<FormInstance>();
+
+const rules = reactive({
+  rs:[{ 
+      type: 'number',
+      required: true,
+      message: 'Por favor seleccione una opción',
+      trigger: 'change',
+    },
+  ],
+  nro_doc: [{ 
+      required: true,
+      message: 'Por favor inserte un nro de documento',
+      trigger: 'blur',
+    },
+    {required: true, validator: checknumeros, trigger: 'blur' },
+  ],
+  tipo:[{ 
+      required: true,
+      message: 'Por favor seleccione una opción',
+      trigger: 'change',
+    },
+  ],
+
+  nombre: [
+    { 
+      required: true,
+      message: 'Por favor inserte un nombre',
+      trigger: 'blur',
+    },
+    {required: true, validator: checknombre, trigger: 'blur' },
+  ],
+
+  apellido_p: [
+    { 
+      required: true,
+      message: 'Por favor inserte un apellido',
+      trigger: 'blur',
+    },
+    {required: true, validator: checknombre, trigger: 'blur' },
+  ],
+  apellido_m: [
+    { 
+      required: true,
+      message: 'Por favor inserte un apellido',
+      trigger: 'blur',
+    },
+    {required: true, validator: checknombre, trigger: 'blur' },
+  ],
+  fecha_nac:[{ 
+      required: true,
+      message: 'Por favor seleccione una fecha',
+      trigger: 'change',
+    },
+  ],
+  contrato:[{ 
+      required: true,
+      message: 'Por favor seleccione una opción',
+      trigger: 'change',
+    },
+  ],
+  
+})
 </script>
 
 <script lang="ts">
@@ -84,13 +175,7 @@ export default {
         ins_iqbf:null,
         venc_lic: null,
       }),
-      rules : reactive<FormRules>({
-        nombre: [
-          { required: true, message: 'Please input Activity name', trigger: 'blur' },
-          { min: 3, max: 5, message: 'Length should be 3 to 5', trigger: 'blur' },
-        ],
-        
-      })
+
     }
   },
   methods: {
@@ -200,11 +285,13 @@ export default {
       this.$refs.mo_create_per.hide();
       this.$refs.mo_editar_per.hide();
       this.api_get_all();
+      this.search_rs_clear();
     },
     close_succes_ed() {
       this.$refs.mo_realizado_ed.hide(); 
       this.$refs.mo_editar_per.hide();
       this.api_get_all();
+      this.search_rs_clear();
     },
     open_fail(msg) {
       this.alert_mo=msg;
@@ -218,6 +305,7 @@ export default {
     },
     closeedit() {
       this.$refs.mo_editar_per.hide();
+      this.search_rs_clear();
     },
     opencrear() {
       this.open_op=false;
@@ -228,6 +316,7 @@ export default {
     },
     closecrear() {
       this.$refs.mo_create_per.hide();
+      this.search_rs_clear();
     },
     load_rs() {
       axios
@@ -288,7 +377,7 @@ export default {
           console.log(resp.data.status);
           this.succes=resp.data.status;
           if (this.succes) {
-            this.open_succes_ed("Trabajador (operario) eliminado correctamente");
+            this.open_succes_ed("Trabajador eliminado correctamente");
             return true;
           }
           else {
@@ -387,53 +476,62 @@ export default {
         })
     },
     
-    create_usr(){
+    async create_usr(){
       //llamada a API
-     axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/trabajadores/nuevo', 
-        { 
-          "are_id": 1,
-          "pue_id": this.form_c.tipo,
-          "emp_id": this.form_c.rs,
-          "tra_nombres":this.form_c.nombre,
-          "tra_apellidopaterno":this.form_c.apellido_p,
-          "tra_apellidomaterno":this.form_c.apellido_m,
-          "tra_nrodocumento": this.form_c.nro_doc,
-          "tra_identificador": "",
-          "tra_fechanacimiento":this.form_c.fecha_nac,
-          "tra_tipocontrato":this.form_c.contrato,
-          "tra_fechaingreso":this.form_c.fecha_i,
-          "tra_fechaingresoplanilla":this.form_c.fecha_ip,
-          "tra_fechacese":this.form_c.fecha_c,
-          "tra_usucreacion":"admin" 
-        })
-        .then((resp) => {
-          console.log(resp.data);
-          this.succes=resp.data.status;
-          if (this.succes) {
-            if(this.open_op) {
-              console.log("Tripulacion")
-              this.id_tmp=resp.data.idValue;
-              var tmpop=this.create_usr_op();
-              console.log(tmpop);
-              if(tmpop) {
-                return true;
+      if (!this.form_cref) return
+      await this.form_cref.validate((valid, fields) => {
+        if (valid) {
+          axios
+          .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/trabajadores/nuevo', 
+          { 
+            "are_id": 1,
+            "pue_id": this.form_c.tipo,
+            "emp_id": this.form_c.rs,
+            "tra_nombres":this.form_c.nombre,
+            "tra_apellidopaterno":this.form_c.apellido_p,
+            "tra_apellidomaterno":this.form_c.apellido_m,
+            "tra_nrodocumento": this.form_c.nro_doc,
+            "tra_identificador": "",
+            "tra_fechanacimiento":this.form_c.fecha_nac,
+            "tra_tipocontrato":this.form_c.contrato,
+            "tra_fechaingreso":this.form_c.fecha_i,
+            "tra_fechaingresoplanilla":this.form_c.fecha_ip,
+            "tra_fechacese":this.form_c.fecha_c,
+            "tra_usucreacion":"admin" 
+          })
+          .then((resp) => {
+            console.log(resp.data);
+            this.succes=resp.data.status;
+            if (this.succes) {
+              if(this.open_op) {
+                console.log("Tripulacion")
+                this.id_tmp=resp.data.idValue;
+                var tmpop=this.create_usr_op();
+                console.log(tmpop);
+                if(tmpop) {
+                  return true;
+                }
+                else {
+                  return false;
+                }
               }
               else {
-                return false;
+                this.open_succes("Operación realizada satisfactoriamente");
+                return true;
               }
             }
             else {
-              this.open_succes("Operación realizada satisfactoriamente");
-              return true;
+              this.open_fail("Hubo un error con el servidor al ejecutar la operación");
+              return false;
             }
-          }
-          else {
-            this.open_fail("Hubo un error con el servidor al ejecutar la operación");
-            return false;
-          }
-        })
-        return false;
+          })
+          return false;
+          } 
+        else {
+          console.log('Error en campos', fields);
+          return;
+        }
+      })
     },  
 
     create_usr_op(){
@@ -508,7 +606,7 @@ export default {
               }
             }
             else {
-              this.open_succes_ed("Uusario modificado satisfactoriamente");
+              this.open_succes_ed("Trabajador modificado satisfactoriamente");
             }
           }
           else {
@@ -534,7 +632,7 @@ export default {
           console.log(resp.data.status);
           this.succes=resp.data.status;
           if (this.succes) {
-            this.open_succes_ed("Uusario modificado satisfactoriamente");
+            this.open_succes_ed("Trabajador modificado satisfactoriamente");
             return true;
           }
           else {
@@ -722,9 +820,9 @@ export default {
           <div class="table-container">
           <el-table :data="datap" border header-row-style="color:black;" >
               <el-table-column prop="emp_razonsocial" label="Razon soc. asoc." width="140" />
-              <el-table-column prop="tra_nombreyapellidos" label="Nombre" width="200"/>
+              <el-table-column prop="tra_nombreyapellidos" label="Nombre" width="200" sortable/>
               <el-table-column prop="tra_nrodocumento" label="Nro. de doc."  />
-              <el-table-column prop="pue_nombre" label="Tipo" />
+              <el-table-column prop="pue_nombre" label="Tipo"  />
               <el-table-column prop="tra_tipocontrato" label="Tipo de contrato" />
               <el-table-column prop="tra_fechaingreso" label="Fecha de ingreso" />
               <el-table-column prop="tra_fechacese" label="Fecha de cese" />
@@ -741,9 +839,9 @@ export default {
   </el-container>
 
 <modal ref="mo_create_per" no-close-on-backdrop title="Agregar Trabajador" width="500px" @ok="create_usr" @cancel="closecrear" cancel-title="Atras" centered>
-<el-form  ref="form_create_ref" :rules="rules" :model="form" label-width="150px" >
+<el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" >
 
-    <el-form-item  label="Razón soc. asoc.">
+    <el-form-item  label="Razón soc. asoc." prop="rs">
       <el-select v-model="form_c.rs" @change="rs_changer" placeholder="Seleccionar">
         <el-option
           v-for="item in opt_rs"
@@ -753,7 +851,7 @@ export default {
         > </el-option>
       </el-select>
     </el-form-item>
-    <el-form-item label="Tipo">
+    <el-form-item label="Tipo" prop="tipo">
       <el-select  v-model="form_c.tipo"  @change="check_op" default-first-option>
         <el-option
           v-for="item in opt_pues"
@@ -763,25 +861,25 @@ export default {
         > </el-option>
       </el-select>
     </el-form-item>
-    <el-form-item label="DNI o carnet de extranjería">
+    <el-form-item label="DNI o carnet de extranjería" prop="nro_doc">
       <el-input v-model="form_c.nro_doc" />
     </el-form-item>
     <hr size="1" color="gray"> 
-    <el-form-item label="Nombres">
+    <el-form-item label="Nombres" prop="nombre" >
       <el-input v-model="form_c.nombre" />
     </el-form-item>
-    <el-form-item label="Apellido Paterno">
+    <el-form-item label="Apellido Paterno" prop="apellido_p">
       <el-input v-model="form_c.apellido_p" />
     </el-form-item>
-    <el-form-item label="Apellido Materno">
+    <el-form-item label="Apellido Materno" prop="apellido_m">
       <el-input v-model="form_c.apellido_m" />
     </el-form-item>
     <hr> 
-    <el-form-item label="Fecha de nac.">
-      <el-date-picker  format="YYYY-MM-DD" value-format="YYYY-MM-DD" v-model="form_c.fecha_nac" />
+    <el-form-item label="Fecha de nac." prop="fecha_nac">
+      <el-date-picker format="YYYY-MM-DD" value-format="YYYY-MM-DD" v-model="form_c.fecha_nac" />
     </el-form-item>
 
-    <el-form-item label="Tipo de contrato">
+    <el-form-item label="Tipo de contrato" prop="contrato">
         <el-select v-model="form_c.contrato"  default-first-option>
           <el-option
             v-for="item in opt_tc"
@@ -932,7 +1030,7 @@ export default {
       </el-form-item>
       
     </div>
-    <el-button color="#E21747" :icon="CloseBold" @click="open_confirmar('Desea eliminar a este trabajador?')">Eliminar</el-button>
+    <el-button color="#E21747" :icon="CloseBold" @click="open_confirmar('Relamente desea eliminar a este trabajador?')">Eliminar</el-button>
 
   </el-form>
 </modal>

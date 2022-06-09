@@ -35,15 +35,15 @@ export default {
     <template #title>
       <el-icon><document-checked /></el-icon>Documentos
     </template>
-    <el-menu-item index="vec_vehiculos">Vehiculos</el-menu-item>
-    <el-menu-item index="vec_personal">Personal</el-menu-item>
+    <el-menu-item index="doc_vehiculos">Vehiculos</el-menu-item>
+    <el-menu-item index="doc_personal">Personal</el-menu-item>
   </el-sub-menu>
-  <el-menu-item index="3">
+  <el-menu-item index="">
     <template #title>
       <el-icon><trend-charts /></el-icon> Planifiación
     </template>
   </el-menu-item>
-  <el-menu-item index="4">
+  <el-menu-item index="">
     <template #title>
       <el-icon><operation /></el-icon> Operaciones
     </template>

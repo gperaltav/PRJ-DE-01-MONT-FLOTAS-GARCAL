@@ -21,6 +21,32 @@ const checkyear = (rule: any, value: any, callback: any) => {
   }, 500)
 }
 
+
+interface Docc {
+  placa: string
+  soat: object
+}
+
+
+const tableRowClassName = ({
+  row,
+  column,
+  rowIndex,
+  columnIndex,
+}: {
+  row: Docc
+  column: Docc
+  rowIndex: number
+  columnIndex: number
+}) => {
+  if (rowIndex === 0) {
+    return 'yellow-row'
+  } else if (rowIndex === 1) {
+    return 'green-row'
+  }
+  return ''
+}
+
 const form_cref = ref<FormInstance>();
 
 const rules = reactive({
@@ -82,7 +108,14 @@ export default {
       editpointer:0,
       succes: false,
       operarios_id:[2,4],
-      datap: [],
+      datap: [{
+          "placa":"123-acd",
+          "soat": {
+              "color":"#00000",
+              "fecha":"10-12-2000",
+              "color2":1
+          }
+      }],
       opt_rs: [],
 
       opt_mar:[],
@@ -148,6 +181,10 @@ export default {
       //cargar listas
       this.load_mar();
       this.load_mod();
+    },
+
+    colorer(a,b,x,y) {
+      
     },
     search_rs_clear() {
       this.form_b.contrato="";
@@ -476,8 +513,6 @@ export default {
 
   mounted () {
     //llamada a API
-    this.api_get_all();
-    this.load_rs();
     //this.load_tc();
     //this.load_pues();
     //this.load_esp();
@@ -601,21 +636,13 @@ export default {
             </el-form>
 
           <div class="table-container">
-          <el-table :data="datap" border header-row-style="color:black;" >
-              <el-table-column prop="emp_razonsocial" label="Razon soc. asoc. " width="140" />
-              <el-table-column prop="veh_placa" label="Placa" width="90" />
-              <el-table-column prop="vcl_nombre" label="Clase" />
-              <el-table-column prop="vti_nombre" label="Tipo" />
-              <el-table-column prop="vma_nombre" label="Marca" width="130" sortable/>
-              <el-table-column prop="vmo_nombre" label="Modelo" />
-              <el-table-column prop="veh_anno" label="Año" width="60"  />
-              <el-table-column prop="veh_serie" label="Nro. serie" />
-              <el-table-column prop="veh_mtc" label="MTC" />
-              <el-table-column prop="veh_cargautil" label="Carga util" />
-              <el-table-column prop="veh_kilometraje" label="Km" />   
-              <el-table-column fixed="right" label="" width="40">
-              <template #default="scope">
-                <el-button  type="text"  @click="button_handle(scope.row.veh_id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
+          <el-table :row-class-name="tableRowClassName" :data="datap" border header-row-style="color:black;" >
+              <el-table-column prop="placa" label="Placa " width="140" />
+              <el-table-column prop="soat.color" label="f21" width="90" />
+              <el-table-column prop="soat.fecha" label="f22" />
+              <el-table-column prop="soat" label="SOAT">
+              <template #default="scope" style="background-color:black ;">
+                {{scope.row.soat.fecha}}
               </template>
             </el-table-column>
             </el-table>
@@ -833,6 +860,83 @@ export default {
 </template>
 
 
-<style scoped src="../styles/basededatos.css">
+<style scoped>
 
+.el-table .yellow-row {
+  --el-table-tr-bg-color: rgb(239, 229, 40);
+}
+.el-table .green-row {
+  --el-table-tr-bg-color: rgb(53, 239, 40);
+}
+
+.layout-container .el-header {
+  position: relative;
+  background-color: rgb(8, 68, 164);
+  color: rgb(240, 240, 240);
+  text-align: left;
+  font-family: "Roboto", sans-serif;
+}
+.layout-container .el-aside {
+  color: var(--el-text-color-primary);
+  background: white;
+}
+.layout-container .el-menu {
+  border-right: none;
+}
+.layout-container .el-main {
+  padding: 0;
+}
+.layout-container .el-header {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.layout-container .el-form {
+  padding-top: 15px;
+  background-color: white;
+}
+
+.form-container {
+  width: 100%;
+}
+
+.table-container {
+  padding: 20px;
+}
+
+
+.el-table {
+  font-family: "Roboto", sans-serif;
+  --el-table-header-bg-color:rgb(199, 199, 199);
+}
+
+.el-col {
+  text-align:center;
+}
+
+.el-row {
+  margin-bottom: 5px;
+}
+
+
+.button-container .el-button {
+  width: 100px;
+  border-radius: 20px;
+}
+
+
+
+.layout-container .toolbar {
+  display: block;
+  text-align: left;
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.layout-container .sitebar {
+  display: block;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
 </style>

@@ -1,9 +1,64 @@
 <script lang="ts" setup>
-import { reactive } from 'vue'
+import { reactive,ref } from 'vue'
 import axios from 'axios'
 import { EditPen, Filter, Plus, Download, CloseBold} from '@element-plus/icons-vue'
 
 import type { FormInstance, FormRules } from 'element-plus'
+
+const checknombre = (rule: any, value: any, callback: any) => {
+  if (!value) {
+    return callback(new Error('Por favor inserte un nombre'))
+  }
+  setTimeout(() => {
+    if (!/^[a-zA-Z\u00C0-\u00D6\u00D9-\u00F6\u00F9-\u00FF ]+$/.test(value)) {
+      callback(new Error('Sólo se permiten letras y espacios'));
+    }
+    else {
+      callback()
+    }
+  }, 500)
+}
+const checknumeros = (rule: any, value: any, callback: any) => {
+  if (!value) {
+    return callback();
+  }
+  setTimeout(() => {
+    if (!/^[0-9\u0000]+$/.test(value)) {
+      callback(new Error('Sólo se permiten letras y espacios'));
+    }
+    else {
+      callback()
+    }
+  }, 500)
+}
+
+const form_cref = ref<FormInstance>();
+
+const rules = reactive({
+  rs:[{ 
+      type: 'number',
+      required: true,
+      message: 'Por favor seleccione una opción',
+      trigger: 'change',
+    },
+  ],
+  nro_doc: [{ 
+      required: true,
+      message: 'Por favor inserte un nro de documento',
+      trigger: 'blur',
+    },
+  ],
+
+  nombre: [
+    {required: true, validator: checknombre, trigger: 'blur' },
+  ],
+  
+  telefono: [
+    {required: true, message: 'Inserte un numero de telefono'},
+    {validator: checknumeros, trigger: 'blur' },
+  ],
+})
+
 </script>
 
 <script lang="ts">
@@ -48,6 +103,7 @@ export default {
         nro_doc: '',
         nombre: '',
         f_pago: '',
+        prod:''
       }),
 
       form_c : reactive({
@@ -74,33 +130,37 @@ export default {
         prod:'',
       }),
 
-      rules : reactive<FormRules>({
-        nombre: [
-          { required: true, message: 'Please input Activity name', trigger: 'blur' },
-          { min: 3, max: 5, message: 'Length should be 3 to 5', trigger: 'blur' },
-        ],
-        
-      })
     }
   },
 
   methods: {
+    async checkformx (formEl: FormInstance | undefined) {
 
+      await formEl.validate((valid, fields) => {
+        if (valid) {
+          console.log('submit!');
+          return true;
+        } else {
+          console.log('error submit!', fields)
+          return false;
+        }
+      })
+    },
     search_rs_ch() {
       this.emp_cont=this.form_b.rs;
-      this.form_b.modelo="";
-      this.form_b.marca="";
+      this.form_b.prod="";
+      this.form_b.f_pago="";
 
       //cargar listas
-      this.load_mar();
-      this.load_mod();
+      this.load_fpago();
+      this.load_prod();
 
     },
     search_rs_clear() {
-      this.form_b.contrato="";
-      this.form_b.tipo="";
-      this.opt_tc = [];
-      this.opt_pues = [];
+      this.form_b.prod="";
+      this.form_b.f_pago="";
+      this.opt_fpago = [];
+      this.opt_prod = [];
     },
     clear_c() {
       this.form_c.rs='';
@@ -150,11 +210,13 @@ export default {
       this.$refs.mo_create_per.hide();
       this.$refs.mo_editar_per.hide();
       this.api_get_all();
+      this.search_rs_clear();
     },
     close_succes_ed() {
       this.$refs.mo_realizado_ed.hide(); 
       this.$refs.mo_editar_per.hide();
       this.api_get_all();
+      this.search_rs_clear();
     },
     open_fail(msg) {
       this.alert_mo=msg;
@@ -174,6 +236,7 @@ export default {
     },
     closeedit() {
       this.$refs.mo_editar_per.hide();
+      this.search_rs_clear();
     },
     opencrear() {
       this.open_op=false;
@@ -182,6 +245,7 @@ export default {
     },
     closecrear() {
       this.$refs.mo_create_per.hide();
+      this.search_rs_clear();
     },
     load_rs() {
       axios
@@ -249,8 +313,7 @@ export default {
           console.log(resp.data);
           this.succes=resp.data.status;
           if (this.succes) {
-            this.open_succes("Vehiculo eliminado correctamente");
-            console.log("Yo deberia estar primero");
+            this.open_succes("Proveedor eliminado correctamente");
             this.err_code = true;
           }
           else {
@@ -261,7 +324,6 @@ export default {
         if (this.err_code==false) {
           this.open_fail("Hubo un error al comunicarse con el servidor, revise su conexión");
         }
-        console.log("Yo deberia estar segundo");
         }, 700)
         
         return this.err_code;
@@ -306,7 +368,7 @@ export default {
           "ent_nombre":this.form_b.nombre, 
           "ent_nrodocumento":this.form_b.nro_doc,
           "fdp_id":this.form_b.f_pago,
-          "pro_id":""
+          "pro_id":this.form_b.prod
         })
         .then((resp) => {
           console.log(resp);
@@ -314,47 +376,57 @@ export default {
         })
     },
     
-    create_usr(){
+    async create_usr(){
       //llamada a API
-      axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/nuevo', 
-        { 
-          "emp_id":parseInt(this.form_c.rs),
-          "Ubi_codigo":"",
-          "ent_nombre":this.form_c.nombre,
-          "dti_id":this.form_c.tipo_doc,
-          "ent_nrodocumento":this.form_c.nro_doc,
-          "ent_apellidopaterno":"",
-          "ent_apellidomaterno":"",
-          "ent_activo":true,
-          "zon_id":0,
-          "ent_direccion":this.form_c.direccion,
-          "ent_telefono":this.form_c.telefono,
-          "ent_celular":"",
-          "ent_paginaweb":"",
-          "ent_correo":this.form_c.correo,
-          "ent_contacto":"",
-          "ent_sexo":"",
-          "ent_usucreacion":"admin",
-          "ent_personanatural":true,
-          "ext_id":this.var_type,
-          "fdp_id":this.form_c.c_pago,
-          "pro_id":this.form_c.prod
-        })
-        .then((resp) => {
-          console.log(resp.data);
-          this.succes=resp.data.status;
-          if (this.succes) {
-            this.open_succes("Operación realizada satisfactoriamente");
-            return true;
-            
-          }
-          else {
-            this.open_fail("Hubo un error con el servidor al ejecutar la operación");
-            return false;
-          }
-        })
-        return false;
+      if (!this.form_cref) return
+      await this.form_cref.validate((valid, fields) => {
+        if (valid) {
+          axios
+          .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/nuevo', 
+          { 
+            "emp_id":parseInt(this.form_c.rs),
+            "Ubi_codigo":"",
+            "ent_nombre":this.form_c.nombre,
+            "dti_id":this.form_c.tipo_doc,
+            "ent_nrodocumento":this.form_c.nro_doc,
+            "ent_apellidopaterno":"",
+            "ent_apellidomaterno":"",
+            "ent_activo":true,
+            "zon_id":0,
+            "ent_direccion":this.form_c.direccion,
+            "ent_telefono":this.form_c.telefono,
+            "ent_celular":"",
+            "ent_paginaweb":"",
+            "ent_correo":this.form_c.correo,
+            "ent_contacto":"",
+            "ent_sexo":"",
+            "ent_usucreacion":"admin",
+            "ent_personanatural":true,
+            "ext_id":this.var_type,
+            "fdp_id":this.form_c.c_pago,
+            "pro_id":this.form_c.prod
+          })
+          .then((resp) => {
+            console.log(resp.data);
+            this.succes=resp.data.status;
+            if (this.succes) {
+              this.open_succes("Operación realizada satisfactoriamente");
+              return true;
+              
+            }
+            else {
+              this.open_fail("Hubo un error con el servidor al ejecutar la operación");
+              return false;
+            }
+          })
+          return false;
+        } 
+        else {
+          console.log('Error en campos', fields);
+          return;
+        }
+      })
+      
     },  
 
     close_create() {
@@ -394,7 +466,7 @@ export default {
           console.log(resp.data.status);
           this.succes=resp.data.status;
           if (this.succes) {
-            this.open_succes_ed("Uusario modificado satisfactoriamente");
+            this.open_succes_ed("Proveedor modificado satisfactoriamente");
           }
           else {
             this.open_fail("Hubo un error al comunicarse con el servidor");
@@ -473,19 +545,27 @@ export default {
                   </el-select>
                 </el-form-item>
 
-              <el-form-item label="Nro. de documento">
-                <el-input v-model="form_b.nro_doc" clearable />
-              </el-form-item>
-
               <el-form-item label="Nombre">
                 <el-input v-model="form_b.nombre" clearable />
               </el-form-item>
 
-              <el-form-item label="Forma de pago preferido">
-                <el-select v-model="form_b.f_pago" placeholder="Seleccionar">
-                  <el-option label="Deposito" value="dep" />
-                  <el-option label="Credito" value="cred" />
+              <el-form-item label="Nro. de documento">
+                <el-input v-model="form_b.nro_doc" clearable />
+              </el-form-item>
+
+              <el-form-item label="Forma de pago">
+                <el-select v-model="form_b.f_pago" placeholder="Seleccionar" clearable>
+                  <el-option
+                    v-for="item in opt_fpago"
+                    :key="item.fdp_id"
+                    :label="item.fdp_descripcion"
+                    :value="item.fdp_id"
+                  > </el-option>
                 </el-select>
+              </el-form-item>
+
+              <el-form-item label="Bien o servicio">
+                <el-input v-model="form_b.prod" clearable />
               </el-form-item>
 
             </el-col>
@@ -510,10 +590,9 @@ export default {
           <div class="table-container">
           <el-table :data="datap" border header-row-style="color:black;" >
               <el-table-column prop="emp_razonsocial" label="Razon soc. aso." width="140" />
-              <el-table-column prop="ent_nombre" label="Nombre de proveedor" />
-              
+              <el-table-column prop="ent_nombre" label="Nombre de proveedor"  width="200" sortable/>
               <el-table-column prop="ent_nrodocumento" label="RUC" />  
-              <el-table-column prop="pro_descri" label="Bien o servicio" />
+              <el-table-column prop="pro_descripcion" label="Bien o servicio" />
               <el-table-column prop="fdp_descri" label="Forma típica de pago" />  
               <el-table-column fixed="right" label="" width="40">
               <template #default="scope">
@@ -527,10 +606,10 @@ export default {
     </el-container>
   </el-container>
 
-<modal ref="mo_create_per" no-close-on-backdrop title="Agregar Cliente" width="500px" @ok="create_usr" @cancel="closecrear" cancel-title="Atras" centered>
-  <el-form  ref="form_create_ref" :rules="rules" :model="form" label-width="150px" >
+<modal ref="mo_create_per" no-close-on-backdrop title="Agregar Proveedor" width="500px" @ok="create_usr" @cancel="closecrear" cancel-title="Atras" centered>
+  <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" >
 
-    <el-form-item  label="Razón soc. asoc.">
+    <el-form-item label="Razón soc. asoc." prop="rs">
       <el-select v-model="form_c.rs" @change="rs_changer" placeholder="Seleccionar">
         <el-option
           v-for="item in opt_rs"
@@ -541,9 +620,9 @@ export default {
       </el-select>
     </el-form-item>
     
-    <el-form-item label="Nro. de documento">
+    <el-form-item label="Nro. de documento" prop="nro_doc">
       <el-col :span="6">
-      <el-select  v-model="form_c.tipo_doc">
+      <el-select  v-model="form_c.tipo_doc" >
         <el-option
           v-for="item in opt_tdoc"
           :key="item.dti_id"
@@ -557,7 +636,7 @@ export default {
       </el-col>
     </el-form-item>
 
-    <el-form-item label="Nombre del cliente">
+    <el-form-item label="Nombre del proveedor" prop="nombre">
       <el-input v-model="form_c.nombre" />
     </el-form-item>
 
@@ -598,8 +677,8 @@ export default {
 
 
 
-<modal ref="mo_editar_per" no-close-on-backdrop title="Editar datos de Cliente" width="500px" @ok="editar_usr" cancel-title="Cancelar" @cancel="closeedit"  centered>
-  <el-form v-loading="wait" ref="form_edit_ref" :rules="rules" :model="form" label-width="150px" >
+<modal ref="mo_editar_per" no-close-on-backdrop title="Editar datos de Proveedor" width="500px" @ok="editar_usr" cancel-title="Cancelar" @cancel="closeedit"  centered>
+  <el-form v-loading="wait" ref="form_cref" :rules="rules" :model="form" label-width="150px" >
 
     <el-form-item  label="Razón soc. asoc.">
       <el-select v-model="form_e.rs" @change="rs_changer" placeholder="Seleccionar">
@@ -654,7 +733,7 @@ export default {
     </el-form-item>
 
     <el-row style="text-align=center">
-      <el-button color="#E21747" :icon="CloseBold" @click="open_confirmar('Realmente desea eliminar a este cliente?')">Eliminar</el-button>
+      <el-button color="#E21747" :icon="CloseBold" @click="open_confirmar('Realmente desea eliminar a este proveedor?')">Eliminar</el-button>
     </el-row>
     
 

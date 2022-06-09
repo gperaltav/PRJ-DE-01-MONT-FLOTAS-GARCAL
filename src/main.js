@@ -109,9 +109,9 @@ const router = createRouter({
       }
     },
     {
-      path: '/vec_personal',
+      path: '/doc_personal',
       name: 'PermisosPersonal',
-      component: () => import('./views/Permisos/Per_Personal.vue'),
+      component: () => import('./views/Documentos/Personal.vue'),
       beforeEnter: (to, from, next) => {
         if(store.state.authenticated == false) {
           next(false);
@@ -121,9 +121,9 @@ const router = createRouter({
       }
     },
     {
-      path: '/vec_vehiculos',
+      path: '/doc_vehiculos',
       name: 'PermisosVehiculos',
-      component: () => import('./views/Permisos/Per_Vehiculos.vue'),
+      component: () => import('./views/Documentos/Vehiculos.vue'),
       beforeEnter: (to, from, next) => {
         if(store.state.authenticated == false) {
           next(false);
