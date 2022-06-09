@@ -146,6 +146,24 @@ export default {
         }
       })
     },
+    get_descarga() {
+       axios
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdepago/'+String(this.emp_cont))
+        .then((resp) => {
+          console.log(resp);  
+          //Download(resp.data.message,"Descargar");
+          const url = window.URL
+                .createObjectURL(new Blob([resp.data.message]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', 'reporte.csv');
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        })
+      
+    },
+
     search_rs_ch() {
       this.emp_cont=this.form_b.rs;
       this.form_b.prod="";
@@ -345,6 +363,7 @@ export default {
       this.form_e.correo=this.data_edit[0].ent_correo;
       this.form_e.telefono=this.data_edit[0].ent_telefono;
       this.form_e.c_pago=this.data_edit[0].fdp_id;
+      this.form_e.prod=this.data_edit[0].pro_id;
     },
 
     api_get_all(){
@@ -579,7 +598,7 @@ export default {
                   <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
                 </el-row>
                 <el-row class="mb-4">
-                  <el-button color="#95d475" :icon=" Download" disabled>A Excel</el-button>
+                  <el-button color="#95d475" :icon=" Download" @click="get_descarga" disabled>A Excel</el-button>
                 </el-row>
                 </div>
               
@@ -709,6 +728,17 @@ export default {
 
     <el-form-item label="Nombre del cliente">
       <el-input v-model="form_e.nombre" />
+    </el-form-item>
+
+    <el-form-item label="Bien o servicio">
+      <el-select  v-model="form_e.prod" >
+        <el-option
+          v-for="item in opt_prod"
+          :key="item.pro_id"
+          :label="item.pro_nombre"
+          :value="item.pro_id"
+        > </el-option>
+      </el-select>
     </el-form-item>
 
     <el-form-item label="Condición de pago">
