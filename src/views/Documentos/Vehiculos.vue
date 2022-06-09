@@ -109,12 +109,18 @@ export default {
       succes: false,
       operarios_id:[2,4],
       datap: [{
-          "placa":"123-acd",
-          "soat": {
-              "color":"#00000",
-              "fecha":"10-12-2000",
-              "color2":1
-          }
+        "placa":"123-acd",
+        "soat": {
+            "color":"#00000",
+            "fecha":"10-12-2000",
+            "color2":1
+        }
+      }],
+      datapE: [{
+        "placa":"123-acd",
+        "soat-color":"#00000",
+        "soat-fecha":"10-12-2000",
+        "soat-color2":1  
       }],
       opt_rs: [],
 
@@ -533,7 +539,7 @@ export default {
       <el-col :span="8" style="text-align=center">
         <div class="sitebar">
         <el-tag style="color:white;" color="#0c59cf">
-          Base de datos > Personal
+          Documentos > Vehículos
         </el-tag>
       </div>
       </el-col>
@@ -643,6 +649,18 @@ export default {
               <el-table-column prop="soat" label="SOAT">
               <template #default="scope" style="background-color:black ;">
                 {{scope.row.soat.fecha}}
+              </template>
+            </el-table-column>
+            </el-table>
+          </div>
+          <div class="table-container">
+          <el-table :row-class-name="tableRowClassName" :data="datapE" border header-row-style="color:black;" >
+              <el-table-column prop="placa" label="Placa " width="140" />
+              <el-table-column prop="soat-color" label="f21" width="90" />
+              <el-table-column prop="soat-fecha" label="f22" />
+              <el-table-column prop="soat" label="SOAT">
+              <template #default="scope" style="background-color:black ;">
+                {{scope.row.soat-fecha}}
               </template>
             </el-table-column>
             </el-table>

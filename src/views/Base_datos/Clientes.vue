@@ -508,7 +508,7 @@ export default {
       <el-col :span="8" style="text-align=center">
         <div class="sitebar">
         <el-tag style="color:white;" color="#0c59cf">
-          Base de datos > Personal
+          Base de datos > Clientes
         </el-tag>
       </div>
       </el-col>
