@@ -5,8 +5,6 @@ import { EditPen, Filter, Plus, Download, CloseBold} from '@element-plus/icons-v
 
 import type { FormInstance, FormRules } from 'element-plus'
 
-
-
 const checkyear = (rule: any, value: any, callback: any) => {
   if (!value) {
     return callback();
@@ -19,32 +17,6 @@ const checkyear = (rule: any, value: any, callback: any) => {
       callback()
     }
   }, 500)
-}
-
-
-interface Docc {
-  placa: string
-  soat: object
-}
-
-
-const tableRowClassName = ({
-  row,
-  column,
-  rowIndex,
-  columnIndex,
-}: {
-  row: Docc
-  column: Docc
-  rowIndex: number
-  columnIndex: number
-}) => {
-  if (rowIndex === 0) {
-    return 'yellow-row'
-  } else if (rowIndex === 1) {
-    return 'green-row'
-  }
-  return ''
 }
 
 const form_cref = ref<FormInstance>();
@@ -106,28 +78,14 @@ export default {
   data(){
     return {
       editpointer:0,
+      edit_rs:0,
       succes: false,
       operarios_id:[2,4],
-      datap: [{
-        "placa":"123-acd",
-        "soat": {
-            "color":"#00000",
-            "fecha":"10-12-2000",
-            "color2":1
-        }
-      }],
-      datapE: [{
-        "placa":"123-acd",
-        "soat-color":"#00000",
-        "soat-fecha":"10-12-2000",
-        "soat-color2":1  
-      }],
-      opt_rs: [],
 
-      opt_mar:[],
-      opt_mod:[],
-      opt_cla:[],
-      opt_ti:[],
+      datap: [],
+      opt_rs: [],
+      placa_act:"",
+      tipo_act:"",
 
       data_edit: [],
       data_edit2: [],
@@ -164,19 +122,14 @@ export default {
       form_e : reactive({
         rs: '',
         placa: '',
-        marca: '',
-        modelo: '',
-        tipo: '',
-        clase: '',
-        year: '',
-        serie: '',
-        mtc: '',
-        carga_util:'',
-        kilometraje: '',
+        tipo_doc: '',
+        ent_emisora: '',
+        fech_emision: '',
+        fech_venc: '',
       }),
     }
   },
-
+ 
   methods: {
 
     search_rs_ch() {
@@ -391,7 +344,11 @@ export default {
     api_get_all(){
       //llamada a API
      axios
-        .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos')
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/controldocumentosvehiculos',
+        {
+          "emp_id": "",
+          "veh_placa":""
+        })
         .then((resp) => {
           console.log(resp);
           this.datap = resp.data;
@@ -467,25 +424,19 @@ export default {
       this.$refs.mo_create_per.hide(); 
     },
 
-    editar_usr(){
+    send_editar_doc(){
       //llamada a API
-    
-    axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos/actualizar', 
+      axios
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/controldocumentosvehiculos/nuevo', 
         { 
           "veh_id":String(this.editpointer),
-          "emp_id": String(this.form_e.rs),
+          "emp_id": String(this.edit_rs),
           "veh_placa":this.form_e.placa,
-          "vma_id":String(this.form_e.marca),
-          "vmo_id":String(this.form_e.modelo),
-          "vti_id": this.form_e.tipo,
-          "vcl_id": this.form_e.clase,
-          "veh_anno":this.form_e.year,
-          "veh_usucreacion":"admin",
-          "veh_serie":this.form_e.serie,
-          "veh_mtc":this.form_e.mtc,
-          "veh_cargautil":String(this.form_e.carga_util),
-          "veh_kilometraje":String(this.form_e.kilometraje)
+          "vtd_id":2,
+          "vxd_entidademisora":this.form_e.ent_emisora,
+          "vxd_fechaemision":this.form_e.fech_emision,
+          "vxd_fechavencimiento":this.form_e.fech_venc,
+          "vxd_usucreacion":"admin"
         })
         .then((resp) => {
           console.log(resp.data.status);
@@ -501,25 +452,253 @@ export default {
         return false;
     },
 
-    button_handle(number){
-      console.log(number);
+    button_handle(obj,index){
+      console.log(obj);
       this.clear_eop;
-      this.editpointer=number;
+      this.editpointer=obj.veh_id;
+      this.edit_rs=obj.emp_id;
+      this.edit_placa=obj.veh_placa;
+      //this.editpointer=number;
       this.$refs.mo_editar_per.open();
-      this.wait = true;
-      this.load_edit(number);
+      switch(index)
+      {
+      case 2:
+        this.placa_act=this.edit_placa;
+        this.tipo_act="CITV 6m";
+        if(!obj.CITV6m) {
+          return 
+        }
+        this.form_e.fech_venc=obj.CITV6m[0].fecha;
+
+      break;
+      case 3:
+        if(!obj.row.CITV12m) {
+          return 
+        }
+        if (obj.row.CITV12m[0].color=="#92d36e") {
+          
+          return "cell-1";
+        }
+        if (obj.row.CITV12m[0].color=="#ff3823") {
+          
+          return "cell-3";
+        }
+
+
+      break;
+      case 4:
+        if(!obj.row.SOAT) {
+          return 
+        }
+        if (obj.row.SOAT[0].color=="#92d36e") {
+          
+          return "cell-1";
+        }
+      break;
+      case 5:
+        if(!obj.row.POLIZA) {
+          return 
+        }
+        if (obj.row.POLIZA[0].color=="#92d36e") {
+          
+          return "cell-1";
+        }
+      break;
+      case 6:
+        if(!obj.row.ELEMPELIGROSOS) {
+          return 
+        }
+        if (obj.row.ELEMPELIGROSOS[0].color=="#92d36e") {
+          
+          return "cell-1";
+        }
+      break;
+      case 7:
+        if(!obj.row.BONIFICACION) {
+          return 
+        }
+        if (obj.row.BONIFICACION[0].color=="#92d36e") {
+          
+          return "cell-1";
+        }
+      break;
+      case 8:
+        if(!obj.row.HERMETECIDAD) {
+          return 
+        }
+        if (obj.row.HERMETECIDAD[0].color=="#92d36e") {
+          
+          return "cell-1";
+        }
+      break;
+
+      default:
+      //default statement or expression;
+      }
+      //this.wait = true;
+      //this.load_edit(number);
       
-      setTimeout(() => {
-        this.load_data_edit();
-        this.emp_cont=this.form_e.rs;
-        this.wait = false;
-      }, 400)
+      //setTimeout(() => {
+        //this.load_data_edit();
+        //this.emp_cont=this.form_e.rs;
+        //this.wait = false;
+      //}, 400)
+    },
+
+    cellStyle2(obj) {
+      switch(obj.columnIndex)
+      {
+      case 2:
+        if(!obj.row.CITV6m) {
+          return 
+        }
+        if (obj.row.CITV6m[0].color=="#92d36e") {
+          
+          return "cell-1";
+        }
+      break;
+      case 3:
+        if(!obj.row.CITV12m) {
+          return 
+        }
+        if (obj.row.CITV12m[0].color=="#92d36e") {
+          
+          return "cell-1";
+        }
+        if (obj.row.CITV12m[0].color=="#ff3823") {
+          
+          return "cell-3";
+        }
+
+
+      break;
+      case 4:
+        if(!obj.row.SOAT) {
+          return 
+        }
+        if (obj.row.SOAT[0].color=="#92d36e") {
+          
+          return "cell-1";
+        }
+      break;
+      case 5:
+        if(!obj.row.POLIZA) {
+          return 
+        }
+        if (obj.row.POLIZA[0].color=="#92d36e") {
+          
+          return "cell-1";
+        }
+      break;
+      case 6:
+        if(!obj.row.ELEMPELIGROSOS) {
+          return 
+        }
+        if (obj.row.ELEMPELIGROSOS[0].color=="#92d36e") {
+          
+          return "cell-1";
+        }
+      break;
+      case 7:
+        if(!obj.row.BONIFICACION) {
+          return 
+        }
+        if (obj.row.BONIFICACION[0].color=="#92d36e") {
+          
+          return "cell-1";
+        }
+      break;
+      case 8:
+        if(!obj.row.HERMETECIDAD) {
+          return 
+        }
+        if (obj.row.HERMETECIDAD[0].color=="#92d36e") {
+          
+          return "cell-1";
+        }
+      break;
+
+      default:
+      //default statement or expression;
+      }
+
+    },
+    charger(obj,idx) {
+      
+    },
+    get_nombre(obj,idx) {
+
+      switch(idx)
+      {
+      case 2:
+        if(!obj.CITV6m) {
+          return "No info"
+        }
+        else {
+          return obj.CITV6m[0].fecha
+        }
+      break;
+      case 3:
+        if(!obj.CITV12m) {
+          return "No info"
+        }
+        else {
+          return obj.CITV12m[0].fecha
+        }
+
+      break;
+      case 4:
+        if(!obj.SOAT) {
+          return "No info"
+        }
+        else {
+          return obj.SOAT[0].fecha
+        }
+      break;
+      case 5:
+        if(!obj.POLIZA) {
+          return "No info"
+        }
+        else {
+          return obj.POLIZA[0].fecha
+        }
+      break;
+      case 6:
+        if(!obj.ELEMPELIGROSOS) {
+          return "No info"
+        }
+        else {
+          return obj.ELEMPELIGROSOS[0].fecha
+        }
+      break;
+      case 7:
+        if(!obj.BONIFICACION) {
+          return "No info"
+        }
+        else {
+          return obj.BONIFICACION[0].fecha
+        }
+      break;
+      case 8:
+        if(!obj.HERMETECIDAD) {
+          return "No info"
+        }
+        else {
+          return obj.HERMETECIDAD[0].fecha
+        }
+      break;
+
+      default:
+      //default statement or expression;
+      }
     }
   },
+  
 
   mounted () {
     //llamada a API
-    //this.load_tc();
+    this.api_get_all();
+    this.load_rs();
     //this.load_pues();
     //this.load_esp();
   },
@@ -556,7 +735,9 @@ export default {
 
       <el-main style="background-color:white">
         <el-scrollbar>
-          <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
+          
+          <el-form  :inline="true" :model="form" label-width="auto" :size="small"  >
+            <el-row style="widht:100%"> 
             <el-col :span="21">
               <el-form-item label="Razón social">
                   <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
@@ -568,103 +749,65 @@ export default {
                     > </el-option>
                   </el-select>
                 </el-form-item>
-
+              
               <el-form-item label="Placa">
                 <el-input v-model="form_b.placa" />
               </el-form-item>
 
-              <el-form-item label="Marca">
-                <el-select  v-model="form_b.marca" >
-                  <el-option
-                    v-for="item in opt_mar"
-                    :key="item.vma_id"
-                    :label="item.vma_nombre"
-                    :value="item.vma_id"
-                  > </el-option>
-                </el-select>
-              </el-form-item>
-
-              <el-form-item label="Modelo">
-                <el-select  v-model="form_b.modelo" >
-                  <el-option
-                    v-for="item in opt_mod"
-                    :key="item.vmo_id"
-                    :label="item.vmo_nombre"
-                    :value="item.vmo_id"
-                  > </el-option>
-                </el-select>
-              </el-form-item>
-
-              <el-form-item label="Año">
-                <el-col :span="11">
-                  <el-date-picker
-                    v-model="form_b.fecha_i"
-                    format="YYYY"
-                    value-format="YYYY"
-                    type="year"
-                    placeholder="Seleccionar año inicio"
-                    style="width: 100%"
-                  />
-                </el-col>
-                <el-col :span="2" class="text-center">
-                  <span class="text-gray-500">-</span>
-                </el-col>
-                <el-col :span="11">
-                  <el-date-picker
-                    v-model="form_b.fecha_f"
-                    format="YYYY"
-                    value-format="YYYY"
-                    type="year"
-                    placeholder="Seleccionar año fin"
-                    style="width: 100%"
-                  />
-                </el-col>
-
-              </el-form-item>
-
             </el-col>
-              <el-col :span="3">
-                
-                <div class="button-container">
+            <el-col :span="3">               
+              <div class="button-container">
                 <el-row class="mb-4">
                   <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
                 </el-row>
-                <el-row class="mb-4">
-                  <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
-                </el-row>
-                <el-row class="mb-4">
-                  <el-button color="#95d475" :icon=" Download" disabled>A Excel</el-button>
-                </el-row>
-                </div>
-                
-              </el-col>
-              
+              </div>    
+            </el-col>
+            </el-row>
+            
             </el-form>
-
+          
           <div class="table-container">
-          <el-table :row-class-name="tableRowClassName" :data="datap" border header-row-style="color:black;" >
-              <el-table-column prop="placa" label="Placa " width="140" />
-              <el-table-column prop="soat.color" label="f21" width="90" />
-              <el-table-column prop="soat.fecha" label="f22" />
-              <el-table-column prop="soat" label="SOAT">
-              <template #default="scope" style="background-color:black ;">
-                {{scope.row.soat.fecha}}
-              </template>
-            </el-table-column>
+          <el-table :cell-class-name="cellStyle2" :data="datap" border header-row-style="color:black;"  >
+              <el-table-column align="center" prop="emp_razonsocial" label="Razon soc. aso. " width="130" />
+              <el-table-column prop="veh_placa" label="Placa " width="140" />
+              <el-table-column label="CITV 6m" width="150">
+                <template #default="scope">
+                  <el-button  type="text"  @click="button_handle(scope.row,2)" >{{get_nombre(scope.row,2)}}</el-button>
+                </template>
+              </el-table-column>
+              <el-table-column label="CITV 12m" width="150">
+                <template #default="scope">
+                  <el-link  type="text"  @click="button_handle(scope.row,3)" >{{get_nombre(scope.row,3)}}</el-link>
+                </template>
+              </el-table-column>
+              <el-table-column label="SOAT" width="150">
+                <template #default="scope">
+                  <el-button  type="text"  @click="button_handle(scope.row,4)" >{{get_nombre(scope.row,4)}}</el-button>
+                </template>
+              </el-table-column>
+              <el-table-column label="POLIZA" width="150">
+                <template #default="scope">
+                  <el-button  type="text"  @click="button_handle(scope.row,5)" >{{get_nombre(scope.row,5)}}</el-button>
+                </template>
+              </el-table-column>
+              <el-table-column label="ELEM. PELIGROSOS" width="170">
+                <template #default="scope">
+                  <el-button  type="text"  @click="button_handle(scope.row,6)" >{{get_nombre(scope.row,6)}}</el-button>
+                </template>
+              </el-table-column>
+              <el-table-column label="BONIFICACIÓN" width="150">
+                <template #default="scope">
+                  <el-button  type="text"  @click="button_handle(scope.row,7)" >{{get_nombre(scope.row,7)}}</el-button>
+                </template>
+              </el-table-column>
+              <el-table-column label="HERMETICIDAD" width="150">
+                <template #default="scope">
+                  <el-button  type="text"  @click="button_handle(scope.row,8)" >{{get_nombre(scope.row,8)}}</el-button>
+                </template>
+              </el-table-column>
             </el-table>
           </div>
-          <div class="table-container">
-          <el-table :row-class-name="tableRowClassName" :data="datapE" border header-row-style="color:black;" >
-              <el-table-column prop="placa" label="Placa " width="140" />
-              <el-table-column prop="soat-color" label="f21" width="90" />
-              <el-table-column prop="soat-fecha" label="f22" />
-              <el-table-column prop="soat" label="SOAT">
-              <template #default="scope" style="background-color:black ;">
-                {{scope.row.soat-fecha}}
-              </template>
-            </el-table-column>
-            </el-table>
-          </div>
+          
         </el-scrollbar>
       </el-main>
     </el-container>
@@ -764,95 +907,39 @@ export default {
 
 
 
-<modal ref="mo_editar_per" no-close-on-backdrop title="Editar datos de Vehiculo" width="500px" @ok="editar_usr" cancel-title="Cancelar" @cancel="closeedit"  centered>
+<modal ref="mo_editar_per" no-close-on-backdrop title="Detalles" width="500px" @ok="editar_usr" cancel-title="Atrás" @cancel="closeedit"  centered>
   <el-form v-loading="wait" ref="form_edit_ref" :rules="rules" :model="form" label-width="150px" >
-
-    <el-form-item  label="Razón soc. asoc.">
-      <el-select v-model="form_e.rs" @change="rs_changer" placeholder="Seleccionar">
-        <el-option
-          v-for="item in opt_rs"
-          :key="item.emp_id"
-          :label="item.emp_razonsocial"
-          :value="item.emp_id"
-        > </el-option>
-      </el-select>
-    </el-form-item>
-    <el-form-item label="Placa o ID">
-      <el-input v-model="form_e.placa" />
-    </el-form-item>
+    <el-row style="text-align=center">
+    <div style="margin-left: auto;margin-right: auto;text-align=center">
+      <h4>Placa: {{placa_act}}</h4>
+      <h4>Tipo de doc.: {{tipo_act}}</h4>
+    </div>
+    </el-row>
     
-    
-    <hr size="1" color="gray"> 
-    <el-form-item label="Marca">
-      <el-select  v-model="form_e.marca" default-first-option>
-        <el-option
-          v-for="item in opt_mar"
-          :key="item.vma_id"
-          :label="item.vma_nombre"
-          :value="item.vma_id"
-        > </el-option>
-      </el-select>
-    </el-form-item>
-    <el-form-item label="Modelo">
-      <el-select  v-model="form_e.modelo" default-first-option>
-        <el-option
-          v-for="item in opt_mod"
-          :key="item.vmo_id"
-          :label="item.vmo_nombre"
-          :value="item.vmo_id"
-        > </el-option>
-      </el-select>
-    </el-form-item>
-    <el-form-item label="Año">
+    <el-form-item label="Fecha de emisión">
       <el-date-picker
-          v-model="form_e.year"
-          format="YYYY"
-          value-format="YYYY"
-          type="year"
-          placeholder="Seleccione año"
+          v-model="form_e.fech_emision"
+          format="YYYY-MM-DD"
+          value-format="YYYY-MM-DD"
+          placeholder="Seleccione fecha"
       />
     </el-form-item>
-    <el-form-item label="Clase">
-      <el-select  v-model="form_e.clase"  @change="check_op" default-first-option>
-        <el-option
-          v-for="item in opt_cla"
-          :key="item.vcl_id"
-          :label="item.vcl_nombre"
-          :value="item.vcl_id"
-        > </el-option>
-      </el-select>
-    </el-form-item>
-    <el-form-item label="Tipo">
-      <el-select  v-model="form_e.tipo"  @change="check_op" default-first-option>
-        <el-option
-          v-for="item in opt_ti"
-          :key="item.vti_id"
-          :label="item.vti_nombre"
-          :value="item.vti_id"
-        > </el-option>
-      </el-select>
-    </el-form-item>
-    
-    <el-form-item label="Nro. de serie">
-      <el-input v-model="form_e.serie" />
+    <el-form-item label="Fecha de vencimiento">
+      <el-date-picker
+          v-model="form_e.fech_venc"
+          format="YYYY-MM-DD"
+          value-format="YYYY-MM-DD"
+          placeholder="Seleccione fecha"
+      />
     </el-form-item>
 
-    <el-form-item label="Código MTC">
-      <el-input v-model="form_e.mtc" />
+    <el-form-item  label="Entidad emisora">
+      <el-input autosize style="width=10px" v-model="form_e.ent_emisora" />
     </el-form-item>
 
-    <el-form-item label="Carga útil">
-      <el-input v-model="form_e.carga_util" />
-    </el-form-item>
-    <hr> 
-    
-    <el-form-item label="Km. estimado">
-      <el-input v-model="form_e.kilometraje" />
-    </el-form-item>
-    
-    <hr>  
+
     <el-row style="text-align=center">
-      <el-button color="#E21747" :icon="CloseBold" @click="open_confirmar('Realmente desea eliminar este vehiculo?')">Eliminar</el-button>
+      <el-button style="margin-left: auto;margin-right: auto" color="#E21747" :icon="CloseBold" @click="open_confirmar('Realmente desea eliminar este vehiculo?')">Eliminar</el-button>
     </el-row>
     
 
@@ -877,15 +964,28 @@ export default {
 
 </template>
 
+<style>
+.el-table .cell-1 {
+  background: #92d36e;
+}
+
+.el-table .cell-2 {
+  background: #fcee57;
+}
+.el-table .cell-3 {
+  background: #fb2525;
+  color: white;
+}
+.el-table .cell-3 .el-link {
+  color: white;
+}
+.el-table .cell-3 .el-link :hover{
+  color: black;
+}
+</style>
+
 
 <style scoped>
-
-.el-table .yellow-row {
-  --el-table-tr-bg-color: rgb(239, 229, 40);
-}
-.el-table .green-row {
-  --el-table-tr-bg-color: rgb(53, 239, 40);
-}
 
 .layout-container .el-header {
   position: relative;

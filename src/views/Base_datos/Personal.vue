@@ -443,7 +443,7 @@ export default {
     load_data_edit_op() {
       this.form_e_op.cat_lic=this.data_edit2[0].tri_licenciacategoria;
       this.form_e_op.nro_lic=this.data_edit2[0].tri_licencianro;
-      this.form_e_op.esp=this.data_edit2[0].tri_especialidad;
+      this.form_e_op.esp=Number( this.data_edit2[0].tri_especialidad);
       this.form_e_op.venc_lic=this.data_edit2[0].tri_licenciafechavencimiento;
       this.form_e_op.ins_iqbf=this.data_edit2[0].tri_inscritossunatiqbf;
     },
@@ -1032,8 +1032,9 @@ export default {
       </el-form-item>
       
     </div>
-    <el-button color="#E21747" :icon="CloseBold" @click="open_confirmar('Relamente desea eliminar a este trabajador?')">Eliminar</el-button>
-
+    <el-row style="text-align=center" >
+    <el-button style="margin-left: auto;margin-right: auto" color="#E21747" :icon="CloseBold" @click="open_confirmar('Realmente desea eliminar a este trabajador?')">Eliminar</el-button>
+    </el-row>
   </el-form>
 </modal>
 

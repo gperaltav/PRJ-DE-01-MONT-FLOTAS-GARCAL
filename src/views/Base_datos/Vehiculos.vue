@@ -614,10 +614,10 @@ export default {
               <el-table-column prop="veh_cargautil" label="Carga util" />
               <el-table-column prop="veh_kilometraje" label="Km" />   
               <el-table-column fixed="right" label="" width="40">
-              <template #default="scope">
-                <el-button  type="text"  @click="button_handle(scope.row.veh_id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
-              </template>
-            </el-table-column>
+                <template #default="scope">
+                  <el-button  type="text"  @click="button_handle(scope.row.veh_id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
+                </template>
+              </el-table-column>
             </el-table>
           </div>
         </el-scrollbar>
@@ -807,7 +807,7 @@ export default {
     
     <hr>  
     <el-row style="text-align=center">
-      <el-button color="#E21747" :icon="CloseBold" @click="open_confirmar('Realmente desea eliminar este vehiculo?')">Eliminar</el-button>
+      <el-button style="margin-left: auto;margin-right: auto" color="#E21747" :icon="CloseBold" @click="open_confirmar('Realmente desea eliminar este vehiculo?')">Eliminar</el-button>
     </el-row>
     
 

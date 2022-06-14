@@ -354,6 +354,7 @@ export default {
       //carga de listas
       this.load_fpago();
       this.load_tdoc();
+      this.load_prod();
 
       this.form_e.tipo_doc=this.data_edit[0].dti_id;
       this.form_e.nro_doc=this.data_edit[0].ent_nrodocumento;
@@ -762,10 +763,9 @@ export default {
       <el-input v-model="form_e.telefono" />
     </el-form-item>
 
-    <el-row style="text-align=center">
-      <el-button color="#E21747" :icon="CloseBold" @click="open_confirmar('Realmente desea eliminar a este proveedor?')">Eliminar</el-button>
+    <el-row style="text-align=center" >
+      <el-button style="margin-left: auto;margin-right: auto" color="#E21747" :icon="CloseBold" @click="open_confirmar('Realmente desea eliminar a este proveedor?')">Eliminar</el-button>
     </el-row>
-    
 
   </el-form>
 </modal>

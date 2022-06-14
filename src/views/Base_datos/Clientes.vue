@@ -712,7 +712,7 @@ export default {
     </el-form-item>
 
     <el-row style="text-align=center">
-      <el-button color="#E21747" :icon="CloseBold" @click="open_confirmar('Realmente desea eliminar a este cliente?')">Eliminar</el-button>
+      <el-button style="margin-left: auto;margin-right: auto" color="#E21747" :icon="CloseBold" @click="open_confirmar('Realmente desea eliminar a este cliente?')">Eliminar</el-button>
     </el-row>
     
 
