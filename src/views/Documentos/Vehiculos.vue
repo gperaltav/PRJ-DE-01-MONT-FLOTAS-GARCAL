@@ -493,7 +493,7 @@ export default {
           return "No info"
         }
         else {
-          if (obj.CITV6m[0].fecha=="") {
+          if (!obj.CITV6m[0].fecha) {
             return "No info"
           }
           return obj.CITV6m[0].fecha
@@ -504,7 +504,7 @@ export default {
           return "No info"
         }
         else {
-          if (obj.CITV12m[0].fecha=="") {
+          if (!obj.CITV12m[0].fecha) {
             return "No info"
           }
           return obj.CITV12m[0].fecha

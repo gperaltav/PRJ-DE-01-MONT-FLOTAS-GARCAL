@@ -451,7 +451,7 @@ export default {
           return "No info"
         }
         else {
-          if (obj.LICENCIAA3[0].fecha=="") {
+          if (!obj.LICENCIAA3[0].fecha) {
             return "No info"
           }
           return obj.LICENCIAA3[0].fecha
@@ -462,7 +462,7 @@ export default {
           return "No info"
         }
         else {
-          if (obj.LICENCIAA4[0].fecha=="") {
+          if (!obj.LICENCIAA4[0].fecha) {
             return "No info"
           }
           return obj.LICENCIAA4[0].fecha
