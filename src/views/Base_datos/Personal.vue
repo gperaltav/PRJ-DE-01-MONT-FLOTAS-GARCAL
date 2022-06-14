@@ -9,27 +9,27 @@ const checknombre = (rule: any, value: any, callback: any) => {
   if (!value) {
     callback();
   }
-  setTimeout(() => {
-    if (!/^[a-zA-Z\u00C0-\u00D6\u00D9-\u00F6\u00F9-\u00FF ]+$/.test(value)) {
-      callback(new Error('Sólo se permiten letras y espacios'));
-    }
-    else {
-      callback();
-    }
-  }, 500)
+
+  if (!/^[a-zA-Z\u00C0-\u00D6\u00D9-\u00F6\u00F9-\u00FF ]+$/.test(value)) {
+    callback(new Error('Sólo se permiten letras y espacios'));
+  }
+  else {
+    callback();
+  }
+
 }
 const checknumeros = (rule: any, value: any, callback: any) => {
   if (!value) {
     return callback();
   }
-  setTimeout(() => {
-    if (!/^[0-9\u0000]+$/.test(value)) {
-      callback(new Error('Sólo se permiten números'));
-    }
-    else {
-      callback()
-    }
-  }, 500)
+
+  if (!/^[0-9\u0000]+$/.test(value)) {
+    callback(new Error('Sólo se permiten números'));
+  }
+  else {
+    callback()
+  }
+
 }
 
 const form_cref = ref<FormInstance>();
@@ -120,6 +120,8 @@ export default {
       wait:false,
       wait2:false,
       open_op:false,
+      helper:false,
+      loadingC:false,
       alert_mo:'',
       id_tmp:-1,
       emp_cont:'1',
@@ -367,6 +369,7 @@ export default {
         .then((resp) => {
           console.log(resp);
           this.data_edit2 = resp.data;
+          console.log(this.data_edit2);
         })      
     },
 
@@ -388,12 +391,15 @@ export default {
         });
     },  
 
-    send_delete_master() {
+    async send_delete_master() {
       this.$refs.mo_advertencia_eliim.hide();
+      this.helper=false;
       this.check_op2();
       if(this.open_op) {
+        this.helper=true;
         console.log("Eliminando operario");
-        this.send_delete_op();
+        await this.send_delete_op();
+        this.send_delete();
       }
       else {
         console.log("Eliminando trabajador");
@@ -409,7 +415,8 @@ export default {
           console.log(resp.data);
           this.succes=resp.data.status;
           if (this.succes) {
-            this.open_succes("Trabajador eliminado correctamente");
+            if(this.helper==false)
+              this.open_succes("Trabajador eliminado correctamente");
             return true;
             
           }
@@ -481,6 +488,7 @@ export default {
     async create_usr(){
       //llamada a API
       if (!this.form_cref) return
+      this.loadingC=true;
       await this.form_cref.validate((valid, fields) => {
         if (valid) {
           axios
@@ -518,6 +526,7 @@ export default {
                 }
               }
               else {
+                this.loadingC=false;
                 this.open_succes("Operación realizada satisfactoriamente");
                 return true;
               }
@@ -553,10 +562,12 @@ export default {
           console.log(resp.data.status);
           this.succes=resp.data.status;
           if (this.succes) {
+            this.loadingC=false;
             this.open_succes("Operación realizada satisfactoriamente");
             return true;
           }
           else {
+            this.loadingC=false;
             this.open_fail("Se creó el trabajador pero no los datos de operario");
             return false;
           }
@@ -647,7 +658,7 @@ export default {
 
     button_handle(number){
       console.log(number);
-      this.clear_eop;
+      this.clear_eop();
       this.editpointer=number;
       this.$refs.mo_editar_per.open();
       this.wait = true;
@@ -658,6 +669,7 @@ export default {
         this.check_op2();
         
         if (this.open_op) {
+          console.log("Operario");
           this.load_edit_op(number);
           
           setTimeout(() => {
@@ -676,7 +688,7 @@ export default {
           
           
           this.wait = false;
-          }, 400)
+          }, 600)
         }
         else {
           this.emp_cont=this.form_e.rs;
@@ -840,7 +852,7 @@ export default {
     </el-container>
   </el-container>
 
-<modal ref="mo_create_per" no-close-on-backdrop title="Agregar Trabajador" width="500px" @ok="create_usr" @cancel="closecrear" cancel-title="Atras" centered>
+<modal ref="mo_create_per" no-close-on-backdrop title="Agregar Trabajador" width="500px" @ok="create_usr" :ok-loading="loadingC" @cancel="closecrear" cancel-title="Atras" centered>
 <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" >
 
     <el-form-item  label="Razón soc. asoc." prop="rs">

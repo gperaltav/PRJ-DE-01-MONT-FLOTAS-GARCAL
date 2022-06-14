@@ -86,12 +86,12 @@ export default {
       opt_rs: [],
       placa_act:"",
       tipo_act:"",
+      tipo_doc:"",
 
       data_edit: [],
-      data_edit2: [],
       wait:false,
       wait2:false,
-      open_op:false,
+
       alert_mo:'',
       id_tmp:-1,
       emp_cont:'1',
@@ -99,24 +99,6 @@ export default {
       form_b : reactive({
         rs: '',
         placa: '',
-        marca: '',
-        modelo: '',
-        fecha_i: '',
-        fecha_f: '',
-      }),
-
-      form_c : reactive({
-        rs: '',
-        placa: '',
-        marca: '',
-        modelo: '',
-        tipo: '',
-        clase: '',
-        year: '',
-        serie: '',
-        mtc: '',
-        carga_util:'',
-        kilometraje: '',
       }),
 
       form_e : reactive({
@@ -132,58 +114,13 @@ export default {
  
   methods: {
 
-    search_rs_ch() {
-      this.emp_cont=this.form_b.rs;
-      this.form_b.modelo="";
-      this.form_b.marca="";
-
-      //cargar listas
-      this.load_mar();
-      this.load_mod();
-    },
-
-    colorer(a,b,x,y) {
-      
-    },
-    search_rs_clear() {
-      this.form_b.contrato="";
-      this.form_b.tipo="";
-      this.opt_tc = [];
-      this.opt_pues = [];
-    },
-    clear_c() {
-      this.form_c.rs='';
-      this.form_c.placa='';
-      this.form_c.marca='';
-      this.form_c.modelo='';
-      this.form_c.tipo='';
-      this.form_c.clase='';
-      this.form_c.year='';
-      this.form_c.serie='';
-      this.form_c.mtc='';
-      this.form_c.carga_uti='';
-      this.form_c.kilometraje='';
-    },
-
     clear_eop() {
-      this.form_e_op.nro_lic= '';
-      this.form_e_op.cat_lic= '';
-      this.form_e_op.esp= '';
-      this.form_e_op.ins_iqbf= null;
-      this.form_e_op.venc_lic= null;
-    },
-
-    rs_changer() {
-      this.emp_cont=this.form_c.rs;
-      this.form_c.modelo="";
-      this.form_c.marca="";
-      this.form_c.clase="";
-      this.form_c.tipo="";
-      //cargar listas
-      this.load_mar();
-      this.load_mod();
-      this.load_cla();
-      this.load_ti();
+      this.form_e.rs= '';
+      this.form_e.placa= '';
+      this.form_e.tipo_doc= '';
+      this.form_e.ent_emisora= '';
+      this.form_e.fech_emision= '';
+      this.form_e.fech_venc= '';
     },
 
     open_succes(msg) {
@@ -211,13 +148,13 @@ export default {
       this.$refs.mo_create_per.hide();
       this.$refs.mo_editar_per.hide();
       this.api_get_all();
-      this.search_rs_clear();
+
     },
     close_succes_ed() {
       this.$refs.mo_realizado_ed.hide(); 
       this.$refs.mo_editar_per.hide();
       this.api_get_all();
-      this.search_rs_clear();
+
     },
     open_fail(msg) {
       this.alert_mo=msg;
@@ -231,7 +168,7 @@ export default {
     },
     closeedit() {
       this.$refs.mo_editar_per.hide();
-      this.search_rs_clear();
+
     },
     opencrear() {
       this.open_op=false;
@@ -240,7 +177,6 @@ export default {
     },
     closecrear() {
       this.$refs.mo_create_per.hide();
-      this.search_rs_clear();
     },
     load_rs() {
       axios
@@ -250,95 +186,33 @@ export default {
           this.opt_rs = resp.data;
         })
     },
-    load_mar() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api//vehiculosmarcas/'+String(this.emp_cont))
-        .then((resp) => {
-          console.log(resp);
-          this.opt_mar = resp.data;
-        })
-    },
-    load_mod() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api//vehiculosmodelos/'+String(this.emp_cont))
-        .then((resp) => {
-          console.log(resp);
-          this.opt_mod = resp.data;
-        })
-    },
-    load_cla() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api//vehiculosclases/'+String(this.emp_cont))
-        .then((resp) => {
-          console.log(resp);
-          this.opt_cla = resp.data;
-        })
-    },
-    load_ti() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api//vehiculostipos/'+String(this.emp_cont))
-        .then((resp) => {
-          console.log(resp);
-          this.opt_ti = resp.data;
-        })
-    },
-    load_esp() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/especialidad/'+String(this.emp_cont))
-        .then((resp) => {
-          console.log(resp);
-          this.opt_esp = resp.data;
-        })
-    },
-
-    load_edit(id) {
-      axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos/"+String(id))
-        .then((resp) => {
-          console.log(resp);
-          this.data_edit = resp.data;
-        })      
-    },
 
     send_delete() {
       this.$refs.mo_advertencia_eliim.hide();
       axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos/borrar/'+String(this.editpointer))
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/controldocumentosvehiculos/nuevo', 
+        { 
+          "veh_id":String(this.editpointer),
+          "emp_id": String(this.edit_rs),
+          "veh_placa":this.edit_placa,
+          "vtd_id":this.tipo_doc,
+          "vxd_entidademisora":'',
+          "vxd_fechaemision":'',
+          "vxd_fechavencimiento":'',
+          "vxd_usucreacion":"admin"
+        })
         .then((resp) => {
           console.log(resp.data.status);
           this.succes=resp.data.status;
           if (this.succes) {
-            this.open_succes("Vehiculo eliminado correctamente");
-            return true;
+            this.open_succes_ed("Datos eliminados satisfactoriamente");
           }
           else {
-            this.open_fail("Hubo un error con el servidor al ejecutar la operación");
-            return false;
+            this.open_fail("Hubo un error al comunicarse con el servidor");
           }
+          console.log(resp);
         })
         return false;
-    },
-
-
-    load_data_edit() {
-      this.form_e.rs=this.data_edit[0].emp_id;
-      this.emp_cont=this.form_e.rs;
-      //carga de listas
-      this.load_mar();
-      this.load_mod();
-      this.load_cla();
-      this.load_ti();
-
-      this.form_e.placa=this.data_edit[0].veh_placa;
-      this.form_e.marca=this.data_edit[0].vma_id;
-      this.form_e.modelo=this.data_edit[0].vmo_id;
-      this.form_e.tipo=this.data_edit[0].vti_id;
-      this.form_e.clase=this.data_edit[0].vcl_id;
-      this.form_e.year=String(this.data_edit[0].veh_anno);
-      this.form_e.serie=this.data_edit[0].veh_serie;
-      this.form_e.mtc=this.data_edit[0].veh_mtc;
-      this.form_e.carga_util=this.data_edit[0].veh_cargautil;
-      this.form_e.kilometraje=this.data_edit[0].veh_kilometraje;
     },
 
     api_get_all(){
@@ -350,78 +224,22 @@ export default {
           "veh_placa":""
         })
         .then((resp) => {
-          console.log(resp);
           this.datap = resp.data;
           console.log(this.datap);
         })
     },
 
     api_get_filt(){
-      console.log(this.form_b.rs);
       axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos', 
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/controldocumentosvehiculos',
         {
-          "emp_id": String(this.form_b.rs),
-          "veh_placa":this.form_b.placa,
-          "vma_nombre":this.form_b.marca,
-          "vmo_nombre":this.form_b.modelo,
-          "veh_anno_inicio":String(this.form_b.fecha_i),
-          "veh_anno_fin":String(this.form_b.fecha_f)
+          "emp_id": this.form_b.rs,
+          "veh_placa":this.form_b.placa
         })
         .then((resp) => {
           console.log(resp);
           this.datap = resp.data;
         })
-    },
-    
-    async create_usr(){
-      //llamada a API
-      if (!this.form_cref) return
-      await this.form_cref.validate((valid, fields) => {
-        if (valid) {
-          console.log(this.form_c.year);
-
-          axios
-          .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos/nuevo', 
-          { 
-            "emp_id": String(this.form_c.rs),
-            "veh_placa":this.form_c.placa,
-            "vma_id": String(this.form_c.marca),
-            "vmo_id": String(this.form_c.modelo),
-            "vti_id": this.form_c.tipo,
-            "vcl_id": this.form_c.clase,
-            "veh_anno":this.form_c.year,
-            "veh_usucreacion":"admin",
-            "veh_serie":this.form_c.serie,
-            "veh_mtc":this.form_c.mtc,
-            "veh_cargautil":String(this.form_c.carga_util),
-            "veh_kilometraje":String(this.form_c.kilometraje)
-          })
-          .then((resp) => {
-            console.log(resp.data);
-            this.succes=resp.data.status;
-            if (this.succes) {
-              this.open_succes("Operación realizada satisfactoriamente");
-              return true;
-              
-            }
-            else {
-              this.open_fail("Hubo un error con el servidor al ejecutar la operación");
-              return false;
-            }
-          })
-          return false;
-          } 
-        else {
-          console.log('Error en campos', fields);
-          return;
-        }
-      })
-    },  
-
-    close_create() {
-      this.$refs.form_create_ref.resetFields();
-      this.$refs.mo_create_per.hide(); 
     },
 
     send_editar_doc(){
@@ -431,8 +249,8 @@ export default {
         { 
           "veh_id":String(this.editpointer),
           "emp_id": String(this.edit_rs),
-          "veh_placa":this.form_e.placa,
-          "vtd_id":2,
+          "veh_placa":this.edit_placa,
+          "vtd_id":this.tipo_doc,
           "vxd_entidademisora":this.form_e.ent_emisora,
           "vxd_fechaemision":this.form_e.fech_emision,
           "vxd_fechavencimiento":this.form_e.fech_venc,
@@ -442,7 +260,7 @@ export default {
           console.log(resp.data.status);
           this.succes=resp.data.status;
           if (this.succes) {
-            this.open_succes_ed("Vehiculo modificado satisfactoriamente");
+            this.open_succes_ed("Datos modificados satisfactoriamente");
           }
           else {
             this.open_fail("Hubo un error al comunicarse con el servidor");
@@ -452,97 +270,106 @@ export default {
         return false;
     },
 
+    load_edit() {
+      axios
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/controldocumentosvehiculos/vista",
+        {
+          "veh_id": this.editpointer,
+          "vtd_id": this.tipo_doc
+        })
+        .then((resp) => {
+          console.log(resp);
+          this.data_edit = resp.data;
+        })      
+    },
+
+    load_data_edit() {
+      if(this.data_edit.length==0) return;
+      this.form_e.ent_emisora=this.data_edit[0].vxd_entidademisora;
+      this.form_e.fech_emision=this.data_edit[0].vxd_fechaemision;
+      this.form_e.fech_venc=this.data_edit[0].vxd_fechavencimiento;
+
+    },
+
     button_handle(obj,index){
       console.log(obj);
       this.clear_eop;
       this.editpointer=obj.veh_id;
       this.edit_rs=obj.emp_id;
       this.edit_placa=obj.veh_placa;
+      this.placa_act=this.edit_placa;
+      this.wait = true;
+      this.tipo_doc=-1;
       //this.editpointer=number;
+
       this.$refs.mo_editar_per.open();
       switch(index)
       {
       case 2:
-        this.placa_act=this.edit_placa;
         this.tipo_act="CITV 6m";
         if(!obj.CITV6m) {
           return 
         }
-        this.form_e.fech_venc=obj.CITV6m[0].fecha;
+        this.tipo_doc=obj.CITV6m[0].id;
 
       break;
       case 3:
-        if(!obj.row.CITV12m) {
+        this.tipo_act="CITV 12m";
+        if(!obj.CITV12m) {
           return 
         }
-        if (obj.row.CITV12m[0].color=="#92d36e") {
-          
-          return "cell-1";
-        }
-        if (obj.row.CITV12m[0].color=="#ff3823") {
-          
-          return "cell-3";
-        }
-
+        this.tipo_doc=obj.CITV12m[0].id;
 
       break;
       case 4:
-        if(!obj.row.SOAT) {
+        this.tipo_act="SOAT";
+        if(!obj.SOAT) {
           return 
         }
-        if (obj.row.SOAT[0].color=="#92d36e") {
-          
-          return "cell-1";
-        }
+        this.tipo_doc=obj.SOAT[0].id;
       break;
       case 5:
-        if(!obj.row.POLIZA) {
+        this.tipo_act="POLIZA";
+        if(!obj.POLIZA) {
           return 
         }
-        if (obj.row.POLIZA[0].color=="#92d36e") {
-          
-          return "cell-1";
-        }
+        this.tipo_doc=obj.POLIZA[0].id;
       break;
       case 6:
-        if(!obj.row.ELEMPELIGROSOS) {
+        this.tipo_act="ELEMENTOS PELIGROSOS";
+        if(!obj.ELEMPELIGROSOS) {
           return 
         }
-        if (obj.row.ELEMPELIGROSOS[0].color=="#92d36e") {
-          
-          return "cell-1";
-        }
+        this.tipo_doc=obj.ELEMPELIGROSOS[0].id;
       break;
       case 7:
-        if(!obj.row.BONIFICACION) {
+        this.tipo_act="BONIFICACIÓN";
+        if(!obj.BONIFICACION) {
           return 
         }
-        if (obj.row.BONIFICACION[0].color=="#92d36e") {
-          
-          return "cell-1";
-        }
+        this.tipo_doc=obj.BONIFICACION[0].id;
       break;
       case 8:
-        if(!obj.row.HERMETECIDAD) {
+        this.tipo_act="HERMETICIDAD";
+        if(!obj.HERMETECIDAD) {
           return 
         }
-        if (obj.row.HERMETECIDAD[0].color=="#92d36e") {
-          
-          return "cell-1";
-        }
+        this.tipo_doc=obj.HERMETECIDAD[0].id;
       break;
 
-      default:
-      //default statement or expression;
       }
-      //this.wait = true;
-      //this.load_edit(number);
-      
-      //setTimeout(() => {
-        //this.load_data_edit();
-        //this.emp_cont=this.form_e.rs;
-        //this.wait = false;
-      //}, 400)
+      if(this.tipo_doc!=-1) {
+        this.load_edit();
+        setTimeout(() => {
+          this.load_data_edit();
+          this.emp_cont=this.form_e.rs;
+          this.wait = false;
+        }, 500)
+      }
+      else {
+        this.open_fail("Hubo un error interno al obtener los datos del servidor");
+      }
+
     },
 
     cellStyle2(obj) {
@@ -553,8 +380,13 @@ export default {
           return 
         }
         if (obj.row.CITV6m[0].color=="#92d36e") {
-          
           return "cell-1";
+        }
+        if (obj.row.CITV6m[0].color=="#fefb64") {
+          return "cell-2";
+        }
+        if (obj.row.CITV6m[0].color=="#ff3823") {
+          return "cell-3";
         }
       break;
       case 3:
@@ -562,14 +394,14 @@ export default {
           return 
         }
         if (obj.row.CITV12m[0].color=="#92d36e") {
-          
           return "cell-1";
         }
+        if (obj.row.CITV12m[0].color=="#fefb64") {
+          return "cell-2";
+        }
         if (obj.row.CITV12m[0].color=="#ff3823") {
-          
           return "cell-3";
         }
-
 
       break;
       case 4:
@@ -577,55 +409,81 @@ export default {
           return 
         }
         if (obj.row.SOAT[0].color=="#92d36e") {
-          
           return "cell-1";
         }
+        if (obj.row.SOAT[0].color=="#fefb64") {
+          return "cell-2";
+        }
+        if (obj.row.SOAT[0].color=="#ff3823") {
+          return "cell-3";
+        }
+        
       break;
       case 5:
         if(!obj.row.POLIZA) {
           return 
         }
         if (obj.row.POLIZA[0].color=="#92d36e") {
-          
           return "cell-1";
         }
+        if (obj.row.POLIZA[0].color=="#fefb64") {
+          return "cell-2";
+        }
+        if (obj.row.POLIZA[0].color=="#ff3823") {
+          return "cell-3";
+        }
+
       break;
       case 6:
         if(!obj.row.ELEMPELIGROSOS) {
           return 
         }
         if (obj.row.ELEMPELIGROSOS[0].color=="#92d36e") {
-          
           return "cell-1";
         }
+        if (obj.row.ELEMPELIGROSOS[0].color=="#fefb64") {
+          return "cell-2";
+        }
+        if (obj.row.ELEMPELIGROSOS[0].color=="#ff3823") {
+          return "cell-3";
+        }
+
       break;
       case 7:
         if(!obj.row.BONIFICACION) {
           return 
         }
-        if (obj.row.BONIFICACION[0].color=="#92d36e") {
-          
+        if (obj.row.BONIFICACION[0].color=="#92d36e") {  
           return "cell-1";
         }
+        if (obj.row.BONIFICACION[0].color=="#fefb64") {
+          return "cell-2";
+        }
+        if (obj.row.BONIFICACION[0].color=="#ff3823") {
+          return "cell-3";
+        }
+
       break;
       case 8:
         if(!obj.row.HERMETECIDAD) {
           return 
         }
         if (obj.row.HERMETECIDAD[0].color=="#92d36e") {
-          
           return "cell-1";
         }
+        if (obj.row.CITV6m[0].color=="#fefb64") {
+          return "cell-2";
+        }
+        if (obj.row.HERMETECIDAD[0].color=="#ff3823") {
+          return "cell-3";
+        }
+
       break;
 
-      default:
-      //default statement or expression;
       }
 
     },
-    charger(obj,idx) {
-      
-    },
+
     get_nombre(obj,idx) {
 
       switch(idx)
@@ -635,6 +493,9 @@ export default {
           return "No info"
         }
         else {
+          if (obj.CITV6m[0].fecha=="") {
+            return "No info"
+          }
           return obj.CITV6m[0].fecha
         }
       break;
@@ -643,6 +504,9 @@ export default {
           return "No info"
         }
         else {
+          if (obj.CITV12m[0].fecha=="") {
+            return "No info"
+          }
           return obj.CITV12m[0].fecha
         }
 
@@ -652,6 +516,9 @@ export default {
           return "No info"
         }
         else {
+          if (!obj.SOAT[0].fecha) {
+            return "No info"
+          }
           return obj.SOAT[0].fecha
         }
       break;
@@ -660,6 +527,9 @@ export default {
           return "No info"
         }
         else {
+          if (!obj.POLIZA[0].fecha) {
+            return "No info"
+          }
           return obj.POLIZA[0].fecha
         }
       break;
@@ -668,6 +538,9 @@ export default {
           return "No info"
         }
         else {
+          if (!obj.ELEMPELIGROSOS[0].fecha) {
+            return "No info"
+          }
           return obj.ELEMPELIGROSOS[0].fecha
         }
       break;
@@ -676,6 +549,9 @@ export default {
           return "No info"
         }
         else {
+          if (!obj.BONIFICACION[0].fecha) {
+            return "No info"
+          }
           return obj.BONIFICACION[0].fecha
         }
       break;
@@ -684,26 +560,23 @@ export default {
           return "No info"
         }
         else {
+          if (!obj.HERMETECIDAD[0].fecha) {
+            return "No info"
+          }
           return obj.HERMETECIDAD[0].fecha
         }
       break;
 
-      default:
-      //default statement or expression;
       }
     }
   },
-  
 
   mounted () {
     //llamada a API
     this.api_get_all();
     this.load_rs();
-    //this.load_pues();
-    //this.load_esp();
   },
 }
-
 </script>
 
 
@@ -740,7 +613,7 @@ export default {
             <el-row style="widht:100%"> 
             <el-col :span="21">
               <el-form-item label="Razón social">
-                  <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
+                  <el-select v-model="form_b.rs" placeholder="Seleccionar" clearable>
                     <el-option
                       v-for="item in opt_rs"
                       :key="item.emp_id"
@@ -768,8 +641,9 @@ export default {
           
           <div class="table-container">
           <el-table :cell-class-name="cellStyle2" :data="datap" border header-row-style="color:black;"  >
-              <el-table-column align="center" prop="emp_razonsocial" label="Razon soc. aso. " width="130" />
-              <el-table-column prop="veh_placa" label="Placa " width="140" />
+              <el-table-column fixed align="center" prop="emp_razonsocial" label="Razon soc. aso. " width="130" />
+              <el-table-column  fixed prop="veh_placa" label="Placa " width="140" />
+              
               <el-table-column label="CITV 6m" width="150">
                 <template #default="scope">
                   <el-button  type="text"  @click="button_handle(scope.row,2)" >{{get_nombre(scope.row,2)}}</el-button>
@@ -777,7 +651,7 @@ export default {
               </el-table-column>
               <el-table-column label="CITV 12m" width="150">
                 <template #default="scope">
-                  <el-link  type="text"  @click="button_handle(scope.row,3)" >{{get_nombre(scope.row,3)}}</el-link>
+                  <el-button  type="text"  @click="button_handle(scope.row,3)" >{{get_nombre(scope.row,3)}}</el-button>
                 </template>
               </el-table-column>
               <el-table-column label="SOAT" width="150">
@@ -813,105 +687,11 @@ export default {
     </el-container>
   </el-container>
 
-<modal ref="mo_create_per" no-close-on-backdrop title="Agregar Vehiculo" width="500px" @ok="create_usr" @cancel="closecrear" cancel-title="Atras" centered>
-  <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" >
-
-    <el-form-item  label="Razón soc. asoc." prop="rs">
-      <el-select v-model="form_c.rs" @change="rs_changer" placeholder="Seleccionar">
-        <el-option
-          v-for="item in opt_rs"
-          :key="item.emp_id"
-          :label="item.emp_razonsocial"
-          :value="item.emp_id"
-        > </el-option>
-      </el-select>
-    </el-form-item>
-
-    <el-form-item label="Placa o ID" prop="placa">
-      <el-input v-model="form_c.placa" />
-    </el-form-item>
-    
-    <hr size="1" color="gray"> 
-
-    <el-form-item label="Marca" prop="marca">
-      <el-select  v-model="form_c.marca" default-first-option>
-        <el-option
-          v-for="item in opt_mar"
-          :key="item.vma_id"
-          :label="item.vma_nombre"
-          :value="item.vma_id"
-        > </el-option>
-      </el-select>
-    </el-form-item>
-    <el-form-item label="Modelo" prop="modelo">
-      <el-select  v-model="form_c.modelo" default-first-option>
-        <el-option
-          v-for="item in opt_mod"
-          :key="item.vmo_id"
-          :label="item.vmo_nombre"
-          :value="item.vmo_id"
-        > </el-option>
-      </el-select>
-    </el-form-item>
-    <el-form-item label="Año" prop="year">
-      <el-date-picker
-          v-model="form_c.year"
-          format="YYYY"
-          value-format="YYYY"
-          type="year"
-          placeholder="Seleccione año"
-      />
-    </el-form-item>
-    <el-form-item label="Clase" prop="clase">
-      <el-select  v-model="form_c.clase"  @change="check_op" default-first-option>
-        <el-option
-          v-for="item in opt_cla"
-          :key="item.vcl_id"
-          :label="item.vcl_nombre"
-          :value="item.vcl_id"
-        > </el-option>
-      </el-select>
-    </el-form-item>
-    <el-form-item label="Tipo" prop="tipo">
-      <el-select  v-model="form_c.tipo"  @change="check_op" default-first-option>
-        <el-option
-          v-for="item in opt_ti"
-          :key="item.vti_id"
-          :label="item.vti_nombre"
-          :value="item.vti_id"
-        > </el-option>
-      </el-select>
-    </el-form-item>
-    
-    <el-form-item label="Nro. de serie">
-      <el-input v-model="form_c.serie" />
-    </el-form-item>
-
-    <el-form-item label="Código MTC">
-      <el-input v-model="form_c.mtc" />
-    </el-form-item>
-
-    <el-form-item label="Carga útil">
-      <el-input v-model="form_c.carga_util" />
-    </el-form-item>
-    <hr> 
-    
-    <el-form-item label="Km. estimado">
-      <el-input v-model="form_c.kilometraje" />
-    </el-form-item>
-    
-    <hr>  
-
-  </el-form>
-</modal>
-
-
-
-<modal ref="mo_editar_per" no-close-on-backdrop title="Detalles" width="500px" @ok="editar_usr" cancel-title="Atrás" @cancel="closeedit"  centered>
+<modal ref="mo_editar_per" no-close-on-backdrop title="Detalles" width="500px" @ok="send_editar_doc" cancel-title="Atrás" @cancel="closeedit"  centered>
   <el-form v-loading="wait" ref="form_edit_ref" :rules="rules" :model="form" label-width="150px" >
     <el-row style="text-align=center">
     <div style="margin-left: auto;margin-right: auto;text-align=center">
-      <h4>Placa: {{placa_act}}</h4>
+      <h4>Nombre: {{placa_act}}</h4>
       <h4>Tipo de doc.: {{tipo_act}}</h4>
     </div>
     </el-row>
@@ -939,9 +719,8 @@ export default {
 
 
     <el-row style="text-align=center">
-      <el-button style="margin-left: auto;margin-right: auto" color="#E21747" :icon="CloseBold" @click="open_confirmar('Realmente desea eliminar este vehiculo?')">Eliminar</el-button>
+      <el-button style="margin-left: auto;margin-right: auto" color="#E21747" :icon="CloseBold" @click="open_confirmar('Realmente desea eliminar los datos de este documento?')">Eliminar</el-button>
     </el-row>
-    
 
   </el-form>
 </modal>
@@ -968,20 +747,38 @@ export default {
 .el-table .cell-1 {
   background: #92d36e;
 }
+.el-table .cell-1 .el-button {
+  color: rgb(0, 0, 0);
+}
+.el-table .cell-1 .el-button  :hover{
+  color: #92d36e;
+}
 
 .el-table .cell-2 {
-  background: #fcee57;
+  background: #fefb64;
 }
+.el-table .cell-2 .el-button {
+  color: rgb(0, 0, 0);
+}
+.el-table .cell-2 .el-button :hover{
+  color: #aeab22;
+}
+
 .el-table .cell-3 {
   background: #fb2525;
-  color: white;
 }
-.el-table .cell-3 .el-link {
-  color: white;
+.el-table .cell-3 .el-button {
+  color: rgb(42, 42, 42);
 }
-.el-table .cell-3 .el-link :hover{
-  color: black;
+.el-table .cell-3 .el-button :hover{
+  color: #fb2525;
 }
+
+.el-table .hover-row .cell3{
+    color: #982278;
+    background: #982278;
+}
+
 </style>
 
 
@@ -1027,6 +824,8 @@ export default {
   font-family: "Roboto", sans-serif;
   --el-table-header-bg-color:rgb(199, 199, 199);
 }
+
+
 
 .el-col {
   text-align:center;
