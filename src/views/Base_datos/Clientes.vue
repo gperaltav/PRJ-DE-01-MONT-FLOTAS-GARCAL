@@ -370,11 +370,10 @@ export default {
         })
     },
     
-    async create_usr(){
+    create_usr(){
       //llamada a API
-      if (!this.form_cref) return
-      await this.form_cref.validate((valid, fields) => {
-        if (valid) {
+      //this.form_cref.validate((valid, fields) => {
+        //if (valid) {
           axios
           .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/nuevo', 
           { 
@@ -414,12 +413,13 @@ export default {
             }
           })
           return false;
-          } 
-        else {
-          console.log('Error en campos', fields);
-          return;
-        }
-      })
+          //}
+       // else {
+        //  console.log('Error en campos', fields);
+        //  return;
+        //}
+        
+      //})
     },  
 
     close_create() {
@@ -596,7 +596,7 @@ export default {
     </el-container>
   </el-container>
 
-<modal ref="mo_create_per" no-close-on-backdrop title="Agregar Cliente" width="500px" @ok="create_usr" @cancel="closecrear" cancel-title="Atras" centered>
+<modal ref="mo_create_per" no-close-on-backdrop title="Agregar Cliente" width="500px" @ok="create_usr()" @cancel="closecrear" cancel-title="Atras" centered>
   <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" >
 
     <el-form-item  label="Razón soc. asoc." prop="rs">

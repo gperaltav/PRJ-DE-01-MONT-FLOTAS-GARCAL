@@ -376,10 +376,10 @@ export default {
     
     async create_usr(){
       //llamada a API
-      if (!this.form_cref) return
-      await this.form_cref.validate((valid, fields) => {
-        if (valid) {
-          console.log(this.form_c.year);
+      //if (!this.form_cref) return
+      //await this.form_cref.validate((valid, fields) => {
+      //  if (valid) {
+       //   console.log(this.form_c.year);
 
           axios
           .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos/nuevo', 
@@ -411,12 +411,12 @@ export default {
             }
           })
           return false;
-          } 
-        else {
-          console.log('Error en campos', fields);
-          return;
-        }
-      })
+         // } 
+       // else {
+          //console.log('Error en campos', fields);
+         // return;
+        //}
+      //})
     },  
 
     close_create() {
@@ -515,7 +515,7 @@ export default {
 
       <el-main style="background-color:white">
         <el-scrollbar>
-          <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
+          <el-form @submit.prevent :inline="true" :model="formInline" label-width="auto" :size="small" >
             <el-col :span="21">
               <el-form-item label="Razón social">
                   <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
@@ -626,7 +626,7 @@ export default {
   </el-container>
 
 <modal ref="mo_create_per" no-close-on-backdrop title="Agregar Vehiculo" width="500px" @ok="create_usr" @cancel="closecrear" cancel-title="Atras" centered>
-  <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" >
+  <el-form  @submit.prevent ref="form_cref" :rules="rules" :model="form_c" label-width="150px" >
 
     <el-form-item  label="Razón soc. asoc." prop="rs">
       <el-select v-model="form_c.rs" @change="rs_changer" placeholder="Seleccionar">
@@ -720,7 +720,7 @@ export default {
 
 
 <modal ref="mo_editar_per" no-close-on-backdrop title="Editar datos de Vehiculo" width="500px" @ok="editar_usr" cancel-title="Cancelar" @cancel="closeedit"  centered>
-  <el-form v-loading="wait" ref="form_edit_ref" :rules="rules" :model="form" label-width="150px" >
+  <el-form @submit.prevent v-loading="wait" ref="form_edit_ref" :rules="rules" :model="form" label-width="150px" >
 
     <el-form-item  label="Razón soc. asoc.">
       <el-select v-model="form_e.rs" @change="rs_changer" placeholder="Seleccionar">

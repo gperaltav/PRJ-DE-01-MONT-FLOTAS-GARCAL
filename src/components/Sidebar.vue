@@ -38,7 +38,7 @@ export default {
     <el-menu-item index="doc_vehiculos">Vehiculos</el-menu-item>
     <el-menu-item index="doc_personal">Personal</el-menu-item>
   </el-sub-menu>
-  <el-menu-item index="">
+  <el-menu-item index="planificacion">
     <template #title>
       <el-icon><trend-charts /></el-icon> Planifiación
     </template>

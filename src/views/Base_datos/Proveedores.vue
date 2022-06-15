@@ -398,9 +398,9 @@ export default {
     
     async create_usr(){
       //llamada a API
-      if (!this.form_cref) return
-      await this.form_cref.validate((valid, fields) => {
-        if (valid) {
+      //if (!this.form_cref) return
+      //await this.form_cref.validate((valid, fields) => {
+       // if (valid) {
           axios
           .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/nuevo', 
           { 
@@ -440,12 +440,12 @@ export default {
             }
           })
           return false;
-        } 
-        else {
-          console.log('Error en campos', fields);
-          return;
-        }
-      })
+        //} 
+        //else {
+          //console.log('Error en campos', fields);
+         // return;
+        //}
+      //})
       
     },  
 

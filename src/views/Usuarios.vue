@@ -5,12 +5,6 @@ import { EditPen, Filter, Plus, Download} from '@element-plus/icons-vue'
 
 import { ref } from 'vue'
 
-const item = {
-  date: '2016-05-02',
-  unombre: 'Tom',
-  address: 'No. 189, Grove St, Los Angeles',
-}
-const testdata = ref(Array.from({ length: 20 }).fill(item))
 </script>
 
 <script>
@@ -35,6 +29,9 @@ export default {
     }
   },
   methods: {
+    open_mod() {
+      this.$refs.CreateMo.open()
+    },
     check() {
       //verificar campos
       if (nombre=='') {
@@ -49,12 +46,10 @@ export default {
     }, 
     onSubmit2 (){
       console.log(this.form.nombre);
-      axios
-          .get('http://localhost:5000/usuarios?name='+String(this.form.nombre))
-          .then((resp) => {
-            console.log(resp);
-            this.users = resp.data;
-          })
+
+    },
+    okis() {
+      console.log("Todo ok");
     },
     onSubmitall (){
       //llamada a API
@@ -104,16 +99,15 @@ export default {
 
       <el-main style="background-color:white">
         <el-scrollbar>
-          <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
+          <el-form @submit.prevent :inline="true" :model="form" label-width="auto" :size="small" >
 
               <el-form-item label="Nombre">
-                <el-input v-model="this.form.nombre" />
+                <el-input v-model="form.nombre" />
               </el-form-item>
 
               <el-form-item>
-                <el-button color="#0844a4"  :icon="Filter" @click="onSubmit2">Filtrar</el-button>
-                <el-button color="#008db1"  :icon="Plus"  @click="this.$refs.CreateMo.open()" >Crear</el-button>
-                <el-button color="#95d475"  :icon=" Download">A Excel</el-button>
+                <el-button color="#0844a4"  :icon="Filter" @click="onSubmit2()">Filtrar</el-button>
+                <el-button color="#008db1"  :icon="Plus"  @click="open_mod()" >Crear</el-button>
               </el-form-item>
             </el-form>
           
@@ -138,7 +132,7 @@ export default {
 
 
 <modal ref="EditMo" title="Editar usuario" width="600px"  hide-footer centered>
-<el-form :model="form" label-width="150px">
+<el-form label-width="150px">
 
     <el-form-item style="z-index: 10000" label="Razón soc. asoc.">
       <el-select  v-model="form.region" placeholder="Seleccionar">
@@ -181,8 +175,8 @@ export default {
 </modal>
 
 
-<modal ref="CreateMo" title="Crear usuario" width="600px"  hide-footer centered>
-<el-form :model="form" label-width="150px">
+<modal ref="CreateMo" title="Crear usuario" width="600px"  @ok="okis()" centered>
+<el-form  label-width="150px">
 
     <el-form-item style="z-index: 10000" label="Razón soc. asoc.">
       <el-select  v-model="form.region" placeholder="Seleccionar">

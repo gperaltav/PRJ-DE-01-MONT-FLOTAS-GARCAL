@@ -16,7 +16,7 @@ const checkyear = (rule: any, value: any, callback: any) => {
     else {
       callback()
     }
-  }, 500)
+  }, 50)
 }
 
 const form_cref = ref<FormInstance>();
