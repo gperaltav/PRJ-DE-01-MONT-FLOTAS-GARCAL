@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { reactive,ref } from 'vue'
 import axios from 'axios'
-import { EditPen, Filter, Plus, Download, CloseBold} from '@element-plus/icons-vue'
+import { EditPen, Filter, Plus, Download, CloseBold, List, Search} from '@element-plus/icons-vue'
 
 import type { FormInstance, FormRules } from 'element-plus'
 
@@ -84,6 +84,7 @@ export default {
       operarios_id:[2,4],
       datap: [],
       opt_rs: [],
+      opt_flete: [],
 
       opt_mar:[],
       opt_mod:[],
@@ -92,9 +93,18 @@ export default {
 
       data_edit: [],
       data_edit2: [],
+      data_ubi:[],
+      data_clis:[],
+      data_prods:[],
+      data_op:[],
+      data_vh1:[],
+      data_vh2:[],
+
       wait:false,
       wait2:false,
       open_op:false,
+      aux1:true,
+
       alert_mo:'',
       id_tmp:-1,
       emp_cont:'1',
@@ -102,24 +112,35 @@ export default {
       form_b : reactive({
         rs: '',
         placa: '',
-        marca: '',
-        modelo: '',
         fecha_i: '',
         fecha_f: '',
+        origen:'',
+        destino:''
       }),
 
       form_c : reactive({
         rs: '',
-        placa: '',
-        marca: '',
-        modelo: '',
-        tipo: '',
-        clase: '',
-        year: '',
-        serie: '',
-        mtc: '',
-        carga_util:'',
-        kilometraje: '',
+        ruta: '',
+        semirremolque: '',
+        cliente_id: '',
+        cliente_nom: '',
+        producto_tipo: '',
+        producto_des: '',
+        flete: '',
+        subtotal: 0,
+        igv: 18,
+        impuesto: 0,
+        total: 0,
+        fecha: '',
+        hora: '',
+        f_h: '',
+        origen: '',
+        destino: '',
+        semire_id: '',
+        tracto_id: '',
+        oper_id: '',
+        oper_nom:'',
+
       }),
 
       form_e : reactive({
@@ -179,10 +200,14 @@ export default {
 
     rs_changer() {
       this.emp_cont=this.form_c.rs;
-      this.form_c.modelo="";
-      this.form_c.marca="";
-      this.form_c.clase="";
-      this.form_c.tipo="";
+      this.form_c.cliente_id="";
+      this.form_c.cliente_nom="";
+      this.form_c.producto_tipo="";
+      this.form_c.producto_des="";
+      this.form_c.semire_id="";
+      this.form_c.tracto_id="";
+      this.form_c.oper_id="";
+      this.form_c.oper_nom="";
       //cargar listas
       this.load_mar();
       this.load_mod();
@@ -304,6 +329,116 @@ export default {
         })      
     },
 
+    load_flete() {
+      axios
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/flete")
+        .then((resp) => {
+          console.log(resp);
+          this.opt_flete = resp.data;
+        })   
+    },
+
+    get_productos(query) {
+      console.log(query);
+      axios
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/productos/buscarnombre" ,
+      {
+        "emp_id":this.form_c.rs,
+        "ent_nrodocumento":query,
+      })
+        .then((resp) => {
+          console.log(resp);
+          this.data_prods = resp.data;
+        })
+    },
+
+    get_ubigeos(query) {
+      console.log(query);
+      axios
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/ubigeo" ,
+      {
+        "ubi_nombre":query,
+      })
+        .then((resp) => {
+          console.log(resp);
+          this.data_ubi = resp.data;
+        })
+    },
+
+    get_clientes(query) {
+      console.log(query);
+      axios
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/buscarclientenumero" ,
+      {
+        "emp_id":this.form_c.rs,
+        "ent_nrodocumento":query,
+      })
+        .then((resp) => {
+          console.log(resp);
+          this.data_clis = resp.data;
+        })
+    },
+
+    select_clientes(obj) {
+      this.form_c.cliente_nom=obj;
+    },
+
+    get_operarios(query) {
+      console.log(query);
+      axios
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/tripulacionpendientesviajes" ,
+      {
+        "emp_id": this.form_c.rs,
+        "tra_nrodocumento":query,
+        "tri_licencianro":"",
+        "tra_nombre":"",
+        "via_fechaviaje":this.form_c.fecha,
+        "via_horaviaje":this.form_c.hora
+      })
+        .then((resp) => {
+          console.log(resp);
+          this.data_op = resp.data;
+        })
+    },
+
+    select_operarios(obj) {
+      this.form_c.oper_nom=obj;
+    },
+
+    get_vehiculo1(query) {
+      console.log(query);
+      axios
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculospendientesviajes" ,
+      {
+        "emp_id": this.form_c.rs,
+        "veh_placa":query,
+        "vcl_id":"SEM",
+        "via_fechaviaje":this.form_c.fecha,
+        "via_horaviaje":this.form_c.hora
+      })
+        .then((resp) => {
+          console.log(resp);
+          this.data_vh1 = resp.data;
+        })
+    },
+
+    get_vehiculo2(query) {
+      console.log(query);
+      axios
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculospendientesviajes" ,
+      {
+        "emp_id": this.form_c.rs,
+        "veh_placa":query,
+        "vcl_id":"TRA",
+        "via_fechaviaje":this.form_c.fecha,
+        "via_horaviaje":this.form_c.hora
+      })
+        .then((resp) => {
+          console.log(resp);
+          this.data_vh2 = resp.data;
+        })
+    },
+
     send_delete() {
       this.$refs.mo_advertencia_eliim.hide();
       axios
@@ -359,14 +494,14 @@ export default {
     api_get_filt(){
       console.log(this.form_b.rs);
       axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos', 
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes', 
         {
-          "emp_id": String(this.form_b.rs),
+          "emp_id":String(this.form_b.rs),
+          "via_fechaviajeinicio":String(this.form_b.fecha_i),
+          "via_fechaviajefin":String(this.form_b.fecha_f),
           "veh_placa":this.form_b.placa,
-          "vma_nombre":this.form_b.marca,
-          "vmo_nombre":this.form_b.modelo,
-          "veh_anno_inicio":String(this.form_b.fecha_i),
-          "veh_anno_fin":String(this.form_b.fecha_f)
+          "ubi_nombreorigen":this.form_b.origen,
+          "ubi_nombredestino":this.form_b.destino,
         })
         .then((resp) => {
           console.log(resp);
@@ -374,26 +509,43 @@ export default {
         })
     },
     
-    async create_usr(){
+    create_usr(){
       //llamada a API
-
-          console.log(this.form_c.year);
+          console.log(this.form_c.fecha);
+          console.log(this.form_c.tracto_id);
+          console.log(this.form_c.semire_id);
+          console.log(this.form_c.cliente_nom);
+          console.log(this.form_c.hora);
+          console.log(this.form_c.subtotal);
+          console.log(this.form_c.impuesto);
+          console.log(this.form_c.producto_des);
+          console.log(this.form_c.origen);
+          console.log(this.form_c.flete);
+          console.log(this.form_c.oper_id);
+          
 
           axios
-          .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos/nuevo', 
+          .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes/nuevo', 
           { 
-            "emp_id": String(this.form_c.rs),
-            "veh_placa":this.form_c.placa,
-            "vma_id": String(this.form_c.marca),
-            "vmo_id": String(this.form_c.modelo),
-            "vti_id": this.form_c.tipo,
-            "vcl_id": this.form_c.clase,
-            "veh_anno":this.form_c.year,
-            "veh_usucreacion":"admin",
-            "veh_serie":this.form_c.serie,
-            "veh_mtc":this.form_c.mtc,
-            "veh_cargautil":String(this.form_c.carga_util),
-            "veh_kilometraje":String(this.form_c.kilometraje)
+            "emp_id": Number(this.form_c.rs),
+            "rut_id":"",
+            "via_serie":"", 
+            "via_numero":"", 
+            "veh_idtracto":this.form_c.tracto_id,
+            "veh_idremolque":this.form_c.semire_id,
+            "ent_id":27,
+            "via_fechaviaje":this.form_c.fecha,
+            "via_horaviaje":this.form_c.hora,
+            "via_subtotal":Number(this.form_c.subtotal),
+            "via_impuesto":Number(this.form_c.impuesto),
+            "via_total":Number(this.form_c.total),
+            "via_observacion":this.form_c.producto_des,
+            "ubi_codigoorigen":this.form_c.origen,
+            "ubi_codigodestino":this.form_c.destino,
+            "vfl_codigo":this.form_c.flete,
+            "tri_id":156,
+            "pro_id":16,
+            "via_usucreacion":"admin"
           })
           .then((resp) => {
             console.log(resp.data);
@@ -449,6 +601,25 @@ export default {
         })
         return false;
     },
+    roundUp(num, precision) {
+      precision = Math.pow(10, precision)
+      return Math.ceil(num * precision) / precision
+    },
+    roundDwn(num, precision) {
+      precision = Math.pow(10, precision)
+      return Math.floor(num * precision) / precision
+    },
+    calcular1() {
+      this.form_c.impuesto=String(this.roundUp((Number(this.form_c.igv)/100)*Number(this.form_c.subtotal),1));
+      this.form_c.total=String(Number(this.form_c.impuesto)+Number(this.form_c.subtotal));
+    },
+    calcular2() {
+      var aux=Number(this.form_c.total)/(100+Number(this.form_c.igv));
+      this.form_c.impuesto=String(this.roundUp(aux*Number(this.form_c.igv),1));
+      this.form_c.subtotal=String(this.roundDwn(aux*100,1));
+      
+      
+    },
 
     button_handle(number){
       console.log(number);
@@ -465,11 +636,13 @@ export default {
       }, 400)
     }
   },
+  
 
   mounted () {
     //llamada a API
     this.api_get_all();
     this.load_rs();
+    this.load_flete();
     //this.load_tc();
     //this.load_pues();
     //this.load_esp();
@@ -490,7 +663,7 @@ export default {
       <el-col :span="8" style="text-align=center">
         <div class="sitebar">
         <el-tag style="color:white;" color="#0c59cf">
-          Base de datos > Vehículos
+          Planificación
         </el-tag>
       </div>
       </el-col>
@@ -524,28 +697,20 @@ export default {
                   </el-select>
                 </el-form-item>
 
-              <el-form-item label="Placa" clearable>
-                <el-input v-model="form_b.placa" />
+              <el-form-item label="Origen" clearable>
+                <el-input v-model='form_b.origen'/>
               </el-form-item>
-
-              <el-form-item label="Ruta" clearable>
-                <el-select  v-model="form_b.marca" >
-                  <el-option
-                    v-for="item in opt_mar"
-                    :key="item.vma_id"
-                    :label="item.vma_nombre"
-                    :value="item.vma_id"
-                  > </el-option>
-                </el-select>
+              <el-form-item label="Destino" clearable>
+                <el-input v-model='form_b.destino'/>
               </el-form-item>
 
               <el-form-item label="Fecha de viaje:" clearable>
                 <el-col :span="11">
                   <el-date-picker
                     v-model="form_b.fecha_i"
-                    format="YYYY"
-                    value-format="YYYY"
-                    type="year"
+                    format="YYYY-MM-DD"
+                    value-format="YYYY-MM-DD"
+                    type="date"
                     placeholder="Seleccionar limite inicial"
                     style="width: 100%"
                   />
@@ -556,14 +721,18 @@ export default {
                 <el-col :span="11">
                   <el-date-picker
                     v-model="form_b.fecha_f"
-                    format="YYYY"
-                    value-format="YYYY"
-                    type="year"
+                    format="YYYY-MM-DD"
+                    value-format="YYYY-MM-DD"
+                    type="date"
                     placeholder="Seleccionar limite final"
                     style="width: 100%"
                   />
                 </el-col>
 
+              </el-form-item>
+
+              <el-form-item label="Placa" clearable>
+                <el-input v-model="form_b.placa" />
               </el-form-item>
 
             </el-col>
@@ -593,12 +762,9 @@ export default {
               <el-table-column prop="via_fechaviaje" label="Fecha de viaje" width="140" />
               <el-table-column prop="via_horaviaje" label="Hora de viaje" width="140" />
               <el-table-column prop="veh_conductor" label="Conductor" />
-              <el-table-column prop="veh_flete" label="Flete" />
-              <el-table-column prop="veh_tipoflete" label="Tipo flete" />
-              <el-table-column prop="nod_origen" label="Origen" />
-              <el-table-column prop="nod_destino" label="Destino" />
-              
-
+              <el-table-column prop="vfl_nombre" label="Flete" />
+              <el-table-column prop="ubi_nombreorigen" label="Origen" />
+              <el-table-column prop="ubi_nombredestino" label="Destino" />
 
               <el-table-column fixed="right" label="" width="40">
                 <template #default="scope">
@@ -612,11 +778,12 @@ export default {
     </el-container>
   </el-container>
 
-<modal ref="mo_create_per" no-close-on-backdrop title="Agregar Vehiculo" width="500px" @ok="create_usr" @cancel="closecrear" cancel-title="Atras" centered>
-  <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" >
 
-    <el-form-item  label="Razón soc. asoc." prop="rs">
-      <el-select v-model="form_c.rs" @change="rs_changer" placeholder="Seleccionar">
+<modal ref="mo_create_per" no-close-on-backdrop title="Nro. de orden de servicio" width="900px" @ok="create_usr" @cancel="closecrear" cancel-title="Atras" centered>
+  <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" >
+    <el-row style="text-align:center">
+    <el-form-item style="margin-left: auto;margin-right: auto" label="Razón soc. asoc." prop="rs">
+      <el-select  v-model="form_c.rs" @change="rs_changer()" placeholder="Seleccionar">
         <el-option
           v-for="item in opt_rs"
           :key="item.emp_id"
@@ -625,88 +792,241 @@ export default {
         > </el-option>
       </el-select>
     </el-form-item>
+    </el-row>
+    <el-row>
+    <el-col :span="12">
+      
+      <el-form-item  label="Cliente " prop="rs">
+        <el-select
+          v-model="form_c.cliente_id"
+          filterable
+          :remote-method="get_clientes"
+          @change="select_clientes"
+          placeholder="Inserte ID de cliente"
+          remote
+          clearable
+          style="width:250px"
+        >
+          <template #prefix>
+            <el-icon><Search /></el-icon>
+          </template>
 
-    <el-form-item label="Placa o ID" prop="placa">
-      <el-input v-model="form_c.placa" />
-    </el-form-item>
-    
-    <hr size="1" color="gray"> 
+          <el-option
+            v-for="item in data_clis"
+            :key="item.ent_id"
+            :label="item.ent_nrodocumento"
+            :value="item.ent_nombre"
+          />
+        </el-select>
+        <el-input style="width:250px" disabled v-model="form_c.cliente_nom" placeholder="Nombre de cliente"/>
+      </el-form-item>
 
-    <el-form-item label="Marca" prop="marca">
-      <el-select  v-model="form_c.marca" default-first-option>
-        <el-option
-          v-for="item in opt_mar"
-          :key="item.vma_id"
-          :label="item.vma_nombre"
-          :value="item.vma_id"
-        > </el-option>
-      </el-select>
-    </el-form-item>
-    <el-form-item label="Modelo" prop="modelo">
-      <el-select  v-model="form_c.modelo" default-first-option>
-        <el-option
-          v-for="item in opt_mod"
-          :key="item.vmo_id"
-          :label="item.vmo_nombre"
-          :value="item.vmo_id"
-        > </el-option>
-      </el-select>
-    </el-form-item>
-    <el-form-item label="Año" prop="year">
-      <el-date-picker
-          v-model="form_c.year"
-          format="YYYY"
-          value-format="YYYY"
-          type="year"
-          placeholder="Seleccione año"
-      />
-    </el-form-item>
-    <el-form-item label="Clase" prop="clase">
-      <el-select  v-model="form_c.clase"  @change="check_op" default-first-option>
-        <el-option
-          v-for="item in opt_cla"
-          :key="item.vcl_id"
-          :label="item.vcl_nombre"
-          :value="item.vcl_id"
-        > </el-option>
-      </el-select>
-    </el-form-item>
-    <el-form-item label="Tipo" prop="tipo">
-      <el-select  v-model="form_c.tipo"  @change="check_op" default-first-option>
-        <el-option
-          v-for="item in opt_ti"
-          :key="item.vti_id"
-          :label="item.vti_nombre"
-          :value="item.vti_id"
-        > </el-option>
-      </el-select>
-    </el-form-item>
-    
-    <el-form-item label="Nro. de serie">
-      <el-input v-model="form_c.serie" />
-    </el-form-item>
+      <el-form-item  label="Producto " prop="rs">
+        <el-select
+          v-model="form_c.producto_tipo"
+          filterable
+          :remote-method="get_productos"
+          placeholder="Tipo de producto"
+          remote
+          clearable
+          style="width:250px"
+        >
+          <template #prefix>
+            <el-icon><Search /></el-icon>
+          </template>
 
-    <el-form-item label="Código MTC">
-      <el-input v-model="form_c.mtc" />
-    </el-form-item>
+          <el-option
+            v-for="item in data_prods"
+            :key="item.pro_id"
+            :label="item.pro_descripcion"
+            :value="item.pro_id"
+          />
+        </el-select>
+        
+        <el-input style="width:250px" v-model="form_c.producto_des" placeholder="Descripcion"/>
+      </el-form-item>
 
-    <el-form-item label="Carga útil">
-      <el-input v-model="form_c.carga_util" />
-    </el-form-item>
-    <hr> 
-    
-    <el-form-item label="Km. estimado">
-      <el-input v-model="form_c.kilometraje" />
-    </el-form-item>
-    
-    <hr>  
+      <el-form-item  label="Flete " prop="rs">
+        <el-select style="width:250px" v-model="form_c.flete" @change="rs_changer" placeholder="Seleccionar">
+          <el-option
+            v-for="item in opt_flete"
+            :key="item.vfl_codigo"
+            :label="item.vfl_nombre"
+            :value="item.vfl_codigo"
+          > </el-option>
+        </el-select>
+      </el-form-item>
 
+      <el-form-item label="Subtotal" >
+        
+        <el-input style="width:250px" v-model="form_c.subtotal">
+          <template #append>
+            <el-button @click="calcular1()" :icon="List" />
+          </template>
+          <template #prepend>S/</template>
+        </el-input>
+      </el-form-item>
+
+      <el-form-item label="Impuesto" >
+        <el-input style="width:190px" v-model="form_c.impuesto">
+          <template #prepend>S/</template>
+        </el-input>
+        <el-input style="width:60px" v-model="form_c.igv">
+          <template #suffix>%</template>
+        </el-input>
+
+      </el-form-item>
+      
+      <el-form-item label="Total" >
+        <el-input style="width:250px" v-model="form_c.total">
+          <template #append>
+            <el-button  @click="calcular2()" :icon="List" />
+          </template>
+          <template #prepend>S/</template>
+        </el-input>
+      </el-form-item>
+
+    </el-col>
+    <el-col :span="12">
+
+      <el-form-item label="Fecha y hora ">
+        <el-date-picker
+            v-model="form_c.fecha"
+            type="date"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
+            placeholder="Fecha"
+            style="width: 125px"
+          />
+          <el-time-picker
+            v-model="form_c.hora"
+            placeholder="Hora"
+            format="hh:mm a"
+            value-format="HH:mm:ss"
+            style="width: 125px"
+          />
+      </el-form-item>
+
+      <el-form-item  label="Origen ">
+        <el-select label="Ruta"
+          v-model="form_c.origen"
+          filterable
+          :remote-method="get_ubigeos"
+          placeholder="Inserte origen"
+          remote
+          clearable
+          style="width:250px"
+        >
+          <template #prefix>
+            <el-icon><Search /></el-icon>
+          </template>
+
+          <el-option
+            v-for="item in data_ubi"
+            :key="item.ubi_codigo"
+            :label="item.ubi_nombre"
+            :value="item.ubi_codigo"
+          />
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="Destino">
+        <el-select 
+          v-model="form_c.destino"
+          filterable
+          :remote-method="get_ubigeos"
+          placeholder="Inserte origen"
+          remote
+          clearable
+          style="width:250px"
+        >
+          <template #prefix>
+            <el-icon><Search /></el-icon>
+          </template>
+
+          <el-option
+            v-for="item in data_ubi"
+            :key="item.ubi_codigo"
+            :label="item.ubi_nombre"
+            :value="item.ubi_codigo"
+          />
+        </el-select>
+      </el-form-item>
+
+      <el-form-item disabled="aux1" label="Semirremolque " prop="rs">
+        <el-select
+          v-model="form_c.semire_id"
+          filterable
+          :remote-method="get_vehiculo1"
+          placeholder="Inserte placa de semirremolque"
+          remote
+          clearable
+          style="width:250px"
+        >
+          <template #prefix>
+            <el-icon><Search /></el-icon>
+          </template>
+          <el-option
+            v-for="item in data_vh1"
+            :key="item.veh_id"
+            :label="item.veh_placa"
+            :value="item.veh_id"
+          />
+        </el-select>
+      </el-form-item>
+
+      <el-form-item  label="Tracto ">
+        <el-select
+          v-model="form_c.tracto_id"
+          filterable
+          :remote-method="get_vehiculo2"
+          placeholder="Inserte ID de tracto"
+          remote
+          clearable
+          style="width:250px"
+        >
+          <template #prefix>
+            <el-icon><Search /></el-icon>
+          </template>
+          <el-option
+            v-for="item in data_vh2"
+            :key="item.veh_id"
+            :label="item.veh_placa"
+            :value="item.veh_id"
+          />
+        </el-select>
+      </el-form-item>
+
+      <el-form-item  label="Conductor " prop="rs">
+        <el-select
+          v-model="form_c.oper_id"
+          filterable
+          :remote-method="get_operarios"
+          @change="select_operarios"
+          placeholder="Inserte ID de conductor"
+          remote
+          clearable
+          style="width:250px"
+        >
+          <template #prefix>
+            <el-icon><Search /></el-icon>
+          </template>
+          <el-option
+            v-for="item in data_op"
+            :key="item.tra_nrodocumento"
+            :label="item.tra_nrodocumento"
+            :value="item.tra_nombre"
+          />
+        </el-select>
+        <el-input style="width:250px" disabled v-model="form_c.oper_nom" placeholder="Nombre de conductor"/>
+      </el-form-item>
+
+    </el-col>
+    </el-row>
   </el-form>
 </modal>
 
-
-
-<modal ref="mo_editar_per" no-close-on-backdrop title="Editar datos de Vehiculo" width="500px" @ok="editar_usr" cancel-title="Cancelar" @cancel="closeedit"  centered>
+<modal ref="mo_editar_per" no-close-on-backdrop title="Editar Viaje" width="500px" @ok="editar_usr" cancel-title="Cancelar" @cancel="closeedit"  centered>
   <el-form v-loading="wait" ref="form_edit_ref" :rules="rules" :model="form" label-width="150px" >
 
     <el-form-item  label="Razón soc. asoc.">
@@ -793,7 +1113,7 @@ export default {
     </el-form-item>
     
     <hr>  
-    <el-row style="text-align=center">
+    <el-row style="text-align:center">
       <el-button style="margin-left: auto;margin-right: auto" color="#E21747" :icon="CloseBold" @click="open_confirmar('Realmente desea eliminar este vehiculo?')">Eliminar</el-button>
     </el-row>
     

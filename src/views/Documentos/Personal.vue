@@ -99,7 +99,7 @@ export default {
 
       form_b : reactive({
         rs: '',
-        placa: '',
+        nombre: '',
       }),
 
       form_e : reactive({
@@ -119,6 +119,7 @@ export default {
     clear_eop() {
       this.form_e.rs= '';
       this.form_e.placa= '';
+      this.form_e.nro_lic='';
       this.form_e.tipo_doc= '';
       this.form_e.ent_emisora= '';
       this.form_e.fech_emision= '';
@@ -192,16 +193,15 @@ export default {
     send_delete() {
       this.$refs.mo_advertencia_eliim.hide();
       axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/controldocumentosvehiculos/nuevo', 
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/controldocumentostripulacion/nuevo', 
         { 
-          "veh_id":String(this.editpointer),
           "emp_id": String(this.edit_rs),
-          "veh_placa":this.edit_placa,
-          "vtd_id":this.tipo_doc,
-          "vxd_entidademisora":'',
-          "vxd_fechaemision":'',
-          "vxd_fechavencimiento":'',
-          "vxd_usucreacion":"admin"
+          "tri_id":String(this.editpointer),
+          "ttd_id":this.tipo_doc,
+          "txd_entidademisora":"",
+          "txd_fechaemision":"",
+          "txd_fechavencimiento":"",
+          "txd_usucreacion":"admin"
         })
         .then((resp) => {
           console.log(resp.data.status);
@@ -233,10 +233,10 @@ export default {
 
     api_get_filt(){
       axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/controldocumentosvehiculos',
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/controldocumentostripulacion',
         {
-          "emp_id": this.form_b.rs,
-          "veh_placa":this.form_b.placa
+           "emp_id": this.form_b.rs,
+            "tri_nombre":this.form_b.nombre,
         })
         .then((resp) => {
           console.log(resp);
@@ -247,16 +247,15 @@ export default {
     send_editar_doc(){
       //llamada a API
       axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/controldocumentosvehiculos/nuevo', 
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/controldocumentostripulacion/nuevo', 
         { 
-          "veh_id":String(this.editpointer),
           "emp_id": String(this.edit_rs),
-          "veh_placa":this.edit_placa,
-          "vtd_id":this.tipo_doc,
-          "vxd_entidademisora":this.form_e.ent_emisora,
-          "vxd_fechaemision":this.form_e.fech_emision,
-          "vxd_fechavencimiento":this.form_e.fech_venc,
-          "vxd_usucreacion":"admin"
+          "tri_id":String(this.editpointer),
+          "ttd_id":this.tipo_doc,
+          "txd_entidademisora":this.form_e.ent_emisora,
+          "txd_fechaemision":this.form_e.fech_emision,
+          "txd_fechavencimiento":this.form_e.fech_venc,
+          "txd_usucreacion":"admin"
         })
         .then((resp) => {
           console.log(resp.data.status);
@@ -295,7 +294,7 @@ export default {
 
     button_handle(obj,index){
       console.log(obj);
-      this.clear_eop;
+      this.clear_eop();
       this.editpointer=obj.tri_id;
       this.edit_rs=obj.emp_id;
       this.edit_placa=obj.tri_nombre;
@@ -557,8 +556,8 @@ export default {
                   </el-select>
                 </el-form-item>
               
-              <el-form-item label="Placa">
-                <el-input v-model="form_b.placa" />
+              <el-form-item label="Nombre">
+                <el-input v-model="form_b.nombre" />
               </el-form-item>
 
             </el-col>
@@ -577,31 +576,31 @@ export default {
           <el-table :cell-class-name="cellStyle2" :data="datap" border header-row-style="color:black;" max-height="75vh"  >
               <el-table-column fixed align="center" prop="emp_razonsocial" label="Razon soc. aso. " width="130" />
               <el-table-column fixed prop="tri_nombre" label="Nombre " width="140" />
-              <el-table-column prop="tri_nrolicencia" label="Licencia " width="140" />
+              <el-table-column prop="tri_nrolicencia" label="Licencia "  />
               
               <el-table-column label="Licencia A3" width="150">
                 <template #default="scope">
-                  <el-button  type="text"  @click="button_handle(scope.row,3)" >{{get_nombre(scope.row,3)}}</el-button>
+                  <el-button  type="text"  @click="button_handle(scope.row,3)"> {{get_nombre(scope.row,3)}}</el-button>
                 </template>
               </el-table-column>
               <el-table-column label="Licencia A4" width="150">
                 <template #default="scope">
-                  <el-button  type="text"  @click="button_handle(scope.row,4)" >{{get_nombre(scope.row,4)}}</el-button>
+                  <el-button  type="text"  @click="button_handle(scope.row,4)"> {{get_nombre(scope.row,4)}}</el-button>
                 </template>
               </el-table-column>
               <el-table-column label="SCTR" width="150">
                 <template #default="scope">
-                  <el-button  type="text"  @click="button_handle(scope.row,5)" >{{get_nombre(scope.row,5)}}</el-button>
+                  <el-button  type="text"  @click="button_handle(scope.row,5)"> {{get_nombre(scope.row,5)}}</el-button>
                 </template>
               </el-table-column>
               <el-table-column label="Rev. Medica" width="150">
                 <template #default="scope">
-                  <el-button  type="text"  @click="button_handle(scope.row,6)" >{{get_nombre(scope.row,6)}}</el-button>
+                  <el-button  type="text"  @click="button_handle(scope.row,6)"> {{get_nombre(scope.row,6)}}</el-button>
                 </template>
               </el-table-column>
               <el-table-column label="Seguro de vida ley" width="170">
                 <template #default="scope">
-                  <el-button  type="text"  @click="button_handle(scope.row,7)" >{{get_nombre(scope.row,7)}}</el-button>
+                  <el-button  type="text"  @click="button_handle(scope.row,7)"> {{get_nombre(scope.row,7)}}</el-button>
                 </template>
               </el-table-column>
             </el-table>

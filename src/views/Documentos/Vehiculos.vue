@@ -293,7 +293,7 @@ export default {
 
     button_handle(obj,index){
       console.log(obj);
-      this.clear_eop;
+      this.clear_eop();
       this.editpointer=obj.veh_id;
       this.edit_rs=obj.emp_id;
       this.edit_placa=obj.veh_placa;

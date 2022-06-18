@@ -856,7 +856,7 @@ export default {
 <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" >
 
     <el-form-item  label="Razón soc. asoc." prop="rs">
-      <el-select v-model="form_c.rs" @change="rs_changer" placeholder="Seleccionar">
+      <el-select style="width:250px" v-model="form_c.rs" @change="rs_changer" placeholder="Seleccionar">
         <el-option
           v-for="item in opt_rs"
           :key="item.emp_id"
@@ -866,7 +866,7 @@ export default {
       </el-select>
     </el-form-item>
     <el-form-item label="Tipo" prop="tipo">
-      <el-select  v-model="form_c.tipo"  @change="check_op" default-first-option>
+      <el-select style="width:250px" v-model="form_c.tipo"  @change="check_op" default-first-option>
         <el-option
           v-for="item in opt_pues"
           :key="item.pue_id"
@@ -876,25 +876,25 @@ export default {
       </el-select>
     </el-form-item>
     <el-form-item label="DNI o carnet de extranjería" prop="nro_doc">
-      <el-input v-model="form_c.nro_doc" />
+      <el-input style="width:250px" v-model="form_c.nro_doc" />
     </el-form-item>
     <hr size="1" color="gray"> 
     <el-form-item label="Nombres" prop="nombre" >
-      <el-input v-model="form_c.nombre" />
+      <el-input style="width:250px" v-model="form_c.nombre" />
     </el-form-item>
     <el-form-item label="Apellido Paterno" prop="apellido_p">
-      <el-input v-model="form_c.apellido_p" />
+      <el-input style="width:250px" v-model="form_c.apellido_p" />
     </el-form-item>
     <el-form-item label="Apellido Materno" prop="apellido_m">
-      <el-input v-model="form_c.apellido_m" />
+      <el-input style="width:250px" v-model="form_c.apellido_m" />
     </el-form-item>
     <hr> 
     <el-form-item label="Fecha de nac." prop="fecha_nac">
-      <el-date-picker format="YYYY-MM-DD" value-format="YYYY-MM-DD" v-model="form_c.fecha_nac" />
+      <el-date-picker style="width:250px" format="YYYY-MM-DD" value-format="YYYY-MM-DD" v-model="form_c.fecha_nac" />
     </el-form-item>
 
     <el-form-item label="Tipo de contrato" prop="contrato">
-        <el-select v-model="form_c.contrato"  default-first-option>
+        <el-select style="width:250px" v-model="form_c.contrato"  default-first-option>
           <el-option
             v-for="item in opt_tc"
             :key="item.tco_id"
@@ -905,13 +905,13 @@ export default {
         
     </el-form-item>
     <el-form-item label="Fecha de ingreso">
-      <el-date-picker format="YYYY-MM-DD" value-format="YYYY-MM-DD" v-model="form_c.fecha_i" />
+      <el-date-picker style="width:250px" format="YYYY-MM-DD" value-format="YYYY-MM-DD" v-model="form_c.fecha_i" />
     </el-form-item>
     <el-form-item label="Fecha de ingreso planilla">
-      <el-date-picker format="YYYY-MM-DD" value-format="YYYY-MM-DD" v-model="form_c.fecha_ip" />
+      <el-date-picker style="width:250px" format="YYYY-MM-DD" value-format="YYYY-MM-DD" v-model="form_c.fecha_ip" />
     </el-form-item>
     <el-form-item label="Fecha de cese">
-      <el-date-picker format="YYYY-MM-DD" value-format="YYYY-MM-DD" v-model="form_c.fecha_c" />
+      <el-date-picker style="width:250px" format="YYYY-MM-DD" value-format="YYYY-MM-DD" v-model="form_c.fecha_c" />
     </el-form-item>
     <!-- <el-form-item label="Clase">
       <el-radio-group v-model="form.resource">
@@ -922,16 +922,16 @@ export default {
     <hr>  
     <div v-if="open_op" class="form-worker">
       <el-form-item label="Nro. de licencia">
-        <el-input v-model="form_c_op.nro_lic"/>
+        <el-input style="width:250px" v-model="form_c_op.nro_lic"/>
       </el-form-item>
       <el-form-item label="Categoria de licencia">
-        <el-input v-model="form_c_op.cat_lic" />
+        <el-input style="width:250px" v-model="form_c_op.cat_lic" />
       </el-form-item>
       <el-form-item label="Fecha de venc. licencia">
-        <el-date-picker v-model="form_c_op.venc_lic" />
+        <el-date-picker style="width:250px" v-model="form_c_op.venc_lic" />
       </el-form-item>
       <el-form-item label="Especialidad">
-        <el-select v-model="form_c_op.esp">
+        <el-select style="width:250px" v-model="form_c_op.esp">
           <el-option
             v-for="item in opt_esp"
             :key="item.tes_id"
