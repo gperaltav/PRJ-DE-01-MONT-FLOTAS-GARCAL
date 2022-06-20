@@ -940,9 +940,10 @@ export default {
           > </el-option>
         </el-select>
       </el-form-item>
+
       <el-form-item label="">
         <el-checkbox v-model="form_c_op.ins_iqbf" label="Inscrito en SUNAT-IQBF" />
-    </el-form-item>
+      </el-form-item>
       
     </div>
 

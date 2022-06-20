@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { reactive,ref } from 'vue'
 import axios from 'axios'
-import { EditPen, Filter, Plus, Download, CloseBold} from '@element-plus/icons-vue'
+import { EditPen, Filter, Plus, Download, CloseBold, Search} from '@element-plus/icons-vue'
 
 import type { FormInstance, FormRules } from 'element-plus'
 
@@ -105,9 +105,12 @@ export default {
         nro_doc:'',
         nombre:'',
         c_pago:'',
+        plazo:'',
         direccion:'',
         correo:'',
         telefono:'',
+        c_activo:'',
+        c_habido:'',
       }),
 
       form_e : reactive({
@@ -116,9 +119,12 @@ export default {
         nro_doc:'',
         nombre:'',
         c_pago:'',
+        plazo:'',
         direccion:'',
         correo:'',
         telefono:'',
+        c_activo:'',
+        c_habido:'',
       }),
     }
   },
@@ -142,19 +148,26 @@ export default {
       this.form_c.nro_doc='';
       this.form_c.nombre='';
       this.form_c.c_pago='';
+      this.form_c.plazo='';
       this.form_c.direccion='';
       this.form_c.correo='';
       this.form_c.telefono='';
+      this.form_c.c_activo='';
+      this.form_c.c_habido='';
+
     },
 
     rs_changer() {
       this.emp_cont=this.form_c.rs;
       this.form_c.c_pago="";
       this.form_c.tipo_doc="";
-
       //cargar listas
       this.load_fpago();
       this.load_tdoc();
+    },
+
+    open_sunat() {
+      this.$refs.mo_sunat.open(); 
     },
 
     open_succes(msg) {
@@ -339,6 +352,10 @@ export default {
       this.form_e.correo=this.data_edit[0].ent_correo;
       this.form_e.telefono=this.data_edit[0].ent_telefono;
       this.form_e.c_pago=this.data_edit[0].fdp_id;
+      this.form_e.plazo=this.data_edit[0].fpd_diasvencimiento;
+      this.form_e.c_activo=this.data_edit[0].ent_estadocontribuyente;
+      this.form_e.c_habido=this.data_edit[0].ent_condicioncontribuyente;
+
     },
 
     api_get_all(){
@@ -397,6 +414,9 @@ export default {
             "ent_personanatural":true,
             "ext_id":this.var_type,
             "fdp_id":this.form_c.c_pago,
+            "fpd_diasvencimiento":Number(this.form_c.plazo),
+            "ent_estadocontribuyente":this.form_c.c_activo,
+            "ent_condicioncontribuyente":this.form_c.c_habido,
             "pro_id":""
           })
           .then((resp) => {
@@ -453,6 +473,9 @@ export default {
           "ent_personanatural":true,
           "ext_id":this.var_type,
           "fdp_id":this.form_e.c_pago,
+          "fpd_diasvencimiento":Number(this.form_e.plazo),
+          "ent_estadocontribuyente":this.form_e.c_activo,
+          "ent_condicioncontribuyente":this.form_e.c_habido,
           "pro_id":""
         })
         .then((resp) => {
@@ -488,9 +511,6 @@ export default {
     //llamada a API
     this.api_get_all();
     this.load_rs();
-    //this.load_tc();
-    //this.load_pues();
-    //this.load_esp();
   },
 }
 
@@ -600,19 +620,21 @@ export default {
   <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" >
 
     <el-form-item  label="Razón soc. asoc." prop="rs">
-      <el-select v-model="form_c.rs" @change="rs_changer" placeholder="Seleccionar">
+      <el-select style="width:300px" v-model="form_c.rs" @change="rs_changer" placeholder="Seleccionar">
         <el-option
           v-for="item in opt_rs"
           :key="item.emp_id"
           :label="item.emp_razonsocial"
           :value="item.emp_id"
+          
         > </el-option>
       </el-select>
     </el-form-item>
     
     <el-form-item label="Nro. de documento" prop="nro_doc">
+      <el-row style="width:300px">
       <el-col :span="6">
-      <el-select  v-model="form_c.tipo_doc">
+      <el-select placeholder="Tipo"  v-model="form_c.tipo_doc">
         <el-option
           v-for="item in opt_tdoc"
           :key="item.dti_id"
@@ -622,15 +644,22 @@ export default {
       </el-select>
       </el-col>
       <el-col :span="18">
-      <el-input v-model="form_c.nro_doc" />
+      <el-input  v-model="form_c.nro_doc" >
+        <template #suffix>
+          <el-icon @click="open_sunat"><Search /></el-icon>
+        </template>
+      </el-input>
       </el-col>
+      </el-row>
     </el-form-item>
 
     <el-form-item label="Nombre del cliente" prop="nombre">
-      <el-input v-model="form_c.nombre" />
+      <el-input style="width:300px" v-model="form_c.nombre" />
     </el-form-item>
 
     <el-form-item label="Condición de pago">
+      <el-row style="width:300px">
+      <el-col :span="18">
       <el-select  v-model="form_c.c_pago" >
         <el-option
           v-for="item in opt_fpago"
@@ -639,16 +668,31 @@ export default {
           :value="item.fdp_id"
         > </el-option>
       </el-select>
+      </el-col>
+
+      <el-col :span="6">
+        <el-input placeholder="Plazo"  v-model="form_c.plazo" />
+      </el-col>
+      
+      </el-row>
     </el-form-item>
 
     <el-form-item label="Dirección">
-      <el-input v-model="form_c.direccion" />
+      <el-input style="width:300px" v-model="form_c.direccion" />
     </el-form-item>
     <el-form-item label="Correo">
-      <el-input v-model="form_c.correo" />
+      <el-input style="width:300px" v-model="form_c.correo" />
     </el-form-item>
     <el-form-item label="Teléfono">
-      <el-input v-model="form_c.telefono" />
+      <el-input style="width:300px" v-model="form_c.telefono" />
+    </el-form-item>
+
+    <el-form-item label="">
+      <el-checkbox v-model="form_c.c_activo" label="Contribuyente activo" />
+    </el-form-item>
+
+    <el-form-item label="">
+      <el-checkbox v-model="form_c.c_habido" label="Contribuyente habido" />
     </el-form-item>
 
   </el-form>
@@ -660,7 +704,7 @@ export default {
   <el-form v-loading="wait" ref="form_edit_ref" :rules="rules" :model="form" label-width="150px" >
 
     <el-form-item  label="Razón soc. asoc.">
-      <el-select v-model="form_e.rs" @change="rs_changer" placeholder="Seleccionar">
+      <el-select style="width:300px" v-model="form_e.rs" @change="rs_changer" placeholder="Seleccionar">
         <el-option
           v-for="item in opt_rs"
           :key="item.emp_id"
@@ -671,6 +715,8 @@ export default {
     </el-form-item>
     
     <el-form-item label="Nro. de documento">
+      <el-row style="width:300px">
+      
       <el-col :span="6">
       <el-select  v-model="form_e.tipo_doc">
         <el-option
@@ -684,13 +730,16 @@ export default {
       <el-col :span="18">
       <el-input v-model="form_e.nro_doc" />
       </el-col>
+      </el-row>
     </el-form-item>
 
     <el-form-item label="Nombre del cliente">
-      <el-input v-model="form_e.nombre" />
+      <el-input style="width:300px" v-model="form_e.nombre" />
     </el-form-item>
 
     <el-form-item label="Condición de pago">
+    <el-row style="width:300px">
+      <el-col :span="18">
       <el-select  v-model="form_e.c_pago" >
         <el-option
           v-for="item in opt_fpago"
@@ -699,16 +748,32 @@ export default {
           :value="item.fdp_id"
         > </el-option>
       </el-select>
+      </el-col>
+
+      <el-col :span="6">
+        <el-input placeholder="Plazo"  v-model="form_e.plazo" />
+      </el-col>
+      
+      </el-row>
+
     </el-form-item>
 
     <el-form-item label="Dirección">
-      <el-input v-model="form_e.direccion" />
+      <el-input style="width:300px" v-model="form_e.direccion" />
     </el-form-item>
     <el-form-item label="Correo">
-      <el-input v-model="form_e.correo" />
+      <el-input style="width:300px" v-model="form_e.correo" />
     </el-form-item>
     <el-form-item label="Teléfono">
-      <el-input v-model="form_e.telefono" />
+      <el-input style="width:300px" v-model="form_e.telefono" />
+    </el-form-item>
+
+    <el-form-item label="">
+      <el-checkbox v-model="form_e.c_activo" label="Contribuyente activo" />
+    </el-form-item>
+
+    <el-form-item label="">
+      <el-checkbox v-model="form_e.c_habido" label="Contribuyente habido" />
     </el-form-item>
 
     <el-row style="text-align=center">
@@ -717,6 +782,14 @@ export default {
     
 
   </el-form>
+</modal>
+
+<modal ref="mo_sunat" no-close-on-backdrop title="Consultar RUC" width="700px" cancel-title="Cancelar" centered>
+ <div> 
+    <object type="text/html" data="https://e-consultaruc.sunat.gob.pe/cl-ti-itmrconsruc/jcrS00Alias?accion=consPorRazonSoc&razSoc=MTS" width="700px" height="400px" style="overflow:auto;">
+    </object>
+ </div>
+
 </modal>
 
 <modal ref="mo_advertencia_eliim" title="Confirmar" centered @ok="send_delete" @cancel="close_confirmar" ok-title="Si" cancel-title="Cancelar" >

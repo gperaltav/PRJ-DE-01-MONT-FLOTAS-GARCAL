@@ -145,16 +145,26 @@ export default {
 
       form_e : reactive({
         rs: '',
-        placa: '',
-        marca: '',
-        modelo: '',
-        tipo: '',
-        clase: '',
-        year: '',
-        serie: '',
-        mtc: '',
-        carga_util:'',
-        kilometraje: '',
+        ruta: '',
+        semirremolque: '',
+        cliente_id: '',
+        cliente_nom: '',
+        producto_tipo: '',
+        producto_des: '',
+        flete: '',
+        subtotal: 0,
+        igv: 18,
+        impuesto: 0,
+        total: 0,
+        fecha: '',
+        hora: '',
+        f_h: '',
+        origen: '',
+        destino: '',
+        semire_id: '',
+        tracto_id: '',
+        oper_id: '',
+        oper_nom:'',
       }),
     }
   },
@@ -209,10 +219,7 @@ export default {
       this.form_c.oper_id="";
       this.form_c.oper_nom="";
       //cargar listas
-      this.load_mar();
-      this.load_mod();
-      this.load_cla();
-      this.load_ti();
+      this.load_flete();
     },
 
     open_succes(msg) {
@@ -322,11 +329,11 @@ export default {
 
     load_edit(id) {
       axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos/"+String(id))
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes/"+String(id))
         .then((resp) => {
           console.log(resp);
           this.data_edit = resp.data;
-        })      
+        }) 
     },
 
     load_flete() {
@@ -463,21 +470,31 @@ export default {
       this.form_e.rs=this.data_edit[0].emp_id;
       this.emp_cont=this.form_e.rs;
       //carga de listas
-      this.load_mar();
-      this.load_mod();
-      this.load_cla();
-      this.load_ti();
+      this.load_flete();
 
-      this.form_e.placa=this.data_edit[0].veh_placa;
-      this.form_e.marca=this.data_edit[0].vma_id;
-      this.form_e.modelo=this.data_edit[0].vmo_id;
-      this.form_e.tipo=this.data_edit[0].vti_id;
-      this.form_e.clase=this.data_edit[0].vcl_id;
-      this.form_e.year=String(this.data_edit[0].veh_anno);
-      this.form_e.serie=this.data_edit[0].veh_serie;
-      this.form_e.mtc=this.data_edit[0].veh_mtc;
-      this.form_e.carga_util=this.data_edit[0].veh_cargautil;
-      this.form_e.kilometraje=this.data_edit[0].veh_kilometraje;
+
+      this.form_e.subtotal=this.data_edit[0].via_subtotal;
+      this.form_e.rs =this.data_edit[0].emp_id;
+      this.form_e.ruta =this.data_edit[0].rut_id;
+      this.form_e.tracto_id =this.data_edit[0].veh_idtracto;
+      this.form_e.semire_id =this.data_edit[0].veh_idremolque;
+      this.form_e.cliente_id =this.data_edit[0].ent_id;
+      this.form_e.fecha =this.data_edit[0].via_fechaviaje;
+      this.form_e.hora =this.data_edit[0].via_horaviaje;
+      this.form_e.subtotal =this.data_edit[0].via_subtotal;
+      this.form_e.impuesto =this.data_edit[0].via_impuesto;
+      this.form_e.total =this.data_edit[0].via_total;
+      this.form_e.producto_des =this.data_edit[0].via_observacion;
+      this.form_e.origen =this.data_edit[0].ubi_codigoorigen;
+      this.form_e.destino =this.data_edit[0].ubi_codigodestino;
+      this.form_e.flete =this.data_edit[0].vfl_codigo;
+      this.form_e.producto_tipo =this.data_edit[0].pro_id;
+      this.form_e.oper_id =this.data_edit[0].tri_id;
+
+      this.select_clientes();
+      this.select_operarios();
+      
+
     },
 
     api_get_all(){
@@ -768,7 +785,7 @@ export default {
 
               <el-table-column fixed="right" label="" width="40">
                 <template #default="scope">
-                  <el-button  type="text"  @click="button_handle(scope.row.veh_id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
+                  <el-button  type="text"  @click="button_handle(scope.row.via_id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -1026,11 +1043,11 @@ export default {
   </el-form>
 </modal>
 
-<modal ref="mo_editar_per" no-close-on-backdrop title="Editar Viaje" width="500px" @ok="editar_usr" cancel-title="Cancelar" @cancel="closeedit"  centered>
-  <el-form v-loading="wait" ref="form_edit_ref" :rules="rules" :model="form" label-width="150px" >
-
-    <el-form-item  label="Razón soc. asoc.">
-      <el-select v-model="form_e.rs" @change="rs_changer" placeholder="Seleccionar">
+<modal ref="mo_editar_per" no-close-on-backdrop title="Editar Viaje" width="900px" @ok="editar_usr" cancel-title="Cancelar" @cancel="closeedit"  centered>
+   <el-form  ref="form_cref" :rules="rules" :model="form_e" label-width="150px" >
+    <el-row style="text-align:center">
+    <el-form-item style="margin-left: auto;margin-right: auto" label="Razón soc. asoc." prop="rs">
+      <el-select  v-model="form_e.rs" @change="rs_changer()" placeholder="Seleccionar">
         <el-option
           v-for="item in opt_rs"
           :key="item.emp_id"
@@ -1039,85 +1056,237 @@ export default {
         > </el-option>
       </el-select>
     </el-form-item>
-    <el-form-item label="Placa o ID">
-      <el-input v-model="form_e.placa" />
-    </el-form-item>
-    
-    
-    <hr size="1" color="gray"> 
-    <el-form-item label="Marca">
-      <el-select  v-model="form_e.marca" default-first-option>
-        <el-option
-          v-for="item in opt_mar"
-          :key="item.vma_id"
-          :label="item.vma_nombre"
-          :value="item.vma_id"
-        > </el-option>
-      </el-select>
-    </el-form-item>
-    <el-form-item label="Modelo">
-      <el-select  v-model="form_e.modelo" default-first-option>
-        <el-option
-          v-for="item in opt_mod"
-          :key="item.vmo_id"
-          :label="item.vmo_nombre"
-          :value="item.vmo_id"
-        > </el-option>
-      </el-select>
-    </el-form-item>
-    <el-form-item label="Año">
-      <el-date-picker
-          v-model="form_e.year"
-          format="YYYY"
-          value-format="YYYY"
-          type="year"
-          placeholder="Seleccione año"
-      />
-    </el-form-item>
-    <el-form-item label="Clase">
-      <el-select  v-model="form_e.clase"  @change="check_op" default-first-option>
-        <el-option
-          v-for="item in opt_cla"
-          :key="item.vcl_id"
-          :label="item.vcl_nombre"
-          :value="item.vcl_id"
-        > </el-option>
-      </el-select>
-    </el-form-item>
-    <el-form-item label="Tipo">
-      <el-select  v-model="form_e.tipo"  @change="check_op" default-first-option>
-        <el-option
-          v-for="item in opt_ti"
-          :key="item.vti_id"
-          :label="item.vti_nombre"
-          :value="item.vti_id"
-        > </el-option>
-      </el-select>
-    </el-form-item>
-    
-    <el-form-item label="Nro. de serie">
-      <el-input v-model="form_e.serie" />
-    </el-form-item>
-
-    <el-form-item label="Código MTC">
-      <el-input v-model="form_e.mtc" />
-    </el-form-item>
-
-    <el-form-item label="Carga útil">
-      <el-input v-model="form_e.carga_util" />
-    </el-form-item>
-    <hr> 
-    
-    <el-form-item label="Km. estimado">
-      <el-input v-model="form_e.kilometraje" />
-    </el-form-item>
-    
-    <hr>  
-    <el-row style="text-align:center">
-      <el-button style="margin-left: auto;margin-right: auto" color="#E21747" :icon="CloseBold" @click="open_confirmar('Realmente desea eliminar este vehiculo?')">Eliminar</el-button>
     </el-row>
-    
+    <el-row>
+    <el-col :span="12">
+      
+      <el-form-item  label="Cliente " prop="rs">
+        <el-select
+          v-model="form_e.cliente_id"
+          filterable
+          :remote-method="get_clientes"
+          @change="select_clientes"
+          placeholder="Inserte ID de cliente"
+          remote
+          clearable
+          style="width:250px"
+        >
+          <template #prefix>
+            <el-icon><Search /></el-icon>
+          </template>
 
+          <el-option
+            v-for="item in data_clis"
+            :key="item.ent_id"
+            :label="item.ent_nrodocumento"
+            :value="item.ent_nombre"
+          />
+        </el-select>
+        <el-input style="width:250px" disabled v-model="form_e.cliente_nom" placeholder="Nombre de cliente"/>
+      </el-form-item>
+
+      <el-form-item  label="Producto " prop="rs">
+        <el-select
+          v-model="form_e.producto_tipo"
+          filterable
+          :remote-method="get_productos"
+          placeholder="Tipo de producto"
+          remote
+          clearable
+          style="width:250px"
+        >
+          <template #prefix>
+            <el-icon><Search /></el-icon>
+          </template>
+
+          <el-option
+            v-for="item in data_prods"
+            :key="item.pro_id"
+            :label="item.pro_descripcion"
+            :value="item.pro_id"
+          />
+        </el-select>
+        
+        <el-input style="width:250px" v-model="form_e.producto_des" placeholder="Descripcion"/>
+      </el-form-item>
+
+      <el-form-item  label="Flete " prop="rs">
+        <el-select style="width:250px" v-model="form_e.flete" @change="rs_changer" placeholder="Seleccionar">
+          <el-option
+            v-for="item in opt_flete"
+            :key="item.vfl_codigo"
+            :label="item.vfl_nombre"
+            :value="item.vfl_codigo"
+          > </el-option>
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="Subtotal" >
+        
+        <el-input style="width:250px" v-model="form_e.subtotal">
+          <template #append>
+            <el-button @click="calcular1()" :icon="List" />
+          </template>
+          <template #prepend>S/</template>
+        </el-input>
+      </el-form-item>
+
+      <el-form-item label="Impuesto" >
+        <el-input style="width:190px" v-model="form_e.impuesto">
+          <template #prepend>S/</template>
+        </el-input>
+        <el-input style="width:60px" v-model="form_e.igv">
+          <template #suffix>%</template>
+        </el-input>
+
+      </el-form-item>
+      
+      <el-form-item label="Total" >
+        <el-input style="width:250px" v-model="form_e.total">
+          <template #append>
+            <el-button  @click="calcular2()" :icon="List" />
+          </template>
+          <template #prepend>S/</template>
+        </el-input>
+      </el-form-item>
+
+    </el-col>
+    <el-col :span="12">
+
+      <el-form-item label="Fecha y hora ">
+        <el-date-picker
+            v-model="form_e.fecha"
+            type="date"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
+            placeholder="Fecha"
+            style="width: 125px"
+          />
+          <el-time-picker
+            v-model="form_e.hora"
+            placeholder="Hora"
+            format="hh:mm a"
+            value-format="HH:mm:ss"
+            style="width: 125px"
+          />
+      </el-form-item>
+
+      <el-form-item  label="Origen ">
+        <el-select label="Ruta"
+          v-model="form_e.origen"
+          filterable
+          :remote-method="get_ubigeos"
+          placeholder="Inserte origen"
+          remote
+          clearable
+          style="width:250px"
+        >
+          <template #prefix>
+            <el-icon><Search /></el-icon>
+          </template>
+
+          <el-option
+            v-for="item in data_ubi"
+            :key="item.ubi_codigo"
+            :label="item.ubi_nombre"
+            :value="item.ubi_codigo"
+          />
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="Destino">
+        <el-select 
+          v-model="form_e.destino"
+          filterable
+          :remote-method="get_ubigeos"
+          placeholder="Inserte origen"
+          remote
+          clearable
+          style="width:250px"
+        >
+          <template #prefix>
+            <el-icon><Search /></el-icon>
+          </template>
+
+          <el-option
+            v-for="item in data_ubi"
+            :key="item.ubi_codigo"
+            :label="item.ubi_nombre"
+            :value="item.ubi_codigo"
+          />
+        </el-select>
+      </el-form-item>
+
+      <el-form-item disabled="aux1" label="Semirremolque " prop="rs">
+        <el-select
+          v-model="form_e.semire_id"
+          filterable
+          :remote-method="get_vehiculo1"
+          placeholder="Inserte placa de semirremolque"
+          remote
+          clearable
+          style="width:250px"
+        >
+          <template #prefix>
+            <el-icon><Search /></el-icon>
+          </template>
+          <el-option
+            v-for="item in data_vh1"
+            :key="item.veh_id"
+            :label="item.veh_placa"
+            :value="item.veh_id"
+          />
+        </el-select>
+      </el-form-item>
+
+      <el-form-item  label="Tracto ">
+        <el-select
+          v-model="form_e.tracto_id"
+          filterable
+          :remote-method="get_vehiculo2"
+          placeholder="Inserte ID de tracto"
+          remote
+          clearable
+          style="width:250px"
+        >
+          <template #prefix>
+            <el-icon><Search /></el-icon>
+          </template>
+          <el-option
+            v-for="item in data_vh2"
+            :key="item.veh_id"
+            :label="item.veh_placa"
+            :value="item.veh_id"
+          />
+        </el-select>
+      </el-form-item>
+
+      <el-form-item  label="Conductor " prop="rs">
+        <el-select
+          v-model="form_e.oper_id"
+          filterable
+          :remote-method="get_operarios"
+          @change="select_operarios"
+          placeholder="Inserte ID de conductor"
+          remote
+          clearable
+          style="width:250px"
+        >
+          <template #prefix>
+            <el-icon><Search /></el-icon>
+          </template>
+          <el-option
+            v-for="item in data_op"
+            :key="item.tra_nrodocumento"
+            :label="item.tra_nrodocumento"
+            :value="item.tra_nombre"
+          />
+        </el-select>
+        <el-input style="width:250px" disabled v-model="form_e.oper_nom" placeholder="Nombre de conductor"/>
+      </el-form-item>
+
+    </el-col>
+    </el-row>
   </el-form>
 </modal>
 

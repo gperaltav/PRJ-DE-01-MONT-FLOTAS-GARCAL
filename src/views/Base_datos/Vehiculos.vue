@@ -629,7 +629,7 @@ export default {
   <el-form  @submit.prevent ref="form_cref" :rules="rules" :model="form_c" label-width="150px" >
 
     <el-form-item  label="Razón soc. asoc." prop="rs">
-      <el-select v-model="form_c.rs" @change="rs_changer" placeholder="Seleccionar">
+      <el-select  v-model="form_c.rs" @change="rs_changer" placeholder="Seleccionar">
         <el-option
           v-for="item in opt_rs"
           :key="item.emp_id"
@@ -645,35 +645,6 @@ export default {
     
     <hr size="1" color="gray"> 
 
-    <el-form-item label="Marca" prop="marca">
-      <el-select  v-model="form_c.marca" default-first-option>
-        <el-option
-          v-for="item in opt_mar"
-          :key="item.vma_id"
-          :label="item.vma_nombre"
-          :value="item.vma_id"
-        > </el-option>
-      </el-select>
-    </el-form-item>
-    <el-form-item label="Modelo" prop="modelo">
-      <el-select  v-model="form_c.modelo" default-first-option>
-        <el-option
-          v-for="item in opt_mod"
-          :key="item.vmo_id"
-          :label="item.vmo_nombre"
-          :value="item.vmo_id"
-        > </el-option>
-      </el-select>
-    </el-form-item>
-    <el-form-item label="Año" prop="year">
-      <el-date-picker
-          v-model="form_c.year"
-          format="YYYY"
-          value-format="YYYY"
-          type="year"
-          placeholder="Seleccione año"
-      />
-    </el-form-item>
     <el-form-item label="Clase" prop="clase">
       <el-select  v-model="form_c.clase"  @change="check_op" default-first-option>
         <el-option
@@ -684,6 +655,30 @@ export default {
         > </el-option>
       </el-select>
     </el-form-item>
+    
+    <el-form-item label="Marca" prop="marca">
+      <el-select  v-model="form_c.marca" default-first-option>
+        <el-option
+          v-for="item in opt_mar"
+          :key="item.vma_id"
+          :label="item.vma_nombre"
+          :value="item.vma_id"
+        > </el-option>
+      </el-select>
+    </el-form-item>
+    
+    <el-form-item label="Año" prop="year">
+      <el-date-picker
+          v-model="form_c.year"
+          format="YYYY"
+          value-format="YYYY"
+          type="year"
+          placeholder="Seleccione año"
+      />
+    </el-form-item>
+
+    
+    
     <el-form-item label="Tipo" prop="tipo">
       <el-select  v-model="form_c.tipo"  @change="check_op" default-first-option>
         <el-option
@@ -691,6 +686,17 @@ export default {
           :key="item.vti_id"
           :label="item.vti_nombre"
           :value="item.vti_id"
+        > </el-option>
+      </el-select>
+    </el-form-item>
+
+    <el-form-item label="Modelo" prop="modelo">
+      <el-select  v-model="form_c.modelo" default-first-option>
+        <el-option
+          v-for="item in opt_mod"
+          :key="item.vmo_id"
+          :label="item.vmo_nombre"
+          :value="item.vmo_id"
         > </el-option>
       </el-select>
     </el-form-item>
@@ -736,37 +742,7 @@ export default {
       <el-input v-model="form_e.placa" />
     </el-form-item>
     
-    
     <hr size="1" color="gray"> 
-    <el-form-item label="Marca">
-      <el-select  v-model="form_e.marca" default-first-option>
-        <el-option
-          v-for="item in opt_mar"
-          :key="item.vma_id"
-          :label="item.vma_nombre"
-          :value="item.vma_id"
-        > </el-option>
-      </el-select>
-    </el-form-item>
-    <el-form-item label="Modelo">
-      <el-select  v-model="form_e.modelo" default-first-option>
-        <el-option
-          v-for="item in opt_mod"
-          :key="item.vmo_id"
-          :label="item.vmo_nombre"
-          :value="item.vmo_id"
-        > </el-option>
-      </el-select>
-    </el-form-item>
-    <el-form-item label="Año">
-      <el-date-picker
-          v-model="form_e.year"
-          format="YYYY"
-          value-format="YYYY"
-          type="year"
-          placeholder="Seleccione año"
-      />
-    </el-form-item>
     <el-form-item label="Clase">
       <el-select  v-model="form_e.clase"  @change="check_op" default-first-option>
         <el-option
@@ -777,6 +753,29 @@ export default {
         > </el-option>
       </el-select>
     </el-form-item>
+
+    
+    <el-form-item label="Marca">
+      <el-select  v-model="form_e.marca" default-first-option>
+        <el-option
+          v-for="item in opt_mar"
+          :key="item.vma_id"
+          :label="item.vma_nombre"
+          :value="item.vma_id"
+        > </el-option>
+      </el-select>
+    </el-form-item>
+    
+    <el-form-item label="Año">
+      <el-date-picker
+          v-model="form_e.year"
+          format="YYYY"
+          value-format="YYYY"
+          type="year"
+          placeholder="Seleccione año"
+      />
+    </el-form-item>
+    
     <el-form-item label="Tipo">
       <el-select  v-model="form_e.tipo"  @change="check_op" default-first-option>
         <el-option
@@ -784,6 +783,17 @@ export default {
           :key="item.vti_id"
           :label="item.vti_nombre"
           :value="item.vti_id"
+        > </el-option>
+      </el-select>
+    </el-form-item>
+
+    <el-form-item label="Modelo">
+      <el-select  v-model="form_e.modelo" default-first-option>
+        <el-option
+          v-for="item in opt_mod"
+          :key="item.vmo_id"
+          :label="item.vmo_nombre"
+          :value="item.vmo_id"
         > </el-option>
       </el-select>
     </el-form-item>

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { reactive,ref } from 'vue'
 import axios from 'axios'
-import { EditPen, Filter, Plus, Download, CloseBold} from '@element-plus/icons-vue'
+import { EditPen, Filter, Plus, Download, CloseBold,Search} from '@element-plus/icons-vue'
 
 import type { FormInstance, FormRules } from 'element-plus'
 
@@ -112,10 +112,13 @@ export default {
         nro_doc:'',
         nombre:'',
         c_pago:'',
+        plazo:'',
         direccion:'',
         correo:'',
         telefono:'',
         prod:'',
+        c_activo:'',
+        c_habido:'',
       }),
 
       form_e : reactive({
@@ -124,10 +127,13 @@ export default {
         nro_doc:'',
         nombre:'',
         c_pago:'',
+        plazo:'',
         direccion:'',
         correo:'',
         telefono:'',
         prod:'',
+        c_activo:'',
+        c_habido:'',
       }),
 
     }
@@ -424,6 +430,9 @@ export default {
             "ent_personanatural":true,
             "ext_id":this.var_type,
             "fdp_id":this.form_c.c_pago,
+            "fpd_diasvencimiento":Number(this.form_c.plazo),
+            "ent_estadocontribuyente":this.form_c.c_activo,
+            "ent_condicioncontribuyente":this.form_c.c_habido,
             "pro_id":this.form_c.prod
           })
           .then((resp) => {
@@ -480,6 +489,9 @@ export default {
           "ent_personanatural":true,
           "ext_id":this.var_type,
           "fdp_id":this.form_e.c_pago,
+          "fpd_diasvencimiento":this.form_e.plazo,
+          "ent_estadocontribuyente":this.form_e.c_activo,
+          "ent_condicioncontribuyente":this.form_e.c_habido,
           "pro_id":this.form_e.prod
         })
         .then((resp) => {
@@ -630,7 +642,7 @@ export default {
   <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" >
 
     <el-form-item label="Razón soc. asoc." prop="rs">
-      <el-select v-model="form_c.rs" @change="rs_changer" placeholder="Seleccionar">
+      <el-select style="width:300px" v-model="form_c.rs" @change="rs_changer" placeholder="Seleccionar">
         <el-option
           v-for="item in opt_rs"
           :key="item.emp_id"
@@ -641,8 +653,9 @@ export default {
     </el-form-item>
     
     <el-form-item label="Nro. de documento" prop="nro_doc">
+      <el-row style="width:300px">
       <el-col :span="6">
-      <el-select  v-model="form_c.tipo_doc" >
+      <el-select placeholder="Tipo" v-model="form_c.tipo_doc" >
         <el-option
           v-for="item in opt_tdoc"
           :key="item.dti_id"
@@ -654,14 +667,15 @@ export default {
       <el-col :span="18">
       <el-input v-model="form_c.nro_doc" />
       </el-col>
+      </el-row>
     </el-form-item>
 
     <el-form-item label="Nombre del proveedor" prop="nombre">
-      <el-input v-model="form_c.nombre" />
+      <el-input style="width:300px" v-model="form_c.nombre" />
     </el-form-item>
 
     <el-form-item label="Bien o servicio">
-      <el-select  v-model="form_c.prod" >
+      <el-select  style="width:300px" v-model="form_c.prod" >
         <el-option
           v-for="item in opt_prod"
           :key="item.pro_id"
@@ -672,6 +686,8 @@ export default {
     </el-form-item>
 
     <el-form-item label="Condición de pago">
+      <el-row style="width:300px">
+      <el-col :span="18">
       <el-select  v-model="form_c.c_pago" >
         <el-option
           v-for="item in opt_fpago"
@@ -680,16 +696,23 @@ export default {
           :value="item.fdp_id"
         > </el-option>
       </el-select>
+      </el-col>
+
+      <el-col :span="6">
+        <el-input placeholder="Plazo"  v-model="form_c.plazo" />
+      </el-col>
+      
+      </el-row>
     </el-form-item>
 
     <el-form-item label="Dirección">
-      <el-input v-model="form_c.direccion" />
+      <el-input style="width:300px" v-model="form_c.direccion" />
     </el-form-item>
     <el-form-item label="Correo">
-      <el-input v-model="form_c.correo" />
+      <el-input style="width:300px" v-model="form_c.correo" />
     </el-form-item>
     <el-form-item label="Teléfono">
-      <el-input v-model="form_c.telefono" />
+      <el-input style="width:300px" v-model="form_c.telefono" />
     </el-form-item>
 
   </el-form>
@@ -701,7 +724,7 @@ export default {
   <el-form v-loading="wait" ref="form_cref" :rules="rules" :model="form" label-width="150px" >
 
     <el-form-item  label="Razón soc. asoc.">
-      <el-select v-model="form_e.rs" @change="rs_changer" placeholder="Seleccionar">
+      <el-select style="width:300px" v-model="form_e.rs" @change="rs_changer" placeholder="Seleccionar">
         <el-option
           v-for="item in opt_rs"
           :key="item.emp_id"
@@ -712,6 +735,7 @@ export default {
     </el-form-item>
     
     <el-form-item label="Nro. de documento">
+      <el-row style="width:300px">
       <el-col :span="6">
       <el-select  v-model="form_e.tipo_doc">
         <el-option
@@ -725,14 +749,15 @@ export default {
       <el-col :span="18">
       <el-input v-model="form_e.nro_doc" />
       </el-col>
+      </el-row>
     </el-form-item>
 
     <el-form-item label="Nombre del cliente">
-      <el-input v-model="form_e.nombre" />
+      <el-input style="width:300px" v-model="form_e.nombre" />
     </el-form-item>
 
     <el-form-item label="Bien o servicio">
-      <el-select  v-model="form_e.prod" >
+      <el-select style="width:300px"  v-model="form_e.prod" >
         <el-option
           v-for="item in opt_prod"
           :key="item.pro_id"
@@ -743,6 +768,8 @@ export default {
     </el-form-item>
 
     <el-form-item label="Condición de pago">
+      <el-row style="width:300px">
+      <el-col :span="18">
       <el-select  v-model="form_e.c_pago" >
         <el-option
           v-for="item in opt_fpago"
@@ -751,16 +778,23 @@ export default {
           :value="item.fdp_id"
         > </el-option>
       </el-select>
+      </el-col>
+
+      <el-col :span="6">
+        <el-input placeholder="Plazo"  v-model="form_e.plazo" />
+      </el-col>
+      
+      </el-row>
     </el-form-item>
 
     <el-form-item label="Dirección">
-      <el-input v-model="form_e.direccion" />
+      <el-input style="width:300px" v-model="form_e.direccion" />
     </el-form-item>
     <el-form-item label="Correo">
-      <el-input v-model="form_e.correo" />
+      <el-input style="width:300px" v-model="form_e.correo" />
     </el-form-item>
     <el-form-item label="Teléfono">
-      <el-input v-model="form_e.telefono" />
+      <el-input style="width:300px" v-model="form_e.telefono" />
     </el-form-item>
 
     <el-row style="text-align=center" >
@@ -785,6 +819,14 @@ export default {
 <modal ref="mo_error"  hide-cancel error title="Error al ejecutar operación" centered @ok="close_fail">
   {{alert_mo}}
   <br/> {{alert_cause}}
+</modal>
+
+<modal ref="mo_sunat" no-close-on-backdrop title="Consultar RUC" width="700px" cancel-title="Cancelar" centered>
+ <div> 
+    <object type="text/html" data="https://e-consultaruc.sunat.gob.pe/cl-ti-itmrconsruc/jcrS00Alias?accion=consPorRazonSoc&razSoc=MTS" width="700px" height="400px" style="overflow:auto;">
+    </object>
+ </div>
+
 </modal>
 
 </template>
