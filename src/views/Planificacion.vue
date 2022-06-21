@@ -302,14 +302,7 @@ export default {
           this.opt_mod = resp.data;
         })
     },
-    load_cla() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api//vehiculosclases/'+String(this.emp_cont))
-        .then((resp) => {
-          console.log(resp);
-          this.opt_cla = resp.data;
-        })
-    },
+    
     load_ti() {
       axios
       .get('http://51.222.25.71:8080/garcal-erp-apiv1/api//vehiculostipos/'+String(this.emp_cont))
@@ -345,12 +338,21 @@ export default {
         })   
     },
 
+    load_prod() {
+      axios
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/productos/'+String(this.emp_cont))
+        .then((resp) => {
+          console.log(resp);
+          this.data_prods = resp.data;
+        })
+    },
+
     get_productos(query) {
       console.log(query);
       axios
       .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/productos/buscarnombre" ,
       {
-        "emp_id":this.form_c.rs,
+        "emp_id":this.emp_cont,
         "ent_nrodocumento":query,
       })
         .then((resp) => {
@@ -377,7 +379,7 @@ export default {
       axios
       .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/buscarclientenumero" ,
       {
-        "emp_id":this.form_c.rs,
+        "emp_id":this.emp_cont,
         "ent_nrodocumento":query,
       })
         .then((resp) => {
@@ -385,9 +387,56 @@ export default {
           this.data_clis = resp.data;
         })
     },
+    
+    select_clientes(idx) {
+      axios
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/" + String(idx),
+      {
+        "emp_id":this.form_c.rs,
+        "ext_id":"cli"
+      })
+        .then((resp) => {
+          console.log(resp.data[0]);
+          if (resp.data[0]) {
+            this.form_c.cliente_nom= String(resp.data[0].ent_nombre);
+          }
+          else {
+            return "No name";
+          }
+        })
+    },
 
-    select_clientes(obj) {
-      this.form_c.cliente_nom=obj;
+    clear_clientes() {
+      this.form_c.cliente_nom= "";
+    },
+
+    select_clientes2(idx) {
+      axios
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/" + String(idx),
+      {
+        "emp_id":this.form_e.rs,
+        "ext_id":"cli"
+      })
+        .then((resp) => {
+          console.log(resp.data[0]);
+          if (resp.data[0]) {
+            this.form_e.cliente_nom= String(resp.data[0].ent_nombre);
+          }
+          else {
+            return "No name";
+          }
+        })
+    },
+
+    clear_clientes2() {
+      this.form_e.cliente_nom= "";
+    },
+
+    clear_operarios() {
+      this.form_c.oper_nom= "";
+    },
+    clear_operarios2() {
+      this.form_e.cliente_nom= "";
     },
 
     get_operarios(query) {
@@ -395,7 +444,7 @@ export default {
       axios
       .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/tripulacionpendientesviajes" ,
       {
-        "emp_id": this.form_c.rs,
+        "emp_id": this.emp_cont,
         "tra_nrodocumento":query,
         "tri_licencianro":"",
         "tra_nombre":"",
@@ -408,8 +457,59 @@ export default {
         })
     },
 
-    select_operarios(obj) {
-      this.form_c.oper_nom=obj;
+    get_operarios2(query) {
+      console.log(query);
+      axios
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/tripulacionpendientesviajes" ,
+      {
+        "emp_id": this.emp_cont,
+        "tra_nrodocumento":query,
+        "tri_licencianro":"",
+        "tra_nombre":"",
+        "via_fechaviaje":this.form_e.fecha,
+        "via_horaviaje":this.form_e.hora
+      })
+        .then((resp) => {
+          console.log(resp);
+          this.data_op = resp.data;
+        })
+    },
+
+    select_operarios(idx) {
+      for (let tmp in this.data_op)  {
+          console.log(tmp);
+          if (this.data_op[tmp].tri_id == idx) {
+            this.form_c.oper_nom= this.data_op[tmp].tra_nombre;
+          }
+        }
+    },
+
+    select_operarios3(idx) {
+      axios
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/trabajadores/"+String(idx))
+        .then((resp) => {
+          console.log(resp);
+          if (resp.data[0]) {
+            this.form_e.oper_nom= String(resp.data[0].tra_nombre);
+          }
+          else {
+            this.form_e.oper_nom= "No name";
+          }
+        })
+    },
+
+    select_operarios2(idx) {
+      this.get_operarios2("");
+      setTimeout( ()  => {
+        for (let tmp in this.data_op)  {
+          console.log(tmp);
+          if (this.data_op[tmp].tri_id == idx) {
+            this.form_e.oper_nom= this.data_op[tmp].tra_nombre;
+          }
+        }
+        
+      } ,500)
+
     },
 
     get_vehiculo1(query) {
@@ -422,6 +522,23 @@ export default {
         "vcl_id":"SEM",
         "via_fechaviaje":this.form_c.fecha,
         "via_horaviaje":this.form_c.hora
+      })
+        .then((resp) => {
+          console.log(resp);
+          this.data_vh1 = resp.data;
+        })
+    },
+
+    get_vehiculo12(query) {
+      console.log(query);
+      axios
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculospendientesviajes" ,
+      {
+        "emp_id": this.form_e.rs,
+        "veh_placa":query,
+        "vcl_id":"SEM",
+        "via_fechaviaje":this.form_e.fecha,
+        "via_horaviaje":this.form_e.hora
       })
         .then((resp) => {
           console.log(resp);
@@ -446,15 +563,32 @@ export default {
         })
     },
 
+    get_vehiculo22(query) {
+      console.log(query);
+      axios
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculospendientesviajes" ,
+      {
+        "emp_id": this.form_e.rs,
+        "veh_placa":query,
+        "vcl_id":"TRA",
+        "via_fechaviaje":this.form_e.fecha,
+        "via_horaviaje":this.form_e.hora
+      })
+        .then((resp) => {
+          console.log(resp);
+          this.data_vh1 = resp.data;
+        })
+    },
+
     send_delete() {
       this.$refs.mo_advertencia_eliim.hide();
       axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos/borrar/'+String(this.editpointer))
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes/borrar/'+String(this.editpointer))
         .then((resp) => {
-          console.log(resp.data.status);
+          console.log(resp.data);
           this.succes=resp.data.status;
           if (this.succes) {
-            this.open_succes("Vehiculo eliminado correctamente");
+            this.open_succes("Viaje eliminado correctamente");
             return true;
           }
           else {
@@ -464,7 +598,6 @@ export default {
         })
         return false;
     },
-
 
     load_data_edit() {
       this.form_e.rs=this.data_edit[0].emp_id;
@@ -491,8 +624,15 @@ export default {
       this.form_e.producto_tipo =this.data_edit[0].pro_id;
       this.form_e.oper_id =this.data_edit[0].tri_id;
 
-      this.select_clientes();
-      this.select_operarios();
+      this.select_clientes2(this.data_edit[0].ent_id);
+      this.get_clientes(this.form_e.cliente_nom);
+
+      this.get_productos("");
+      this.get_operarios2("");
+      this.get_vehiculo12("");
+      this.get_vehiculo22("");
+      this.select_operarios2(this.form_e.oper_id);
+      
       
 
     },
@@ -528,29 +668,14 @@ export default {
     
     create_usr(){
       //llamada a API
-          console.log(this.form_c.fecha);
-          console.log(this.form_c.tracto_id);
-          console.log(this.form_c.semire_id);
-          console.log(this.form_c.cliente_nom);
-          console.log(this.form_c.hora);
-          console.log(this.form_c.subtotal);
-          console.log(this.form_c.impuesto);
-          console.log(this.form_c.producto_des);
-          console.log(this.form_c.origen);
-          console.log(this.form_c.flete);
-          console.log(this.form_c.oper_id);
-          
-
-          axios
-          .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes/nuevo', 
-          { 
+          console.log({ 
             "emp_id": Number(this.form_c.rs),
             "rut_id":"",
             "via_serie":"", 
             "via_numero":"", 
-            "veh_idtracto":this.form_c.tracto_id,
-            "veh_idremolque":this.form_c.semire_id,
-            "ent_id":27,
+            "veh_idtracto":Number(this.form_c.tracto_id),
+            "veh_idremolque":String(this.form_c.semire_id),
+            "ent_id":Number(this.form_c.cliente_id),
             "via_fechaviaje":this.form_c.fecha,
             "via_horaviaje":this.form_c.hora,
             "via_subtotal":Number(this.form_c.subtotal),
@@ -560,8 +685,34 @@ export default {
             "ubi_codigoorigen":this.form_c.origen,
             "ubi_codigodestino":this.form_c.destino,
             "vfl_codigo":this.form_c.flete,
-            "tri_id":156,
-            "pro_id":16,
+            "tri_id":String(this.form_c.oper_id),
+            "pro_id":Number(this.form_c.producto_tipo),
+            "via_usucreacion":"admin"
+          });
+          
+          
+
+          axios
+          .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes/nuevo', 
+          { 
+            "emp_id": Number(this.form_c.rs),
+            "rut_id":"",
+            "via_serie":"", 
+            "via_numero":"", 
+            "veh_idtracto":Number(this.form_c.tracto_id),
+            "veh_idremolque":String(this.form_c.semire_id),
+            "ent_id":Number(this.form_c.cliente_id),
+            "via_fechaviaje":this.form_c.fecha,
+            "via_horaviaje":this.form_c.hora,
+            "via_subtotal":Number(this.form_c.subtotal),
+            "via_impuesto":Number(this.form_c.impuesto),
+            "via_total":Number(this.form_c.total),
+            "via_observacion":this.form_c.producto_des,
+            "ubi_codigoorigen":this.form_c.origen,
+            "ubi_codigodestino":this.form_c.destino,
+            "vfl_codigo":this.form_c.flete,
+            "tri_id":String(this.oper_id),
+            "pro_id":Number(this.producto_tipo),
             "via_usucreacion":"admin"
           })
           .then((resp) => {
@@ -634,8 +785,6 @@ export default {
       var aux=Number(this.form_c.total)/(100+Number(this.form_c.igv));
       this.form_c.impuesto=String(this.roundUp(aux*Number(this.form_c.igv),1));
       this.form_c.subtotal=String(this.roundDwn(aux*100,1));
-      
-      
     },
 
     button_handle(number){
@@ -819,6 +968,7 @@ export default {
           filterable
           :remote-method="get_clientes"
           @change="select_clientes"
+          @clear="clear_clientes"
           placeholder="Inserte ID de cliente"
           remote
           clearable
@@ -832,7 +982,7 @@ export default {
             v-for="item in data_clis"
             :key="item.ent_id"
             :label="item.ent_nrodocumento"
-            :value="item.ent_nombre"
+            :value="item.ent_id"
           />
         </el-select>
         <el-input style="width:250px" disabled v-model="form_c.cliente_nom" placeholder="Nombre de cliente"/>
@@ -864,7 +1014,7 @@ export default {
       </el-form-item>
 
       <el-form-item  label="Flete " prop="rs">
-        <el-select style="width:250px" v-model="form_c.flete" @change="rs_changer" placeholder="Seleccionar">
+        <el-select style="width:250px" v-model="form_c.flete" placeholder="Seleccionar">
           <el-option
             v-for="item in opt_flete"
             :key="item.vfl_codigo"
@@ -1020,6 +1170,7 @@ export default {
           filterable
           :remote-method="get_operarios"
           @change="select_operarios"
+          @clear="clear_operarios"
           placeholder="Inserte ID de conductor"
           remote
           clearable
@@ -1032,7 +1183,7 @@ export default {
             v-for="item in data_op"
             :key="item.tra_nrodocumento"
             :label="item.tra_nrodocumento"
-            :value="item.tra_nombre"
+            :value="item.tri_id"
           />
         </el-select>
         <el-input style="width:250px" disabled v-model="form_c.oper_nom" placeholder="Nombre de conductor"/>
@@ -1079,7 +1230,7 @@ export default {
             v-for="item in data_clis"
             :key="item.ent_id"
             :label="item.ent_nrodocumento"
-            :value="item.ent_nombre"
+            :value="item.ent_id"
           />
         </el-select>
         <el-input style="width:250px" disabled v-model="form_e.cliente_nom" placeholder="Nombre de cliente"/>
@@ -1265,8 +1416,8 @@ export default {
         <el-select
           v-model="form_e.oper_id"
           filterable
-          :remote-method="get_operarios"
-          @change="select_operarios"
+          :remote-method="get_operarios2"
+          @change="select_operarios3"
           placeholder="Inserte ID de conductor"
           remote
           clearable
@@ -1279,13 +1430,16 @@ export default {
             v-for="item in data_op"
             :key="item.tra_nrodocumento"
             :label="item.tra_nrodocumento"
-            :value="item.tra_nombre"
+            :value="item.tri_id"
           />
         </el-select>
         <el-input style="width:250px" disabled v-model="form_e.oper_nom" placeholder="Nombre de conductor"/>
       </el-form-item>
 
     </el-col>
+    </el-row>
+    <el-row style="text-align=center" >
+      <el-button style="margin-left: auto;margin-right: auto" color="#E21747" :icon="CloseBold" @click="open_confirmar('Realmente desea eliminar este viaje pendiente?')">Eliminar</el-button>
     </el-row>
   </el-form>
 </modal>
