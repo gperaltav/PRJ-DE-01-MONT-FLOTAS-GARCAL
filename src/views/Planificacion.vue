@@ -76,6 +76,34 @@ const rules = reactive({
     },
   ],
 
+  origen:[{ 
+      required: true,
+      message: 'Campo obligatorio',
+      trigger: 'blur',
+    },
+  ],
+
+  destino:[{ 
+      required: true,
+      message: 'Campo obligatorio',
+      trigger: 'blur',
+    },
+  ],
+
+  tracto:[{ 
+      required: true,
+      message: 'Campo obligatorio',
+      trigger: 'blur',
+    },
+  ],
+
+  conductor:[{ 
+      required: true,
+      message: 'Campo obligatorio',
+      trigger: 'blur',
+    },
+  ],
+
 })
 </script>
 
@@ -545,7 +573,7 @@ export default {
       {
         "emp_id": this.form_c.rs,
         "veh_placa":query,
-        "vcl_id":"SEM",
+        "vcl_id":"TRA",
         "via_fechaviaje":this.form_c.fecha,
         "via_horaviaje":this.form_c.hora
       })
@@ -562,7 +590,7 @@ export default {
       {
         "emp_id": this.form_e.rs,
         "veh_placa":query,
-        "vcl_id":"SEM",
+        "vcl_id":"TRA",
         "via_fechaviaje":this.form_e.fecha,
         "via_horaviaje":this.form_e.hora
       })
@@ -579,7 +607,7 @@ export default {
       {
         "emp_id": this.form_c.rs,
         "veh_placa":query,
-        "vcl_id":"TRA",
+        "vcl_id":"SEM",
         "via_fechaviaje":this.form_c.fecha,
         "via_horaviaje":this.form_c.hora
       })
@@ -596,13 +624,13 @@ export default {
       {
         "emp_id": this.form_e.rs,
         "veh_placa":query,
-        "vcl_id":"TRA",
+        "vcl_id":"SEM",
         "via_fechaviaje":this.form_e.fecha,
         "via_horaviaje":this.form_e.hora
       })
         .then((resp) => {
           console.log(resp);
-          this.data_vh1 = resp.data;
+          this.data_vh2 = resp.data;
         })
     },
 
@@ -654,6 +682,7 @@ export default {
       this.get_clientes(this.form_e.cliente_nom);
 
       this.get_productos("");
+      this.get_clientes("");
       this.get_operarios2("");
       this.get_vehiculo12("");
       this.get_vehiculo22("");
@@ -665,8 +694,27 @@ export default {
 
     api_get_all(){
       //llamada a API
-     axios
-        .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes')
+    const tiempoTranscurrido = Date.now();
+    const hoy = new Date(tiempoTranscurrido);
+
+    var mm=hoy.getMonth() + 1;
+    var aa=hoy.getFullYear();
+    var dd=hoy.getDate();
+
+    var  fech=aa+"-"+mm+"-"+dd;
+
+    console.log(aa+mm+dd);
+
+    axios
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes', 
+        {
+          "emp_id":"",
+          "via_fechaviajeinicio":fech,
+          "via_fechaviajefin":fech,
+          "veh_placa":"",
+          "ubi_nombreorigen":"",
+          "ubi_nombredestino":"",
+        })
         .then((resp) => {
           console.log(resp);
           this.datap = resp.data;
@@ -1086,7 +1134,7 @@ export default {
           />
       </el-form-item>
 
-      <el-form-item  label="Origen ">
+      <el-form-item  label="Origen " prop="origen">
         <el-select label="Ruta"
           v-model="form_c.origen"
           filterable
@@ -1109,7 +1157,7 @@ export default {
         </el-select>
       </el-form-item>
 
-      <el-form-item label="Destino">
+      <el-form-item label="Destino" prop="destino">
         <el-select 
           v-model="form_c.destino"
           filterable
@@ -1132,12 +1180,12 @@ export default {
         </el-select>
       </el-form-item>
 
-      <el-form-item label="Semirremolque " prop="rs">
+      <el-form-item  label="Tracto " prop="tracto">
         <el-select
-          v-model="form_c.semire_id"
+          v-model="form_c.tracto_id"
           filterable
           :remote-method="get_vehiculo1"
-          placeholder="Inserte placa de semirremolque"
+          placeholder="Inserte ID de tracto"
           remote
           clearable
           style="width:250px"
@@ -1154,12 +1202,12 @@ export default {
         </el-select>
       </el-form-item>
 
-      <el-form-item  label="Tracto ">
+      <el-form-item label="Acople ">
         <el-select
-          v-model="form_c.tracto_id"
+          v-model="form_c.semire_id"
           filterable
           :remote-method="get_vehiculo2"
-          placeholder="Inserte ID de tracto"
+          placeholder="Inserte placa de semirremolque"
           remote
           clearable
           style="width:250px"
@@ -1176,7 +1224,9 @@ export default {
         </el-select>
       </el-form-item>
 
-      <el-form-item  label="Conductor " prop="rs">
+      
+
+      <el-form-item  label="Conductor " prop="conductor">
         <el-select
           v-model="form_c.oper_id"
           filterable
@@ -1224,7 +1274,7 @@ export default {
     <el-row>
     <el-col :span="12">
       
-      <el-form-item  label="Cliente " prop="rs">
+      <el-form-item  label="Cliente " prop="cliente_id">
         <el-select
           v-model="form_e.cliente_id"
           filterable
@@ -1249,7 +1299,7 @@ export default {
         <el-input style="width:250px" disabled v-model="form_e.cliente_nom" placeholder="Nombre de cliente"/>
       </el-form-item>
 
-      <el-form-item  label="Producto " prop="rs">
+      <el-form-item  label="Producto " prop="producto_tipo">
         <el-select
           v-model="form_e.producto_tipo"
           filterable
@@ -1274,7 +1324,7 @@ export default {
         <el-input style="width:250px" v-model="form_e.producto_des" placeholder="Descripcion"/>
       </el-form-item>
 
-      <el-form-item  label="Flete " prop="rs">
+      <el-form-item  label="Flete " prop="flete">
         <el-select style="width:250px" v-model="form_e.flete" @change="rs_changer" placeholder="Seleccionar">
           <el-option
             v-for="item in opt_flete"
@@ -1285,7 +1335,7 @@ export default {
         </el-select>
       </el-form-item>
 
-      <el-form-item label="Subtotal" >
+      <el-form-item label="Subtotal" prop="subtotal">
         
         <el-input style="width:250px" v-model="form_e.subtotal">
           <template #append>
@@ -1295,7 +1345,7 @@ export default {
         </el-input>
       </el-form-item>
 
-      <el-form-item label="Impuesto" >
+      <el-form-item label="Impuesto" prop="impuesto">
         <el-input style="width:190px" v-model="form_e.impuesto">
           <template #prepend>S/</template>
         </el-input>
@@ -1305,7 +1355,7 @@ export default {
 
       </el-form-item>
       
-      <el-form-item label="Total" >
+      <el-form-item label="Total" prop="total">
         <el-input style="width:250px" v-model="form_e.total">
           <template #append>
             <el-button  @click="calcular2()" :icon="List" />
@@ -1317,7 +1367,7 @@ export default {
     </el-col>
     <el-col :span="12">
 
-      <el-form-item label="Fecha y hora ">
+      <el-form-item label="Fecha y hora " prop="fecha">
         <el-date-picker
             v-model="form_e.fecha"
             type="date"
@@ -1335,7 +1385,7 @@ export default {
           />
       </el-form-item>
 
-      <el-form-item  label="Origen ">
+      <el-form-item  label="Origen "  prop="origen">
         <el-select label="Ruta"
           v-model="form_e.origen"
           filterable
@@ -1358,7 +1408,7 @@ export default {
         </el-select>
       </el-form-item>
 
-      <el-form-item label="Destino">
+      <el-form-item label="Destino"  prop="destino">
         <el-select 
           v-model="form_e.destino"
           filterable
@@ -1381,12 +1431,12 @@ export default {
         </el-select>
       </el-form-item>
 
-      <el-form-item disabled="aux1" label="Semirremolque " prop="rs">
+      <el-form-item  label="Tracto " prop="tracto">
         <el-select
-          v-model="form_e.semire_id"
+          v-model="form_e.tracto_id"
           filterable
           :remote-method="get_vehiculo1"
-          placeholder="Inserte placa de semirremolque"
+          placeholder="Inserte ID de tracto"
           remote
           clearable
           style="width:250px"
@@ -1403,12 +1453,12 @@ export default {
         </el-select>
       </el-form-item>
 
-      <el-form-item  label="Tracto ">
+      <el-form-item disabled="aux1" label="Acople " >
         <el-select
-          v-model="form_e.tracto_id"
+          v-model="form_e.semire_id"
           filterable
           :remote-method="get_vehiculo2"
-          placeholder="Inserte ID de tracto"
+          placeholder="Inserte placa de semirremolque"
           remote
           clearable
           style="width:250px"
@@ -1425,7 +1475,9 @@ export default {
         </el-select>
       </el-form-item>
 
-      <el-form-item  label="Conductor " prop="rs">
+      
+
+      <el-form-item  label="Conductor " prop="conductor">
         <el-select
           v-model="form_e.oper_id"
           filterable
