@@ -31,41 +31,51 @@ const rules = reactive({
       trigger: 'change',
     },
   ],
-  placa: [{ 
+  cliente_id: [{ 
       required: true,
-      message: 'Por favor inserte un nro de placa o id',
+      message: 'Por favor busque y seleccion un cliente',
       trigger: 'blur',
     },
   ],
 
-  marca:[{ 
+  producto_tipo:[{ 
       required: true,
-      message: 'Por favor seleccione una opción',
+      message: 'Por favor seleccione un tipo de producto',
       trigger: 'change',
     },
   ],
-  modelo:[{ 
+  flete:[{ 
       required: true,
-      message: 'Por favor seleccione una opción',
+      message: 'Por favor seleccione un tipo de flete',
       trigger: 'change',
     },
   ],
-  clase:[{ 
+  subtotal:[{ 
       required: true,
-      message: 'Por favor seleccione una opción',
+      message: 'Monto requerido',
       trigger: 'change',
     },
   ],
-  tipo:[{ 
+  impuesto:[{ 
       required: true,
-      message: 'Por favor seleccione una opción',
+      message: 'Monto requerido',
       trigger: 'change',
     },
   ],
-  year:[
-    {required: true, message: 'Inserte un año'},
-    {validator: checkyear, trigger: 'blur' },
+  total:[{ 
+      required: true,
+      message: 'Monto requerido',
+      trigger: 'change',
+    },
   ],
+
+  fecha:[{ 
+      required: true,
+      message: 'Fecha requerida',
+      trigger: 'change',
+    },
+  ],
+
 })
 </script>
 
@@ -85,6 +95,9 @@ export default {
       datap: [],
       opt_rs: [],
       opt_flete: [],
+
+      stop_cliente: true,
+      stop_con: true,
 
       opt_mar:[],
       opt_mod:[],
@@ -218,6 +231,11 @@ export default {
       this.form_c.tracto_id="";
       this.form_c.oper_id="";
       this.form_c.oper_nom="";
+      this.data_clis=[];
+      this.data_op=[];
+      if(this.form_c.rs!="") {
+        this.stop_cliente=false;
+      }
       //cargar listas
       this.load_flete();
     },
@@ -399,6 +417,8 @@ export default {
           console.log(resp.data[0]);
           if (resp.data[0]) {
             this.form_c.cliente_nom= String(resp.data[0].ent_nombre);
+            this.data_clis=[];
+            return;
           }
           else {
             return "No name";
@@ -421,6 +441,8 @@ export default {
           console.log(resp.data[0]);
           if (resp.data[0]) {
             this.form_e.cliente_nom= String(resp.data[0].ent_nombre);
+            this.data_clis=[];
+            return;
           }
           else {
             return "No name";
@@ -480,6 +502,8 @@ export default {
           console.log(tmp);
           if (this.data_op[tmp].tri_id == idx) {
             this.form_c.oper_nom= this.data_op[tmp].tra_nombre;
+            this.data_op=[];
+            return;
           }
         }
     },
@@ -505,6 +529,8 @@ export default {
           console.log(tmp);
           if (this.data_op[tmp].tri_id == idx) {
             this.form_e.oper_nom= this.data_op[tmp].tra_nombre;
+            this.data_op=[];
+            return;
           }
         }
         
@@ -668,29 +694,6 @@ export default {
     
     create_usr(){
       //llamada a API
-          console.log({ 
-            "emp_id": Number(this.form_c.rs),
-            "rut_id":"",
-            "via_serie":"", 
-            "via_numero":"", 
-            "veh_idtracto":Number(this.form_c.tracto_id),
-            "veh_idremolque":String(this.form_c.semire_id),
-            "ent_id":Number(this.form_c.cliente_id),
-            "via_fechaviaje":this.form_c.fecha,
-            "via_horaviaje":this.form_c.hora,
-            "via_subtotal":Number(this.form_c.subtotal),
-            "via_impuesto":Number(this.form_c.impuesto),
-            "via_total":Number(this.form_c.total),
-            "via_observacion":this.form_c.producto_des,
-            "ubi_codigoorigen":this.form_c.origen,
-            "ubi_codigodestino":this.form_c.destino,
-            "vfl_codigo":this.form_c.flete,
-            "tri_id":String(this.form_c.oper_id),
-            "pro_id":Number(this.form_c.producto_tipo),
-            "via_usucreacion":"admin"
-          });
-          
-          
 
           axios
           .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes/nuevo', 
@@ -700,7 +703,7 @@ export default {
             "via_serie":"", 
             "via_numero":"", 
             "veh_idtracto":Number(this.form_c.tracto_id),
-            "veh_idremolque":String(this.form_c.semire_id),
+            "veh_idremolque":this.form_c.semire_id,
             "ent_id":Number(this.form_c.cliente_id),
             "via_fechaviaje":this.form_c.fecha,
             "via_horaviaje":this.form_c.hora,
@@ -711,8 +714,8 @@ export default {
             "ubi_codigoorigen":this.form_c.origen,
             "ubi_codigodestino":this.form_c.destino,
             "vfl_codigo":this.form_c.flete,
-            "tri_id":String(this.oper_id),
-            "pro_id":Number(this.producto_tipo),
+            "tri_id":this.form_c.oper_id,
+            "pro_id":Number(this.form_c.producto_tipo),
             "via_usucreacion":"admin"
           })
           .then((resp) => {
@@ -740,27 +743,35 @@ export default {
       //llamada a API
     
     axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos/actualizar', 
-        { 
-          "veh_id":String(this.editpointer),
-          "emp_id": String(this.form_e.rs),
-          "veh_placa":this.form_e.placa,
-          "vma_id":String(this.form_e.marca),
-          "vmo_id":String(this.form_e.modelo),
-          "vti_id": this.form_e.tipo,
-          "vcl_id": this.form_e.clase,
-          "veh_anno":this.form_e.year,
-          "veh_usucreacion":"admin",
-          "veh_serie":this.form_e.serie,
-          "veh_mtc":this.form_e.mtc,
-          "veh_cargautil":String(this.form_e.carga_util),
-          "veh_kilometraje":String(this.form_e.kilometraje)
-        })
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes/actualizar', 
+      { 
+        "via_id":this.editpointer,
+        "emp_id":Number(this.form_e.rs),
+        "rut_id":"",
+        "veh_idtracto":Number(this.form_e.tracto_id),
+        "veh_idremolque":this.form_e.semire_id,
+        "ent_id":Number(this.form_e.cliente_id),
+        "via_serie":"",
+        "via_numero":"",
+        "via_fechaviaje":this.form_e.fecha,
+        "via_horaviaje":this.form_e.hora,
+        "via_subtotal":Number(this.form_e.subtotal),
+        "via_impuesto":Number(this.form_e.impuesto),
+        "via_total":Number(this.form_e.total),
+        "via_observacion":this.form_e.producto_des,
+        "via_usumodificacion":"admin",
+        "vie_codigo":"TER",
+        "ubi_codigoorigen":this.form_e.origen,
+        "ubi_codigodestino":this.form_e.destino,
+        "vfl_codigo":this.form_e.flete,
+        "pro_id":Number(this.form_e.producto_tipo),
+        "tri_id":this.form_e.oper_id,
+      })
         .then((resp) => {
           console.log(resp.data.status);
           this.succes=resp.data.status;
           if (this.succes) {
-            this.open_succes_ed("Vehiculo modificado satisfactoriamente");
+            this.open_succes_ed("Viaje modificado satisfactoriamente");
           }
           else {
             this.open_fail("Hubo un error al comunicarse con el servidor");
@@ -962,7 +973,7 @@ export default {
     <el-row>
     <el-col :span="12">
       
-      <el-form-item  label="Cliente " prop="rs">
+      <el-form-item  label="Cliente " prop="cliente_id">
         <el-select
           v-model="form_c.cliente_id"
           filterable
@@ -973,6 +984,7 @@ export default {
           remote
           clearable
           style="width:250px"
+          :disabled="stop_cliente"
         >
           <template #prefix>
             <el-icon><Search /></el-icon>
@@ -988,7 +1000,7 @@ export default {
         <el-input style="width:250px" disabled v-model="form_c.cliente_nom" placeholder="Nombre de cliente"/>
       </el-form-item>
 
-      <el-form-item  label="Producto " prop="rs">
+      <el-form-item  label="Producto " prop="producto_tipo">
         <el-select
           v-model="form_c.producto_tipo"
           filterable
@@ -1013,7 +1025,7 @@ export default {
         <el-input style="width:250px" v-model="form_c.producto_des" placeholder="Descripcion"/>
       </el-form-item>
 
-      <el-form-item  label="Flete " prop="rs">
+      <el-form-item  label="Flete " prop="flete">
         <el-select style="width:250px" v-model="form_c.flete" placeholder="Seleccionar">
           <el-option
             v-for="item in opt_flete"
@@ -1024,7 +1036,7 @@ export default {
         </el-select>
       </el-form-item>
 
-      <el-form-item label="Subtotal" >
+      <el-form-item label="Subtotal" prop="subtotal">
         
         <el-input style="width:250px" v-model="form_c.subtotal">
           <template #append>
@@ -1034,7 +1046,7 @@ export default {
         </el-input>
       </el-form-item>
 
-      <el-form-item label="Impuesto" >
+      <el-form-item label="Impuesto" prop="impuesto">
         <el-input style="width:190px" v-model="form_c.impuesto">
           <template #prepend>S/</template>
         </el-input>
@@ -1044,7 +1056,7 @@ export default {
 
       </el-form-item>
       
-      <el-form-item label="Total" >
+      <el-form-item label="Total" prop="total">
         <el-input style="width:250px" v-model="form_c.total">
           <template #append>
             <el-button  @click="calcular2()" :icon="List" />
@@ -1056,7 +1068,7 @@ export default {
     </el-col>
     <el-col :span="12">
 
-      <el-form-item label="Fecha y hora ">
+      <el-form-item label="Fecha y hora " prop="fecha">
         <el-date-picker
             v-model="form_c.fecha"
             type="date"
@@ -1120,7 +1132,7 @@ export default {
         </el-select>
       </el-form-item>
 
-      <el-form-item disabled="aux1" label="Semirremolque " prop="rs">
+      <el-form-item label="Semirremolque " prop="rs">
         <el-select
           v-model="form_c.semire_id"
           filterable
@@ -1174,6 +1186,7 @@ export default {
           placeholder="Inserte ID de conductor"
           remote
           clearable
+          :disabled="stop_conductor"
           style="width:250px"
         >
           <template #prefix>

@@ -16,7 +16,7 @@ export default {
 
 <template>
 
-<el-menu :default-openeds="['1', '2']" router=true>
+<el-menu :default-openeds="['1', '2','4']" router=true>
   <el-menu-item index="inicio">
     <template #title>
       <el-icon><office-building /></el-icon>Inicio 
@@ -43,11 +43,13 @@ export default {
       <el-icon><trend-charts /></el-icon> Planifiación
     </template>
   </el-menu-item>
-  <el-menu-item index="">
+  <el-sub-menu index="4">
     <template #title>
-      <el-icon><operation /></el-icon> Operaciones
+      <el-icon><operation /></el-icon>Operaciones
     </template>
-  </el-menu-item>
+    <el-menu-item index="operaciones_combustible">Combustible</el-menu-item>
+  </el-sub-menu>
+
 
 </el-menu>
 

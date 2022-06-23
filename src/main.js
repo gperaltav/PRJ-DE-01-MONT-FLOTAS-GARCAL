@@ -145,6 +145,18 @@ const router = createRouter({
       }
     },
     {
+      path: '/operaciones_combustible',
+      name: 'Operacion de combustible',
+      component: () => import('./views/Operaciones/Combustible.vue'),
+      beforeEnter: (to, from, next) => {
+        if(store.state.authenticated == false) {
+          next(false);
+        } else {
+          next();
+        }
+      }
+    },
+    {
       path: '/inicio',
       name: 'Usuarios',
       component: () => import('./views/Usuarios.vue'),
