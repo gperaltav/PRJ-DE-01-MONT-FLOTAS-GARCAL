@@ -48,6 +48,7 @@ export default {
       <el-icon><operation /></el-icon>Operaciones
     </template>
     <el-menu-item index="operaciones_combustible">Combustible</el-menu-item>
+    <el-menu-item index="operaciones_viaticos">Viáticos</el-menu-item>
   </el-sub-menu>
 
 

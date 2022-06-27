@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { reactive,ref } from 'vue'
 import axios from 'axios'
-import { EditPen, Filter, Plus, Download, CloseBold} from '@element-plus/icons-vue'
+import { EditPen, Filter, Plus, Download, CloseBold, List,Search} from '@element-plus/icons-vue'
 
 import type { FormInstance, FormRules } from 'element-plus'
 
@@ -83,11 +83,10 @@ export default {
       succes: false,
       datap: [],
       opt_rs: [],
-
-      opt_mar:[],
-      opt_mod:[],
-      opt_cla:[],
-      opt_ti:[],
+      opt_prv: [],
+      opt_fp: [],
+      opt_td:[],
+      opt_via:[],
 
       data_edit: [],
       data_edit2: [],
@@ -110,10 +109,18 @@ export default {
         cantidad_n:'',
         cantidad_un:'',
         cantidad_p_uni:'',
-        subtotal:'',
-        impuesto:'',
-        total:'',
-        tipo_pago:''
+        subtotal:0,
+        impuesto:0,
+        total:0,
+        tipo_pago:'',
+        igv:18
+      }),
+
+      aux : reactive({
+        veh_id:'',
+        acople_id:'',
+        pro_id:'',
+
       }),
 
     }
@@ -123,16 +130,21 @@ export default {
 
     clear_c() {
       this.form_c.rs='';
-      this.form_c.placa='';
-      this.form_c.marca='';
-      this.form_c.modelo='';
-      this.form_c.tipo='';
-      this.form_c.clase='';
-      this.form_c.year='';
-      this.form_c.serie='';
-      this.form_c.mtc='';
-      this.form_c.carga_uti='';
-      this.form_c.kilometraje='';
+      this.form_c.prv_id='';
+      this.form_c.prv_nom='';
+      this.form_c.tipo_doc='';
+      this.form_c.serie_doc='';
+      this.form_c.nro_doc='';
+      this.form_c.fecha_em='';
+      this.form_c.fecha_via='';
+      this.form_c.via_id='';
+      this.form_c.cantidad_n='';
+      this.form_c.cantidad_un='';
+      this.form_c.cantidad_p_uni='';
+      this.form_c.subtotal=0;
+      this.form_c.impuesto=0;
+      this.form_c.total=0;
+      this.form_c.tipo_pago='';
     },
 
     rs_changer() {
@@ -142,10 +154,12 @@ export default {
       this.form_c.via_id="";
       this.form_c.fecha_via="";
       //cargar listas
-      this.load_mar();
-      this.load_mod();
-      this.load_cla();
-      this.load_ti();
+      this.get_formas_pago();
+      this.get_tipos_doc();
+    },
+    fech_changer() {
+      //cargar listas
+      this.get_viajes();
     },
 
     open_succes(msg) {
@@ -205,47 +219,272 @@ export default {
         })
     },
 
+    load_viajes() {
+      
+      axios
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajesfecha', 
+      {
+        "emp_id": Number(this.form_c.rs),
+        "gui_fechaemision": this.form_c.fecha_em,
+        "gti_codigo": this.form_c.tipo_doc,
+        "gui_serie": this.form_c.serie_doc,
+        "gui_numero": this.form_c.nro_doc ,
+        "via_id": Number(this.form_c.via_id),
+        "gui_entdestinatario":"",
+        "veh_id": 0,
+        "veh_idacople":"",
+        "pro_id":3,
+        "gui_estado":"",
+        "gui_peso":2,
+        "ubi_codigoorigen":"010112",
+        "ubi_codigodestino":"010113",
+        "gui_observacion":"",
+        "gui_usucreacion":"admin"
+      })
+      .then((resp) => {
+        console.log(resp.data);
+        this.succes=resp.data.status;
+        if (this.succes) {
+          this.open_succes("Operación realizada satisfactoriamente");
+          return true;
+          
+        }
+        else {
+          this.open_fail("Hubo un error con el servidor al ejecutar la operación");
+          return false;
+        }
+      })
+    },
+    
+    get_proveedores(query) {
+      axios
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/buscarentidadnumero', 
+      {
+        "emp_id": 2,
+        "ent_nrodocumento": query,
+        "ext_id": "prv"
+      })
+      .then((resp) => {
+        console.log(resp);
+        this.opt_prv = resp.data;
+      })
+    },
+
+    select_proveedores(idx) {
+      axios
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/" + String(idx),
+      {
+        "emp_id":this.form_c.rs,
+        "ext_id":"prv"
+      })
+        .then((resp) => {
+          console.log(resp.data[0]);
+          if (resp.data[0]) {
+            this.form_c.prv_nom= String(resp.data[0].ent_nombre);
+            this.data_clis=[];
+            return;
+          }
+          else {
+            return "No name";
+          }
+        })
+    },
+
+    clear_proveedores() {
+      this.form_c.prv_nom= "";
+    },
+
+    get_formas_pago() {
+      axios
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdepago/'+String(this.form_c.rs))
+      .then((resp) => {
+        console.log(resp);
+        this.opt_fp = resp.data;
+      })
+    },
+
+    get_tipos_doc() {
+      axios
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprastipos/'+String(this.form_c.rs))
+      .then((resp) => {
+        console.log(resp);
+        this.opt_td = resp.data;
+      })
+    },
+
+    get_viajes() {
+
+      axios
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajesfecha', 
+      {
+        "emp_id": this.form_c.rs,
+        "via_fechaviaje":this.form_c.fecha_via
+      })
+      .then((resp) => {
+        console.log(resp);
+        this.opt_via = resp.data;
+      })
+    },
+
+    insertar_comprobante() {
+      axios
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprascab/nuevo', 
+      {      
+        "emp_id": Number(this.form_c.rs),
+        "ent_id": Number(this.form_c.prv_id),
+        "ccc_serie": this.form_c.serie_doc,
+        "ccc_numero": this.form_c.nro_doc,
+        "ccc_fechaemision": this.form_c.fecha_em,
+        "ccc_subtotal": Number(this.form_c.subtotal),
+        "ccc_impuesto": Number(this.form_c.impuesto),
+        "ccc_total": Number(this.form_c.total),
+        "cct_codigo": "BOL",
+        "cce_codigo": "CAN",
+        "mon_codigo": "SOL",
+        "ccc_observaciones": "",
+        "ccc_idreferencia":null,
+        "ccc_tipocambio": 18,
+        "ccc_generamovimiento":false,
+        "ccc_fechaingreso":  this.form_c.fecha_em,
+        "ccc_periodoregistro":"",
+        "usu_codigo": "admin",
+        "ccc_usucreacion":"admin"
+      })
+      .then((resp) => {
+        console.log(resp.data);
+        this.succes=resp.data.status;
+        if (this.succes) {
+          return true;
+          
+        }
+        else {
+          return false;
+        }
+      })
+    },
+
+    insertar_guia() {
+      axios
+      .post('http://51.222.25.71:8080//garcal-erp-apiv1/api/guias/nuevo', 
+      {
+        "emp_id": Number(this.form_c.rs),
+        "gui_fechaemision": this.form_c.fecha_em,
+        "gti_codigo": this.form_c.tipo_doc,
+        "gui_serie": this.form_c.serie_doc,
+        "gui_numero": this.form_c.nro_doc ,
+        "via_id": Number(this.form_c.via_id),
+        "gui_entdestinatario":"",
+        "veh_id": 0,
+        "veh_idacople":"",
+        "pro_id":3,
+        "gui_estado":"",
+        "gui_peso":2,
+        "ubi_codigoorigen":"010112",
+        "ubi_codigodestino":"010113",
+        "gui_observacion":"",
+        "gui_usucreacion":"admin"
+      })
+      .then((resp) => {
+        console.log(resp.data);
+        this.succes=resp.data.status;
+        if (this.succes) {
+          return true;
+          
+        }
+        else {
+          return false;
+        }
+      })
+    },
+
+    transaccion_insertar() {
+      axios
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprascab/nuevo', 
+      {
+        "cabecera": {
+          "emp_id": Number(this.form_c.rs),
+          "ent_id": Number(this.form_c.prv_id),
+          "ccc_serie": this.form_c.serie_doc,
+          "ccc_numero": this.form_c.nro_doc,
+          "ccc_fechaemision": this.form_c.fecha_em,
+          "ccc_subtotal": Number(this.form_c.subtotal),
+          "ccc_impuesto": Number(this.form_c.impuesto),
+          "ccc_total": Number(this.form_c.total),
+          "cct_codigo": "BOL",
+          "cce_codigo": "CAN",
+          "mon_codigo": "SOL",
+          "ccc_observaciones": "",
+          "ccc_idreferencia":null,
+          "ccc_tipocambio": 18,
+          "ccc_generamovimiento":false,
+          "ccc_fechaingreso":  this.form_c.fecha_em,
+          "ccc_periodoregistro":"",
+          "usu_codigo": "admin",
+          "ccc_usucreacion":"admin"
+        },
+        "detalle": [{
+          "emp_id": Number(this.form_c.rs),
+          "gui_fechaemision": this.form_c.fecha_em,
+          "gti_codigo": this.form_c.tipo_doc,
+          "gui_serie": this.form_c.serie_doc,
+          "gui_numero": this.form_c.nro_doc ,
+          "via_id": Number(this.form_c.via_id),
+          "gui_entdestinatario":"",
+          "veh_id": 0,
+          "veh_idacople":"",
+          "pro_id":3,
+          "gui_estado":"VAR",
+          "gui_peso":2,
+          "ubi_codigoorigen":"010112",
+          "ubi_codigodestino":"010113",
+          "gui_observacion":"",
+          "gui_usucreacion":"admin"
+          }
+        ]
+      })
+      .then((resp) => {
+        console.log(resp.data);
+        this.succes=resp.data.status;
+        if (this.succes) {
+          return true;
+        }
+        else {
+          return false;
+        }
+      })
+    },
+
     create_api(){
       //llamada a API
+      var r1=this.insertar_comprobante();
+      var r2=this.insertar_guia();
 
-          axios
-          .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprascab/nuevo', 
-          { 
-            "emp_id": Number(this.form_c.rs),
-            "ent_id": Number(this.form_c.prv_id),
-            "ccc_serie": this.form_c.serie_doc,
-            "ccc_numero": this.form_c.numero_doc,
-            "ccc_fechaemision": this.form_c.fecha_em,
-            "ccc_subtotal": Number(this.form_c.subtotal),
-            "ccc_impuesto": Number(this.form_c.impuesto),
-            "ccc_total": Number(this.form_c.total),
-            "cct_codigo": "BOL",
-            "cce_codigo": "CAN",
-            "mon_codigo": "SOL",
-            "ccc_observaciones": "",
-            "ccc_idreferencia":null,
-            "ccc_tipocambio": 18,
-            "ccc_generamovimiento":false,
-            "ccc_fechaingreso": "2022-01-06",
-            "ccc_periodoregistro": "2022-01-07",
-            "usu_codigo": "admin",
-            "ccc_usucreacion":"admin"
-          })
-          .then((resp) => {
-            console.log(resp.data);
-            this.succes=resp.data.status;
-            if (this.succes) {
-              this.open_succes("Operación realizada satisfactoriamente");
-              return true;
-              
-            }
-            else {
-              this.open_fail("Hubo un error con el servidor al ejecutar la operación");
-              return false;
-            }
-          })
-          return false;
+      if(r1 && r2) {
+        this.open_succes("Operación realizada satisfactoriamente");
+      }
+      else {
+        this.open_fail("Hubo un error con el servidor al ejecutar la operación");
+      }
+
     },  
+
+    roundUp(num, precision) {
+      precision = Math.pow(10, precision)
+      return Math.ceil(num * precision) / precision
+    },
+    roundDwn(num, precision) {
+      precision = Math.pow(10, precision)
+      return Math.floor(num * precision) / precision
+    },
+    calcular1() {
+      this.form_c.impuesto=String(this.roundUp((Number(this.form_c.igv)/100)*Number(this.form_c.subtotal),1));
+      this.form_c.total=String(Number(this.form_c.impuesto)+Number(this.form_c.subtotal));
+    },
+    calcular2() {
+      var aux=Number(this.form_c.total)/(100+Number(this.form_c.igv));
+      this.form_c.impuesto=String(this.roundUp(aux*Number(this.form_c.igv),1));
+      this.form_c.subtotal=String(this.roundDwn(aux*100,1));
+    },
 
     button_handle(number){
       console.log(number);
@@ -320,26 +559,48 @@ export default {
                   :key="item.emp_id"
                   :label="item.emp_razonsocial"
                   :value="item.emp_id"
-                  
                 > </el-option>
               </el-select>
             </el-form-item>
 
             <el-form-item  label="Proveedor">
               <el-row style="width:600px"> 
-              <el-col :span="8"><el-input v-model="form_c.prv_id" placeholder="ID de proveedor" /></el-col>
-              <el-col :span="16"><el-input v-model="form_c.prv_nom" placeholder="Nombre de proveedor" /></el-col>
-              </el-row> 
+              <el-col :span="8">
+                <el-select
+                  v-model="form_c.prv_id"
+                  filterable
+                  :remote-method="get_proveedores"
+                  @change="select_proveedores"
+                  @clear="clear_proveedores"
+                  placeholder="Inserte ID de proveedor"
+                  remote
+                  clearable
+                  :disabled="stop_cliente"
+                >
+                  <template #prefix>
+                    <el-icon><Search /></el-icon>
+                  </template>
+
+                  <el-option
+                    v-for="item in opt_prv"
+                    :key="item.ent_id"
+                    :label="item.ent_nrodocumento"
+                    :value="item.ent_id"
+                  />
+                </el-select>
+              </el-col>
+              <el-col :span="16"><el-input disabled v-model="form_c.prv_nom" placeholder="Nombre de proveedor" /></el-col>
+              </el-row>
             </el-form-item>
 
             <el-row style="width:800px; margin-bottom: 18px"> 
               <el-col :span="6">
                 <el-select v-model="form_c.tipo_doc" style="width:150px; margin-left:50px" placeholder="Tipo de doc."  clearable>
                 <el-option
-                  v-for="item in opt_rs"
-                  :key="item.emp_id"
-                  :label="item.emp_razonsocial"
-                  :value="item.emp_id"
+                  v-for="item in opt_td"
+                  :key="item.cct_codigo"
+                  :label="item.cct_descripcion"
+                  :value="item.cct_codigo"
                 > </el-option>
                 </el-select>
               </el-col>
@@ -370,7 +631,7 @@ export default {
 
             <el-form-item label="Fecha de viaje">
               <el-row style="width:600px">
-              <el-col span="12">
+              <el-col :span="12">
                 <el-date-picker
                   type="date"
                   v-model="form_c.fecha_via"
@@ -378,16 +639,17 @@ export default {
                   value-format="YYYY-MM-DD"
                   placeholder="Seleccione fecha"
                   style="width: 300px"
+                  @change="fech_changer"
                 />
               </el-col>
               
               <el-col :span="12">
                 <el-select v-model="form_c.via_id" placeholder="Seleccione una opcion" style="width:300px" clearable>
                   <el-option
-                    v-for="item in opt_rs"
-                    :key="item.emp_id"
-                    :label="item.emp_razonsocial"
-                    :value="item.emp_id"
+                    v-for="item in opt_via"
+                    :key="item.via_id"
+                    :label="item.via_descripcion"
+                    :value="item.via_id"
                   > </el-option>
                 </el-select> 
               </el-col>
@@ -401,17 +663,14 @@ export default {
                 </el-col>
                 <el-col :span="6"> 
                   <el-select v-model="form_c.cantidad_un" placeholder="Unidad" style="width:150px" clearable>
-                    <el-option
-                      v-for="item in opt_rs"
-                      :key="item.emp_id"
-                      :label="item.emp_razonsocial"
-                      :value="item.emp_id"
-                    > </el-option>
+                    <el-option label="Galones" value="gal" />
                   </el-select> 
                 </el-col>
-                <el-col span="12">
+                <el-col :span="12">
                   <el-form-item label-width="100px" label="P. Unitario">
-                    <el-input v-model="form_c.cantidad_p_uni" placeholder="Seleccionar" />
+                    <el-input v-model="form_c.cantidad_p_uni" placeholder="Insertar monto" >
+                      <template #prepend>S/</template>
+                    </el-input>
                   </el-form-item>
                 </el-col>
               </el-row>
@@ -419,36 +678,51 @@ export default {
 
             <el-form-item style="margin-left: auto;margin-right: auto" label="Valor venta">
               <div style="width:300px">
-                <el-input v-model="form_c.subtotal" placeholder="Inserte una cantidad"/>
+                <el-input v-model="form_c.subtotal" placeholder="Inserte una cantidad">
+                  <template #append>
+                    <el-button @click="calcular1()" :icon="List" />
+                  </template>
+                  <template #prepend>S/</template>
+                </el-input>
               </div>
             </el-form-item>
 
             <el-form-item style="margin-left: auto;margin-right: auto" label="Impuesto">
               <div style="width:300px">
-                <el-input v-model="form_c.impuesto" placeholder="Inserte una cantidad"/>
+                <el-input v-model="form_c.impuesto" placeholder="Inserte una cantidad">
+                  <template #prepend>S/</template>
+                </el-input>
               </div>
+              <el-input style="width:60px" v-model="form_c.igv">
+                <template #suffix>%</template>
+              </el-input>
             </el-form-item>
 
             <el-form-item style="margin-left: auto;margin-right: auto" label="Total">
               <div style="width:300px">
-                <el-input v-model="form_c.total" placeholder="Inserte una cantidad"/>
+                <el-input v-model="form_c.total" placeholder="Inserte una cantidad">
+                  <template #append>
+                    <el-button  @click="calcular2()" :icon="List" />
+                  </template>
+                  <template #prepend>S/</template>
+                </el-input>
               </div>
             </el-form-item>
 
             <el-form-item style="margin-left: auto;margin-right: auto" label="Tipo de pago">
               <el-select v-model="form_c.tipo_pago" placeholder="Seleccione una opcion" style="width:300px" clearable>
                 <el-option
-                  v-for="item in opt_rs"
-                  :key="item.emp_id"
-                  :label="item.emp_razonsocial"
-                  :value="item.emp_id"
+                  v-for="item in opt_fp"
+                  :key="item.fdp_id"
+                  :label="item.fdp_descripcion"
+                  :value="item.fdp_id"
                   
                 > </el-option>
               </el-select>
             </el-form-item>
 
             <el-row style="text-align=center; margin-left:100px" >
-              <el-button style="margin-left: auto;margin-right: auto" color="#0844a4" >Guardar</el-button>
+              <el-button  @click="create_api" style="margin-left: auto;margin-right: auto" color="#0844a4" >Guardar</el-button>
             </el-row>
               
             </el-form>
