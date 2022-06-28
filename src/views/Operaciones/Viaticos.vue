@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { reactive,ref } from 'vue'
 import axios from 'axios'
-import { EditPen, Filter, Plus, Download, CloseBold, List} from '@element-plus/icons-vue'
+import { EditPen, Filter, Plus, Download, CloseBold, List, Search} from '@element-plus/icons-vue'
 
 import type { FormInstance, FormRules } from 'element-plus'
 
@@ -68,7 +68,8 @@ export default {
         impuesto:0,
         total:0,
         tipo_pago:'',
-        igv:18
+        igv:18,
+        obs:''
       }),
 
       aux : reactive({
@@ -224,7 +225,23 @@ export default {
       })
     },
 
-    
+    get_chofer(query) {
+      console.log(query);
+      axios
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/tripulacionpendientesviajes" ,
+      {
+        "emp_id": this.emp_cont,
+        "tra_nrodocumento":query,
+        "tri_licencianro":"",
+        "tra_nombre":"",
+        "via_fechaviaje":this.form_c.fecha,
+        "via_horaviaje":this.form_c.hora
+      })
+        .then((resp) => {
+          console.log(resp);
+          this.data_op = resp.data;
+        })
+    },
 
     get_viajes() {
       axios
@@ -335,7 +352,7 @@ export default {
           "usu_codigo": "admin",
           "ccc_usucreacion":"admin"
         },
-        "detalle": {
+        "detalle": [{
           "emp_id": Number(this.form_c.rs),
           "gui_fechaemision": this.form_c.fecha_em,
           "gti_codigo": this.form_c.tipo_doc,
@@ -352,7 +369,7 @@ export default {
           "ubi_codigodestino":"010113",
           "gui_observacion":"",
           "gui_usucreacion":"admin"
-        }
+        }]
       })
       .then((resp) => {
         console.log(resp.data);
@@ -481,28 +498,26 @@ export default {
                 <el-select
                   v-model="form_c.prv_id"
                   filterable
-                  :remote-method="get_proveedores"
-                  @change="select_proveedores"
-                  @clear="clear_proveedores"
-                  placeholder="Inserte ID de proveedor"
+                  :remote-method="get_chofer"
+                  @change="select_chofer"
+                  @clear="clear_chofer"
+                  placeholder="Inserte ID de conductor"
                   remote
                   clearable
-                  
-                  :disabled="stop_cliente"
                 >
                   <template #prefix>
                     <el-icon><Search /></el-icon>
                   </template>
 
                   <el-option
-                    v-for="item in data_clis"
+                    v-for="item in data_ops"
                     :key="item.ent_id"
                     :label="item.ent_nrodocumento"
                     :value="item.ent_id"
                   />
                 </el-select>
               </el-col>
-              <el-col :span="16"><el-input v-model="form_c.prv_nom" placeholder="Nombre del conductor" /></el-col>
+              <el-col :span="16"><el-input disabled v-model="form_c.prv_nom" placeholder="Nombre del conductor" /></el-col>
               </el-row>
             </el-form-item>
 
@@ -569,7 +584,6 @@ export default {
               </el-row>
             </el-form-item>
 
-
             <el-form-item style="margin-left: auto;margin-right: auto" label="Total">
               <div style="width:300px">
                 <el-input v-model="form_c.total" placeholder="Inserte una cantidad">
@@ -580,7 +594,7 @@ export default {
 
             <el-form-item style="margin-left: auto;margin-right: auto" label="Observaciones">
               <div style="width:600px">
-                <el-input v-model="form_c.total" placeholder=""/>
+                <el-input v-model="form_c.obs" placeholder=""/>
               </div>
             </el-form-item>
 

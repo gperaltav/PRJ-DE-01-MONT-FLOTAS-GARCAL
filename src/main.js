@@ -169,6 +169,43 @@ const router = createRouter({
       }
     },
     {
+      path: '/operaciones_personal',
+      name: 'Pagos personal',
+      component: () => import('./views/Operaciones/Choferes.vue'),
+      beforeEnter: (to, from, next) => {
+        if(store.state.authenticated == false) {
+          next(false);
+        } else {
+          next();
+        }
+      }
+    },
+    {
+      path: '/facturacion_guias',
+      name: 'Guias',
+      component: () => import('./views/Facturacion/Guias.vue'),
+      beforeEnter: (to, from, next) => {
+        if(store.state.authenticated == false) {
+          next(false);
+        } else {
+          next();
+        }
+      }
+    },
+
+    {
+      path: '/disposicion_dinero',
+      name: 'Disposicion de dinero',
+      component: () => import('./views/Disposicion_dinero.vue'),
+      beforeEnter: (to, from, next) => {
+        if(store.state.authenticated == false) {
+          next(false);
+        } else {
+          next();
+        }
+      }
+    },
+    {
       path: '/inicio',
       name: 'Usuarios',
       component: () => import('./views/Usuarios.vue'),

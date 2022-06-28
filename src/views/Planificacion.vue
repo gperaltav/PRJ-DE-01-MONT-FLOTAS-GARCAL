@@ -267,6 +267,24 @@ export default {
       //cargar listas
       this.load_flete();
     },
+    rs_changer2() {
+      this.emp_cont=this.form_e.rs;
+      this.form_e.cliente_id="";
+      this.form_e.cliente_nom="";
+      this.form_e.producto_tipo="";
+      this.form_e.producto_des="";
+      this.form_e.semire_id="";
+      this.form_e.tracto_id="";
+      this.form_e.oper_id="";
+      this.form_e.oper_nom="";
+      this.data_clis=[];
+      this.data_op=[];
+      if(this.form_e.rs!="") {
+        this.stop_cliente=false;
+      }
+      //cargar listas
+      this.load_flete();
+    },
 
     open_succes(msg) {
       this.alert_mo=msg;
@@ -423,10 +441,11 @@ export default {
     get_clientes(query) {
       console.log(query);
       axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/buscarclientenumero" ,
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/buscarentidadnumero', 
       {
-        "emp_id":this.emp_cont,
-        "ent_nrodocumento":query,
+        "emp_id": Number(this.emp_cont),
+        "ent_nrodocumento": query,
+        "ext_id": "cli"
       })
         .then((resp) => {
           console.log(resp);
@@ -438,7 +457,7 @@ export default {
       axios
       .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/" + String(idx),
       {
-        "emp_id":this.form_c.rs,
+        "emp_id":Number(this.emp_cont),
         "ext_id":"cli"
       })
         .then((resp) => {
@@ -683,10 +702,11 @@ export default {
 
       this.get_productos("");
       this.get_clientes("");
-      this.get_operarios2("");
       this.get_vehiculo12("");
       this.get_vehiculo22("");
+      this.get_operarios2("");
       this.select_operarios2(this.form_e.oper_id);
+      
       
       
 
@@ -710,7 +730,7 @@ export default {
         .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes', 
         {
           "emp_id":"",
-          "via_fechaviajeinicio":fech,
+          "via_fechaviajeinicio":fech2,
           "via_fechaviajefin":fech,
           "veh_placa":"",
           "ubi_nombreorigen":"",
@@ -1089,7 +1109,7 @@ export default {
         
         <el-input style="width:250px" v-model="form_c.subtotal">
           <template #append>
-            <el-button @click="calcular1()" :icon="List" />
+            <el-button @click="calcular1()"><img width="15" height="15" src = "../components/calculadora.svg"/> </el-button>
           </template>
           <template #prepend>S/</template>
         </el-input>
@@ -1108,7 +1128,7 @@ export default {
       <el-form-item label="Total" prop="total">
         <el-input style="width:250px" v-model="form_c.total">
           <template #append>
-            <el-button  @click="calcular2()" :icon="List" />
+            <el-button  @click="calcular2()" ><img width="15" height="15" src = "../components/calculadora.svg"/> </el-button>
           </template>
           <template #prepend>S/</template>
         </el-input>
@@ -1262,7 +1282,7 @@ export default {
    <el-form  ref="form_cref" :rules="rules" :model="form_e" label-width="150px" >
     <el-row style="text-align:center">
     <el-form-item style="margin-left: auto;margin-right: auto" label="Razón soc. asoc." prop="rs">
-      <el-select  v-model="form_e.rs" @change="rs_changer()" placeholder="Seleccionar">
+      <el-select  v-model="form_e.rs" @change="rs_changer2()" placeholder="Seleccionar">
         <el-option
           v-for="item in opt_rs"
           :key="item.emp_id"
@@ -1326,7 +1346,7 @@ export default {
       </el-form-item>
 
       <el-form-item  label="Flete " prop="flete">
-        <el-select style="width:250px" v-model="form_e.flete" @change="rs_changer" placeholder="Seleccionar">
+        <el-select style="width:250px" v-model="form_e.flete" placeholder="Seleccionar">
           <el-option
             v-for="item in opt_flete"
             :key="item.vfl_codigo"
@@ -1340,7 +1360,7 @@ export default {
         
         <el-input style="width:250px" v-model="form_e.subtotal">
           <template #append>
-            <el-button @click="calcular1()" :icon="List" />
+            <el-button @click="calcular1()"><img width="15" height="15" src = "../components/calculadora.svg"/> </el-button>
           </template>
           <template #prepend>S/</template>
         </el-input>
@@ -1359,7 +1379,7 @@ export default {
       <el-form-item label="Total" prop="total">
         <el-input style="width:250px" v-model="form_e.total">
           <template #append>
-            <el-button  @click="calcular2()" :icon="List" />
+            <el-button  @click="calcular2()"><img width="15" height="15" src = "../components/calculadora.svg"/> </el-button>
           </template>
           <template #prepend>S/</template>
         </el-input>

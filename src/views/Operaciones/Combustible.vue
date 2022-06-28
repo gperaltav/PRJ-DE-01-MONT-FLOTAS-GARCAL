@@ -260,7 +260,7 @@ export default {
       axios
       .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/buscarentidadnumero', 
       {
-        "emp_id": 2,
+        "emp_id": Number(this.form_c.rs),
         "ent_nrodocumento": query,
         "ext_id": "prv"
       })
@@ -525,7 +525,7 @@ export default {
       <el-col :span="8" style="text-align=center">
         <div class="sitebar">
         <el-tag style="color:white;" color="#0c59cf">
-          Base de datos > Vehículos
+          Operaciones > Combustible
         </el-tag>
       </div>
       </el-col>
@@ -680,7 +680,7 @@ export default {
               <div style="width:300px">
                 <el-input v-model="form_c.subtotal" placeholder="Inserte una cantidad">
                   <template #append>
-                    <el-button @click="calcular1()" :icon="List" />
+                    <el-button @click="calcular1()" ><img style="fill:#797979" width="15" height="15" src = "../../components/calculadora.svg"/> </el-button>
                   </template>
                   <template #prepend>S/</template>
                 </el-input>
@@ -688,7 +688,7 @@ export default {
             </el-form-item>
 
             <el-form-item style="margin-left: auto;margin-right: auto" label="Impuesto">
-              <div style="width:300px">
+              <div style="width:240px">
                 <el-input v-model="form_c.impuesto" placeholder="Inserte una cantidad">
                   <template #prepend>S/</template>
                 </el-input>
@@ -702,7 +702,7 @@ export default {
               <div style="width:300px">
                 <el-input v-model="form_c.total" placeholder="Inserte una cantidad">
                   <template #append>
-                    <el-button  @click="calcular2()" :icon="List" />
+                    <el-button  @click="calcular2()"><img style="fill:#797979" width="15" height="15" src = "../../components/calculadora.svg"/> </el-button>
                   </template>
                   <template #prepend>S/</template>
                 </el-input>

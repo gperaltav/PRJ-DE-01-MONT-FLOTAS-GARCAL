@@ -1,7 +1,7 @@
 <script setup>
 
 import { ref } from 'vue'
-import { Notebook, OfficeBuilding,DocumentChecked,Operation,TrendCharts} from '@element-plus/icons-vue'
+import { Notebook, OfficeBuilding,DocumentChecked,Operation,TrendCharts,Money,Tickets} from '@element-plus/icons-vue'
 
 </script>
 
@@ -16,7 +16,7 @@ export default {
 
 <template>
 
-<el-menu :default-openeds="['1', '2','4']" router=true>
+<el-menu :default-openeds="['1', '2']" router=true>
   <el-menu-item index="inicio">
     <template #title>
       <el-icon><office-building /></el-icon>Inicio 
@@ -49,7 +49,20 @@ export default {
     </template>
     <el-menu-item index="operaciones_combustible">Combustible</el-menu-item>
     <el-menu-item index="operaciones_viaticos">Viáticos</el-menu-item>
+    <el-menu-item index="operaciones_personal">Personal</el-menu-item>
   </el-sub-menu>
+  <el-sub-menu index="5">
+    <template #title>
+      <el-icon><Tickets /></el-icon>Facturación
+    </template>
+    <el-menu-item index="facturacion_guias">Guias</el-menu-item>
+  </el-sub-menu>
+  <el-menu-item index="disposicion_dinero">
+    <template #title>
+      <el-icon><Money /></el-icon> Disposicion de dinero
+    </template>
+  </el-menu-item>
+
 
 
 </el-menu>
