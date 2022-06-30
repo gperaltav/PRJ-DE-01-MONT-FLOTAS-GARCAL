@@ -56,6 +56,7 @@ export default {
       <el-icon><Tickets /></el-icon>Facturación
     </template>
     <el-menu-item index="facturacion_guias">Guias</el-menu-item>
+    <el-menu-item index="facturacion_comprobantes">Comprobantes</el-menu-item>
   </el-sub-menu>
   <el-menu-item index="disposicion_dinero">
     <template #title>

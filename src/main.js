@@ -194,6 +194,19 @@ const router = createRouter({
     },
 
     {
+      path: '/facturacion_comprobantes',
+      name: 'Comprobantes',
+      component: () => import('./views/Facturacion/Comprobantes.vue'),
+      beforeEnter: (to, from, next) => {
+        if(store.state.authenticated == false) {
+          next(false);
+        } else {
+          next();
+        }
+      }
+    },
+
+    {
       path: '/disposicion_dinero',
       name: 'Disposicion de dinero',
       component: () => import('./views/Disposicion_dinero.vue'),
