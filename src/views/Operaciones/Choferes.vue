@@ -40,8 +40,9 @@ export default {
       datap: [],
       opt_rs: [],
       opt_fp: [],
-      opt_td:[],
+      opt_con:[],
       opt_via:[],
+      data_op:[],
 
       data_edit: [],
       data_edit2: [],
@@ -53,9 +54,9 @@ export default {
 
       form_c : reactive({
         rs: '',
-        prv_id:'',
-        prv_nom:'',
-        tipo_doc:'',
+        tra_id:'',
+        tra_nom:'',
+        concepto:'',
         serie_doc:'',
         nro_doc:'',
         fecha_em:'',
@@ -99,13 +100,16 @@ export default {
 
     rs_changer() {
       this.emp_cont=this.form_c.rs;
-      this.form_c.prv_id="";
-      this.form_c.prv_nom="";
+      this.form_c.tra_id="";
+      this.form_c.tra_nom="";
       this.form_c.via_id="";
       this.form_c.fecha_via="";
+      this.form_c.concepto="";
       //cargar listas
       this.get_formas_pago();
       this.get_tipos_doc();
+      this.get_referencia();
+      this.get_chofer("");
     },
     fech_changer() {
       //cargar listas
@@ -225,22 +229,38 @@ export default {
       })
     },
 
+    get_referencia() {
+      axios
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprasreferencia/'+String(this.form_c.rs))
+      .then((resp) => {
+        console.log(resp);
+        this.opt_con = resp.data;
+      })
+    },
+
     get_chofer(query) {
       console.log(query);
       axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/tripulacionpendientesviajes" ,
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/tripulacionoperariodocumentos" ,
       {
         "emp_id": this.emp_cont,
-        "tra_nrodocumento":query,
-        "tri_licencianro":"",
-        "tra_nombre":"",
-        "via_fechaviaje":this.form_c.fecha,
-        "via_horaviaje":this.form_c.hora
+        "tra_nrodocumento ": query,
+        "tra_nombre": ""
       })
         .then((resp) => {
           console.log(resp);
           this.data_op = resp.data;
         })
+    },
+
+    select_chofer(id) {
+      for (let tmp in this.data_op)  {
+        console.log(tmp);
+        if (this.data_op[tmp].tra_id == id) {
+          this.form_c.tra_nom= this.data_op[tmp].tra_nombre;
+          return;
+        }
+      }
     },
 
     get_viajes() {
@@ -261,7 +281,7 @@ export default {
       .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprascab/nuevo', 
       {      
         "emp_id": Number(this.form_c.rs),
-        "ent_id": Number(this.form_c.prv_id),
+        "ent_id": Number(this.form_c.tra_id),
         "ccc_serie": this.form_c.serie_doc,
         "ccc_numero": this.form_c.nro_doc,
         "ccc_fechaemision": this.form_c.fecha_em,
@@ -328,56 +348,66 @@ export default {
     },
 
     transaccion_insertar() {
+      const tiempoTranscurrido = Date.now();
+      const hoy = new Date(tiempoTranscurrido);
+      var mm=String(hoy.getMonth() + 1);
+      var aa=String(hoy.getFullYear());
+      var dd=String(hoy.getDate());
+
+      if(mm.length==1)
+        mm="0"+mm;
+      if(dd.length==1)
+        dd="0"+dd;
+
+      var fech=aa+"-"+mm+"-"+dd;
+
+      console.log(fech);
+
       axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprascab/nuevo', 
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescompras/nuevo', 
       {
-        "cabecera": {
-          "emp_id": Number(this.form_c.rs),
-          "ent_id": Number(this.form_c.prv_id),
-          "ccc_serie": this.form_c.serie_doc,
-          "ccc_numero": this.form_c.nro_doc,
-          "ccc_fechaemision": this.form_c.fecha_em,
-          "ccc_subtotal": Number(this.form_c.subtotal),
-          "ccc_impuesto": Number(this.form_c.impuesto),
-          "ccc_total": Number(this.form_c.total),
-          "cct_codigo": "BOL",
-          "cce_codigo": "CAN",
-          "mon_codigo": "SOL",
-          "ccc_observaciones": "",
-          "ccc_idreferencia":null,
-          "ccc_tipocambio": 18,
-          "ccc_generamovimiento":false,
-          "ccc_fechaingreso":  this.form_c.fecha_em,
-          "ccc_periodoregistro":"",
-          "usu_codigo": "admin",
-          "ccc_usucreacion":"admin"
-        },
-        "detalle": [{
-          "emp_id": Number(this.form_c.rs),
-          "gui_fechaemision": this.form_c.fecha_em,
-          "gti_codigo": this.form_c.tipo_doc,
-          "gui_serie": this.form_c.serie_doc,
-          "gui_numero": this.form_c.nro_doc ,
-          "via_id": Number(this.form_c.via_id),
-          "gui_entdestinatario":"",
-          "veh_id": 0,
-          "veh_idacople":"",
-          "pro_id":3,
-          "gui_estado":"VAR",
-          "gui_peso":2,
-          "ubi_codigoorigen":"010112",
-          "ubi_codigodestino":"010113",
-          "gui_observacion":"",
-          "gui_usucreacion":"admin"
+        "emp_id": Number(this.form_c.rs),
+        "ent_id": "",
+        "ccc_serie": this.form_c.serie_doc,
+        "ccc_numero": this.form_c.nro_doc,
+        "ccc_fechaemision": this.form_c.fecha_em,
+        "ccc_subtotal": "",
+        "ccc_impuesto": "",
+        "ccc_total": Number(this.form_c.total),
+        "cct_codigo": "BOL",
+        "cce_codigo": "CAN",
+        "mon_codigo": "SOL",
+        "ccc_observaciones": this.form_c.obs,
+        "ccc_idreferencia":"",
+        "ccc_tipocambio": 18,
+        "ccc_generamovimiento":false,
+        "ccc_fechaingreso": fech,
+        "ccc_periodoregistro": fech,
+        "ccr_codigo":"PEA",
+        "usu_codigo": "admin",
+        "ccc_usucreacion":"admin",
+        "detalle":[{
+          "pro_id":"",
+          "via_id":String(this.form_c.via_id),
+          "veh_id":"",
+          "tra_id":Number(this.form_c.tra_id),
+          "ccd_serie":this.form_c.serie_doc,
+          "ccd_cantidad":"",
+          "ccd_preciounitario":"",
+          "ccd_subtotal":this.form_c.total,
+          "uni_unidad":"UNI"
         }]
       })
       .then((resp) => {
         console.log(resp.data);
         this.succes=resp.data.status;
         if (this.succes) {
+          this.open_succes("Operación realizada satisfactoriamente");
+          this.clear_c();
           return true;
         }
         else {
+          this.open_fail("Hubo un error con el servidor al ejecutar la operación");
           return false;
         }
       })
@@ -496,7 +526,7 @@ export default {
               <el-row style="width:600px"> 
               <el-col :span="8">
                 <el-select
-                  v-model="form_c.prv_id"
+                  v-model="form_c.tra_id"
                   filterable
                   :remote-method="get_chofer"
                   @change="select_chofer"
@@ -510,25 +540,25 @@ export default {
                   </template>
 
                   <el-option
-                    v-for="item in data_ops"
-                    :key="item.ent_id"
-                    :label="item.ent_nrodocumento"
-                    :value="item.ent_id"
+                    v-for="item in data_op"
+                    :key="item.tra_nrodocumento"
+                    :label="item.tra_nrodocumento"
+                    :value="item.tra_id"
                   />
                 </el-select>
               </el-col>
-              <el-col :span="16"><el-input disabled v-model="form_c.prv_nom" placeholder="Nombre del conductor" /></el-col>
+              <el-col :span="16"><el-input disabled v-model="form_c.tra_nom" placeholder="Nombre del conductor" /></el-col>
               </el-row>
             </el-form-item>
 
             <el-row style="width:800px; margin-bottom: 18px"> 
               <el-col :span="6">
-                <el-select v-model="form_c.tipo_doc" style="width:150px; margin-left:50px" placeholder="Concepto"  clearable>
+                <el-select v-model="form_c.concepto" style="width:150px; margin-left:50px" placeholder="Concepto"  clearable>
                 <el-option
-                  v-for="item in opt_td"
-                  :key="item.cct_codigo"
-                  :label="item.cct_descripcion"
-                  :value="item.cct_codigo"
+                  v-for="item in opt_con"
+                  :key="item.ccr_codigo"
+                  :label="item.ccr_descripcion"
+                  :value="item.ccr_codigo"
                 > </el-option>
                 </el-select>
               </el-col>
@@ -599,7 +629,7 @@ export default {
             </el-form-item>
 
             <el-row style="text-align=center; margin-left:100px" >
-              <el-button  @click="create_api" style="margin-left: auto;margin-right: auto" color="#0844a4" >Guardar</el-button>
+              <el-button  @click="transaccion_insertar" style="margin-left: auto;margin-right: auto" color="#0844a4" >Guardar</el-button>
             </el-row>
               
             </el-form>

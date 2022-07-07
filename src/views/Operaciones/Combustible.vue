@@ -129,22 +129,23 @@ export default {
   methods: {
 
     clear_c() {
-      this.form_c.rs='';
-      this.form_c.prv_id='';
-      this.form_c.prv_nom='';
-      this.form_c.tipo_doc='';
-      this.form_c.serie_doc='';
-      this.form_c.nro_doc='';
-      this.form_c.fecha_em='';
-      this.form_c.fecha_via='';
-      this.form_c.via_id='';
-      this.form_c.cantidad_n='';
-      this.form_c.cantidad_un='';
-      this.form_c.cantidad_p_uni='';
-      this.form_c.subtotal=0;
-      this.form_c.impuesto=0;
-      this.form_c.total=0;
-      this.form_c.tipo_pago='';
+      this.form_c.rs= '',
+      this.form_c.prv_id='',
+      this.form_c.prv_nom='',
+      this.form_c.tipo_doc='',
+      this.form_c.serie_doc='',
+      this.form_c.nro_doc='',
+      this.form_c.fecha_em='',
+      this.form_c.fecha_via='',
+      this.form_c.via_id='',
+      this.form_c.cantidad_n='',
+      this.form_c.cantidad_un='',
+      this.form_c.cantidad_p_uni='',
+      this.form_c.subtotal=0,
+      this.form_c.impuesto=0,
+      this.form_c.total=0,
+      this.form_c.tipo_pago='',
+      this.form_c.igv=18
     },
 
     rs_changer() {
@@ -156,6 +157,7 @@ export default {
       //cargar listas
       this.get_formas_pago();
       this.get_tipos_doc();
+      this.get_proveedores("");
     },
     fech_changer() {
       //cargar listas
@@ -345,7 +347,7 @@ export default {
         "ccc_idreferencia":null,
         "ccc_tipocambio": 18,
         "ccc_generamovimiento":false,
-        "ccc_fechaingreso":  this.form_c.fecha_em,
+        "ccc_fechaingreso": this.form_c.fecha_em,
         "ccc_periodoregistro":"",
         "usu_codigo": "admin",
         "ccc_usucreacion":"admin"
@@ -398,57 +400,66 @@ export default {
     },
 
     transaccion_insertar() {
+      const tiempoTranscurrido = Date.now();
+      const hoy = new Date(tiempoTranscurrido);
+      var mm=String(hoy.getMonth() + 1);
+      var aa=String(hoy.getFullYear());
+      var dd=String(hoy.getDate());
+
+      if(mm.length==1)
+        mm="0"+mm;
+      if(dd.length==1)
+        dd="0"+dd;
+
+      var fech=aa+"-"+mm+"-"+dd;
+
+      console.log(fech);
+
       axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprascab/nuevo', 
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescompras/nuevo', 
       {
-        "cabecera": {
-          "emp_id": Number(this.form_c.rs),
-          "ent_id": Number(this.form_c.prv_id),
-          "ccc_serie": this.form_c.serie_doc,
-          "ccc_numero": this.form_c.nro_doc,
-          "ccc_fechaemision": this.form_c.fecha_em,
-          "ccc_subtotal": Number(this.form_c.subtotal),
-          "ccc_impuesto": Number(this.form_c.impuesto),
-          "ccc_total": Number(this.form_c.total),
-          "cct_codigo": "BOL",
-          "cce_codigo": "CAN",
-          "mon_codigo": "SOL",
-          "ccc_observaciones": "",
-          "ccc_idreferencia":null,
-          "ccc_tipocambio": 18,
-          "ccc_generamovimiento":false,
-          "ccc_fechaingreso":  this.form_c.fecha_em,
-          "ccc_periodoregistro":"",
-          "usu_codigo": "admin",
-          "ccc_usucreacion":"admin"
-        },
-        "detalle": [{
-          "emp_id": Number(this.form_c.rs),
-          "gui_fechaemision": this.form_c.fecha_em,
-          "gti_codigo": this.form_c.tipo_doc,
-          "gui_serie": this.form_c.serie_doc,
-          "gui_numero": this.form_c.nro_doc ,
-          "via_id": Number(this.form_c.via_id),
-          "gui_entdestinatario":"",
-          "veh_id": 0,
-          "veh_idacople":"",
-          "pro_id":3,
-          "gui_estado":"VAR",
-          "gui_peso":2,
-          "ubi_codigoorigen":"010112",
-          "ubi_codigodestino":"010113",
-          "gui_observacion":"",
-          "gui_usucreacion":"admin"
-          }
-        ]
+        "emp_id": Number(this.form_c.rs),
+        "ent_id": Number(this.form_c.prv_id),
+        "ccc_serie": this.form_c.serie_doc,
+        "ccc_numero": this.form_c.nro_doc,
+        "ccc_fechaemision": this.form_c.fecha_em,
+        "ccc_subtotal": Number(this.form_c.subtotal),
+        "ccc_impuesto": Number(this.form_c.impuesto),
+        "ccc_total": Number(this.form_c.total),
+        "cct_codigo": this.form_c.tipo_doc,
+        "cce_codigo": "CAN",
+        "mon_codigo": "SOL",
+        "ccc_observaciones": "",
+        "ccc_idreferencia":"",
+        "ccc_tipocambio": 18,
+        "ccc_generamovimiento":false,
+        "ccc_fechaingreso": fech,
+        "ccc_periodoregistro": fech,
+        "ccr_codigo":"PEA",
+        "usu_codigo": "admin",
+        "ccc_usucreacion":"admin",
+        "detalle":[{
+          "pro_id":"",
+          "via_id":String(this.form_c.via_id),
+          "veh_id":"",
+          "tra_id":"",
+          "ccd_serie":this.form_c.serie_doc,
+          "ccd_cantidad":this.form_c.cantidad_n,
+          "ccd_preciounitario":this.form_c.cantidad_p_uni,
+          "ccd_subtotal":this.form_c.total,
+          "uni_unidad":"UNI"
+        }]
       })
       .then((resp) => {
         console.log(resp.data);
         this.succes=resp.data.status;
         if (this.succes) {
+          this.open_succes("Operación realizada satisfactoriamente");
+          this.clear_c();
           return true;
         }
         else {
+          this.open_fail("Hubo un error con el servidor al ejecutar la operación");
           return false;
         }
       })
@@ -722,7 +733,7 @@ export default {
             </el-form-item>
 
             <el-row style="text-align=center; margin-left:100px" >
-              <el-button  @click="create_api" style="margin-left: auto;margin-right: auto" color="#0844a4" >Guardar</el-button>
+              <el-button  @click="transaccion_insertar" style="margin-left: auto;margin-right: auto" color="#0844a4" >Guardar</el-button>
             </el-row>
               
             </el-form>

@@ -379,7 +379,7 @@ export default {
           "ent_nombre":this.form_b.nombre, 
           "ent_nrodocumento":this.form_b.nro_doc,
           "fdp_id":this.form_b.f_pago,
-          "pro_id":""
+          "pro_descripcion":""
         })
         .then((resp) => {
           console.log(resp);

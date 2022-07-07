@@ -74,7 +74,8 @@ export default {
       var_type:'prv',
       editpointer:0,
       succes: false,
-      operarios_id:[2,4],
+      gem_id: 'GEM',
+      gtr_id: 'GTR',
       datap: [],
       opt_rs: [],
 
@@ -103,10 +104,10 @@ export default {
 
       form_b : reactive({
         rs: '',
-        nro_doc: '',
-        nombre: '',
-        f_pago: '',
-        prod:''
+        tipo_guia: '',
+        codigo: '',
+        fech_inicio: '',
+        fech_fin:''
       }),
 
       form_c : reactive({
@@ -120,7 +121,13 @@ export default {
         gt_serie:'',
         gt_numero:'',
         gt_fecha_em:'',
-        gt_producto:''
+        gt_producto:'',
+
+        gt_pro_id:'',
+        veh_remolque:'',
+        veh_tracto:'',
+        ubi_origen:'',
+        ubi_destino:''
       }),
 
       form_e : reactive({
@@ -134,16 +141,24 @@ export default {
         gt_serie:'',
         gt_numero:'',
         gt_fecha_em:'',
-        gt_producto:''
+        gt_producto:'',
+
+        tipo:'',
+
+        gt_pro_id:'',
+        veh_remolque:'',
+        veh_tracto:'',
+        ubi_origen:'',
+        ubi_destino:''
       }),
 
     }
   },
 
   methods: {
-    async checkformx (formEl: FormInstance | undefined) {
+    checkformx (formEl: FormInstance | undefined) {
 
-      await formEl.validate((valid, fields) => {
+      formEl.validate((valid, fields) => {
         if (valid) {
           console.log('submit!');
           return true;
@@ -152,23 +167,6 @@ export default {
           return false;
         }
       })
-    },
-    get_descarga() {
-       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdepago/'+String(this.emp_cont))
-        .then((resp) => {
-          console.log(resp);  
-          //Download(resp.data.message,"Descargar");
-          const url = window.URL
-                .createObjectURL(new Blob([resp.data.message]));
-          const link = document.createElement('a');
-          link.href = url;
-          link.setAttribute('download', 'reporte.csv');
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-        })
-      
     },
 
     search_rs_ch() {
@@ -320,16 +318,73 @@ export default {
         })      
     },
 
+    load_data_edit() {
+      this.form_e.rs=this.data_edit[0].emp_id;
+      this.emp_cont=this.form_e.rs;
+      this.form_e.id_via=this.data_edit[0].via_id;
+      //carga de listas
+
+      //carga de datos
+      this.form_e.tipo=this.data_edit[0].gti_codigo;
+      if(this.form_e.tipo==this.gem_id) {
+        this.form_e.gr_serie=this.data_edit[0].gui_serie;
+        this.form_e.gr_numero=this.data_edit[0].gui_numero;
+        
+        this.form_e.gr_fecha_em=this.data_edit[0].gui_fechaemision;
+        this.form_e.gr_peso=this.data_edit[0].gui_peso;
+      }
+      if(this.form_e.tipo==this.gtr_id) {
+        this.form_e.gt_serie=this.data_edit[0].gui_serie;
+        this.form_e.gt_numero=this.data_edit[0].gui_numero;
+        this.form_e.gt_fecha_em=this.data_edit[0].gui_fechaemision;
+        
+        this.form_e.gt_producto=this.data_edit[0].pro_id;
+      }
+      
+      
+      this.form_e.fecha_via=this.data_edit[0].gui_fechaemision;
+
+      this.form_e.serie=this.data_edit[0].gui_serie;
+      this.form_e.numero=this.data_edit[0].gui_numero;
+      this.form_e.direccion=this.data_edit[0].ent_direccion;
+      this.form_e.correo=this.data_edit[0].ent_correo;
+      this.form_e.telefono=this.data_edit[0].ent_telefono;
+      this.form_e.c_pago=this.data_edit[0].fdp_id;
+      this.form_e.prod=this.data_edit[0].pro_id;
+    },
+
+    select_viaje(id) {
+      this.load_viaje_data(id);
+      for (let tmp in this.opt_via)  {
+        console.log(tmp);
+        if (this.opt_via[tmp].via_id == id) {
+          this.form_c.gt_pro_id= this.opt_via[tmp].pro_id;
+          this.form_c.gt_producto=this.opt_via[tmp].pro_descripcion;
+          this.form_c.veh_remolque= this.opt_via[tmp].veh_idremolque;
+          this.form_c.veh_tracto= this.opt_via[tmp].veh_idtracto;
+          return;
+        }
+      }
+    },
+
+    load_viaje_data(id) {
+      console.log(id);
+      axios
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes/'+String(id))
+      .then((resp) => {
+        console.log(resp);
+        this.data_aux = resp.data[0];
+        console.log(this.datap);
+        this.form_c.ubi_origen= this.data_aux.ubi_codigoorigen;
+        this.form_c.ubi_destino= this.data_aux.ubi_codigodestino;
+      })
+    },
+
     send_delete() {
       this.$refs.mo_advertencia_eliim.hide();
       this.err_code=false;
       axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/borrar/',
-        {
-          "ent_id":String(this.editpointer),
-          "emp_id":String(this.form_e.rs),
-          "ext_id":this.var_type
-        })
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/guias/borrar/'+String(this.editpointer))
         .then((resp) => {
           console.log(resp.data);
           this.succes=resp.data.status;
@@ -351,40 +406,10 @@ export default {
     },
 
 
-    load_data_edit() {
-      this.form_e.rs=this.data_edit[0].emp_id;
-      this.emp_cont=this.form_e.rs;
-      //carga de listas
-      this.load_fpago();
-      this.load_tdoc();
-      this.load_prod();
-
-      this.form_e.tipo_doc=this.data_edit[0].dti_id;
-      this.form_e.nro_doc=this.data_edit[0].ent_nrodocumento;
-      this.form_e.nombre=this.data_edit[0].ent_nombre;
-      this.form_e.c_pago=this.data_edit[0].vti_id;
-      this.form_e.direccion=this.data_edit[0].ent_direccion;
-      this.form_e.correo=this.data_edit[0].ent_correo;
-      this.form_e.telefono=this.data_edit[0].ent_telefono;
-      this.form_e.c_pago=this.data_edit[0].fdp_id;
-      this.form_e.prod=this.data_edit[0].pro_id;
-    },
-
-    load_viaje_data(id) {
-      console.log(id);
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes/'+String(id))
-      .then((resp) => {
-        console.log(resp);
-        this.data_aux = resp.data[0];
-        console.log(this.datap);
-      })
-    },
-
     api_get_all(){
       //llamada a API
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/proveedor')
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/guias')
       .then((resp) => {
         console.log(resp);
         this.datap = resp.data;
@@ -414,14 +439,13 @@ export default {
     api_get_filt(){
       console.log(this.form_b.rs);
       axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad', 
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/guias', 
         {
-          "emp_id": String(this.form_b.rs),
-          "ext_id":this.var_type,
-          "ent_nombre":this.form_b.nombre, 
-          "ent_nrodocumento":this.form_b.nro_doc,
-          "fdp_id":this.form_b.f_pago,
-          "pro_id":this.form_b.prod
+          "emp_id": Number(this.form_b.rs),
+          "gti_codigo": this.form_b.tipo_guia,
+          "gui_serienumero": this.form_b.codigo,
+          "gui_fechaemision_inicio": this.form_b.fech_inicio,
+          "gui_fechaemision_fin": this.form_b.fech_fin
         })
         .then((resp) => {
           console.log(resp);
@@ -429,25 +453,46 @@ export default {
         })
     },
     
-    create_usr(){
+    crear_guia(){
+
+      console.log(
+        {      
+            "emp_id": Number(this.form_c.rs),
+            "gui_fechaemision": this.form_c.gt_fecha_em,
+            "gti_codigo": "GTR",
+            "gui_serie":this.form_c.gt_serie,
+            "gui_numero": this.form_c.gt_numero,
+            "via_id": Number(this.form_c.id_via),
+            "gui_entdestinatario":"",
+            "veh_id": Number(this.form_c.veh_tracto),
+            "veh_idacople":"",
+            "pro_id":Number(this.form_c.gt_pro_id),
+            "gui_estado":"",
+            "gui_peso":Number(this.form_c.peso),
+            "ubi_codigoorigen":this.form_c.ubi_origen,
+            "ubi_codigodestino":this.form_c.ubi_destino,
+            "gui_observacion":"",
+            "gui_usucreacion":"admin"
+          }
+      );
 
       axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/guias/nuevo', 
-      { 
-        "emp_id":Number(this.form_c.rs),
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/guias/nuevo',
+      {      
+        "emp_id": Number(this.form_c.rs),
         "gui_fechaemision": this.form_c.gr_fecha_em,
         "gti_codigo": "GEM",
-        "gui_serie": this.form_c.gr_serie,
+        "gui_serie":this.form_c.gr_serie,
         "gui_numero": this.form_c.gr_numero,
-        "via_id": Number(this.form_c.id_via),
-        "gui_entdestinatario":this.data_aux.ent_id,
-        "veh_id": Number(this.data_aux.veh_idtracto),
-        "veh_idacople":Number(this.data_aux.veh_idremolque),
-        "pro_id":"",
+        "via_id":  Number(this.form_c.id_via),
+        "gui_entdestinatario":"",
+        "veh_id":  Number(this.form_c.veh_tracto),
+        "veh_idacople": "",
+        "pro_id":Number(this.form_c.gt_pro_id),
         "gui_estado":"",
-        "gui_peso":Number(this.form_c.gr_peso),
-        "ubi_codigoorigen":this.data_aux.ubi_codigoorigen,
-        "ubi_codigodestino":this.data_aux.ubi_codigodestino,
+        "gui_peso": Number(this.form_c.gr_peso),
+        "ubi_codigoorigen":this.form_c.ubi_origen,
+        "ubi_codigodestino":this.form_c.ubi_destino,
         "gui_observacion":"",
         "gui_usucreacion":"admin"
       })
@@ -456,23 +501,22 @@ export default {
         this.succes=resp.data.status;
         if (this.succes) {
           axios
-          .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/guias/nuevo', 
-          { 
-            "emp_id":parseInt(this.form_c.rs),
-            "gui_fechaemision": this.form_c.gr_fecha_em,
+          .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/guias/nuevo',
+          {      
+            "emp_id": Number(this.form_c.rs),
+            "gui_fechaemision": this.form_c.gt_fecha_em,
             "gti_codigo": "GTR",
-            "gui_serie": this.form_c.gt_serie,
+            "gui_serie":this.form_c.gt_serie,
             "gui_numero": this.form_c.gt_numero,
             "via_id": Number(this.form_c.id_via),
             "gui_entdestinatario":"",
-            "veh_id": Number(this.data_aux.veh_idtracto),
-            "veh_idacople":Number(this.data_aux.veh_idremolque),
-            "pro_id": Number(this.data_aux.pro_id),
-            //"pro_id": Number(this.form_c.gt_producto),
+            "veh_id": Number(this.form_c.veh_tracto),
+            "veh_idacople":"",
+            "pro_id":Number(this.form_c.gt_pro_id),
             "gui_estado":"",
-            "gui_peso":"",
-            "ubi_codigoorigen":this.data_aux.ubi_codigoorigen,
-            "ubi_codigodestino":this.data_aux.ubi_codigodestino,
+            "gui_peso":Number(this.form_c.gr_peso),
+            "ubi_codigoorigen":this.form_c.ubi_origen,
+            "ubi_codigodestino":this.form_c.ubi_destino,
             "gui_observacion":"",
             "gui_usucreacion":"admin"
           })
@@ -480,17 +524,14 @@ export default {
             console.log(resp.data);
             this.succes=resp.data.status;
             if (this.succes) {
-              this.open_succes("Operación realizada satisfactoriamente");
-              return true;
-              
+                  this.open_succes("Operación realizada satisfactoriamente");
+                  return true;
             }
             else {
-              this.open_fail("Hubo un error con el servidor al ejecutar la operación");
+              this.open_fail("Hubo un error con el servidor al insertar la guia de transportista");
               return false;
             }
           })
-          return false;
-          
         }
         else {
           this.open_fail("Hubo un error con el servidor al ejecutar la operación");
@@ -507,42 +548,81 @@ export default {
       this.$refs.mo_create_per.hide(); 
     },
 
-    editar_usr(){
+    editar_guia(){
       //llamada a API
+      var send={};
+      if(this.form_e.tipo==this.gem_id) {
+        send= {
+          "gui_id": Number(this.editpointer),
+          "emp_id":  Number(this.form_e.rs),
+          "gui_fechaemision": this.form_e.gr_fecha_em,
+          "gti_codigo":"GEM",
+          "gui_serie": this.form_e.gr_serie,
+          "gui_numero": this.form_e.gr_numero,
+          "via_id":  Number(this.data_edit[0].via_id),
+          "gui_entdestinatario":"",
+          "veh_id": Number(this.data_edit[0].veh_id),
+          "veh_idacople":"",
+          "pro_id":  Number(this.data_edit[0].pro_id),
+          "gui_estado":"THB",
+          "gui_peso": Number(this.data_edit[0].gui_peso),
+          "ubi_codigoorigen":this.data_edit[0].ubi_codigoorigen,
+          "ubi_codigodestino":this.data_edit[0].ubi_codigodestino,
+          "gui_observacion":"",
+          "gui_usucreacion":"admin"
+        }
+      }
+      if(this.form_e.tipo==this.gtr_id) {
+        send= {
+          "gui_id": this.editpointer,
+          "emp_id": this.form_e.rs,
+          "gui_fechaemision": this.form_e.gt_fecha_em,
+          "gti_codigo":"GTR",
+          "gui_serie": this.form_e.gt_serie,
+          "gui_numero": this.form_e.gt_numero,
+          "via_id": this.data_edit[0].via_id,
+          "gui_entdestinatario":"",
+          "veh_id": this.data_edit[0].veh_id,
+          "veh_idacople":"",
+          "pro_id": this.data_edit[0].pro_id,
+          "gui_estado":"THB",
+          "gui_peso":this.data_edit[0].gui_peso,
+          "ubi_codigoorigen":this.data_edit[0].ubi_codigoorigen,
+          "ubi_codigodestino":this.data_edit[0].ubi_codigodestino,
+          "gui_observacion":"",
+          "gui_usucreacion":"admin"
+        }
+      }
+
+      console.log(send);
+      console.log({
+          "gui_id": Number(this.editpointer),
+          "emp_id":  Number(this.form_e.rs),
+          "gui_fechaemision": this.form_e.gr_fecha_em,
+          "gti_codigo":"GEM",
+          "gui_serie": this.form_e.gr_serie,
+          "gui_numero": this.form_e.gr_numero,
+          "via_id":  Number(this.data_edit[0].via_id),
+          "gui_entdestinatario":"",
+          "veh_id": Number(this.data_edit[0].veh_id),
+          "veh_idacople":"",
+          "pro_id":  Number(this.data_edit[0].pro_id),
+          "gui_estado":"THB",
+          "gui_peso": Number(this.data_edit[0].gui_peso),
+          "ubi_codigoorigen":this.data_edit[0].ubi_codigoorigen,
+          "ubi_codigodestino":this.data_edit[0].ubi_codigodestino,
+          "gui_observacion":"",
+          "gui_usucreacion":"admin"
+        });
+
       axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/actualizar', 
-        { 
-          "ent_id" :this.editpointer,
-          "emp_id":parseInt(this.form_e.rs),
-          "Ubi_codigo":"",
-          "ent_nombre":this.form_e.nombre,
-          "dti_id":this.form_e.tipo_doc,
-          "ent_nrodocumento":this.form_e.nro_doc,
-          "ent_apellidopaterno":"",
-          "ent_apellidomaterno":"",
-          "ent_activo":true,
-          "zon_id":0,
-          "ent_direccion":this.form_e.direccion,
-          "ent_telefono":this.form_e.telefono,
-          "ent_celular":"",
-          "ent_paginaweb":"",
-          "ent_correo":this.form_e.correo,
-          "ent_contacto":"",
-          "ent_sexo":"",
-          "ent_usucreacion":"admin",
-          "ent_personanatural":true,
-          "ext_id":this.var_type,
-          "fdp_id":this.form_e.c_pago,
-          "fpd_diasvencimiento":this.form_e.plazo,
-          "ent_estadocontribuyente":this.form_e.c_activo,
-          "ent_condicioncontribuyente":this.form_e.c_habido,
-          "pro_id":this.form_e.prod
-        })
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/guias/actualizar', 
+        send)
         .then((resp) => {
           console.log(resp.data.status);
           this.succes=resp.data.status;
           if (this.succes) {
-            this.open_succes_ed("Proveedor modificado satisfactoriamente");
+            this.open_succes_ed("Guia modificada satisfactoriamente");
           }
           else {
             this.open_fail("Hubo un error al comunicarse con el servidor");
@@ -552,12 +632,12 @@ export default {
         return false;
     },
 
-    button_handle(number,number2){
-      console.log(number);
-      this.editpointer=number;
+    button_handle(id){
+      console.log(id);
+      this.editpointer=id;
       this.$refs.mo_editar_per.open();
       this.wait = true;
-      this.load_edit(number,number2);
+      this.load_edit(id);
       
       setTimeout(() => {
         this.load_data_edit();
@@ -622,7 +702,7 @@ export default {
               </el-form-item>
 
               <el-form-item label="Tipo de guia">
-                <el-select v-model="form_b.f_pago" placeholder="Seleccionar" clearable>
+                <el-select v-model="form_b.tipo_guia" placeholder="Seleccionar" clearable>
                   <el-option
                     v-for="item in opt_fpago"
                     :key="item.fdp_id"
@@ -633,13 +713,13 @@ export default {
               </el-form-item>
 
               <el-form-item label="Codigo">
-                <el-input placeholder="serie-numero" v-model="form_b.nombre" clearable />
+                <el-input placeholder="serie-numero" v-model="form_b.codigo" clearable />
               </el-form-item>
 
               <el-form-item label="Fecha de emisión">
                 <el-col :span="11">
                   <el-date-picker
-                    v-model="form_b.fecha_i"
+                    v-model="form_b.fech_inicio"
                     format="YYYY-MM-DD"
                     value-format="YYYY-MM-DD"
                     type="date"
@@ -652,7 +732,7 @@ export default {
                 </el-col>
                 <el-col :span="11">
                   <el-date-picker
-                    v-model="form_b.fecha_f"
+                    v-model="form_b.fech_fin"
                     format="YYYY-MM-DD"
                     value-format="YYYY-MM-DD"
                     type="date"
@@ -672,7 +752,7 @@ export default {
                 <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
               </el-row>
               <el-row class="mb-4">
-                <el-button color="#95d475" :icon=" Download" @click="get_descarga" disabled>A Excel</el-button>
+                <el-button color="#95d475" :icon=" Download"  disabled>A Excel</el-button>
               </el-row>
               </div>
             </el-col>
@@ -681,16 +761,16 @@ export default {
 
           <div class="table-container">
           <el-table :data="datap" border header-row-style="color:black;" >
-            <el-table-column prop="emp_razonsocial" label="Razon soc. aso." width="140" />
-            <el-table-column prop="ent_nombre" label="Tipo de guia"  width="200" sortable/>
-            <el-table-column prop="ent_nrodocumento" label="Fecha emisión" />  
-            <el-table-column prop="pro_descripcion" label="Nro. Guia" />
-            <el-table-column prop="fdp_descri" label="Placa" />
-            <el-table-column prop="fdp_descri" label="Viaje" />  
-            <el-table-column prop="fdp_descri" label="Estado" /> 
+            <el-table-column prop="emp_razonsocial" label="Razon soc. aso." width="140" align="center"/>
+            <el-table-column prop="gti_descripcion" label="Tipo de guia"  width="200"/>
+            <el-table-column prop="gui_fechaemision" label="Fecha emisión" />  
+            <el-table-column prop="gui_serienumero" label="Nro. Guia" />
+            <el-table-column prop="veh_placa" label="Placa" />
+            <el-table-column prop="via_descripcion" label="Viaje" />  
+            <el-table-column prop="gui_estado" label="Estado" /> 
             <el-table-column fixed="right" label="" width="40">
               <template #default="scope">
-                <el-button  type="text"  @click="button_handle(scope.row.ent_id,scope.row.emp_id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
+                <el-button  type="text"  @click="button_handle(scope.row.gui_id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -700,7 +780,7 @@ export default {
     </el-container>
   </el-container>
 
-<modal ref="mo_create_per" no-close-on-backdrop title="Agregar Guia" width="900px" @ok="create_usr" @cancel="closecrear" cancel-title="Atras" centered>
+<modal ref="mo_create_per" no-close-on-backdrop title="Agregar Guia" width="900px" @ok="crear_guia" @cancel="closecrear" cancel-title="Atras" centered>
   <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" >
     <el-row style="text-align:center">
     <el-form-item style="margin-left: auto;margin-right: auto" label="Razón soc. asoc." prop="rs">
@@ -716,21 +796,19 @@ export default {
     </el-row>
     <el-row style="text-align:center">
     <el-form-item style="margin-left: auto;margin-right: auto" label="Fecha de viaje">
-      <el-row style="width: 450px">
-        <el-col :span="8">
+      <el-row >
+
           <el-date-picker
             type="date"
             v-model="form_c.fecha_via"
             format="YYYY-MM-DD"
             value-format="YYYY-MM-DD"
-            placeholder="Seleccione fecha"
-            style="width: 150px"
+            placeholder="Inserte fecha"
+            style="width: 140px"
             @change="fech_changer"
           />
-        </el-col>
-        
-        <el-col :span="16">
-          <el-select v-model="form_c.id_via" placeholder="Seleccione una opcion" style="width: 300px" @change="load_viaje_data" clearable>
+
+          <el-select v-model="form_c.id_via" placeholder="Seleccione una opcion" style="width: 300px" @change="select_viaje" clearable>
             <el-option
               v-for="item in opt_via"
               :key="item.via_id"
@@ -739,7 +817,7 @@ export default {
               
             > </el-option>
           </el-select> 
-        </el-col>
+
       </el-row>
     </el-form-item>
     </el-row>
@@ -799,12 +877,12 @@ export default {
 
 
 
-<modal ref="mo_editar_per" no-close-on-backdrop title="Editar datos de Proveedor" width="500px" @ok="editar_usr" cancel-title="Cancelar" @cancel="closeedit"  centered>
+<modal ref="mo_editar_per" no-close-on-backdrop title="Editar datos de Guia" width="600px" @ok="editar_guia" cancel-title="Cancelar" @cancel="closeedit"  centered>
   <el-form v-loading="wait" ref="form_cref" :rules="rules" :model="form" label-width="150px" >
 
-    <el-row style="text-align:center">
-    <el-form-item style="margin-left: auto;margin-right: auto" label="Razón soc. asoc." prop="rs" disabled>
-      <el-select style="width:300px" v-model="form_e.rs" @change="rs_changer" placeholder="Seleccionar">
+
+    <el-form-item label="Razón soc. asoc.">
+      <el-select style="width:300px" v-model="form_e.rs" @change="rs_changer" placeholder="Seleccionar" disabled>
         <el-option
           v-for="item in opt_rs"
           :key="item.emp_id"
@@ -813,25 +891,11 @@ export default {
         > </el-option>
       </el-select>
     </el-form-item>
-    </el-row>
-    <el-row style="text-align:center">
-    <el-form-item style="margin-left: auto;margin-right: auto" label="Fecha de viaje">
-      <el-row style="width: 450px">
-        <el-col :span="8">
-          <el-date-picker
-            type="date"
-            v-model="form_e.fecha_via"
-            format="YYYY-MM-DD"
-            value-format="YYYY-MM-DD"
-            placeholder="Seleccione fecha"
-            style="width: 150px"
-            @change="fech_changer"
-            disabled
-          />
-        </el-col>
-        
-        <el-col :span="16">
-          <el-select v-model="form_e.id_via" placeholder="Seleccione una opcion" style="width: 300px" @change="load_viaje_data" disabled>
+
+
+    <el-form-item label="Viaje">
+      <el-row >
+          <el-select v-model="form_e.id_via" placeholder="Seleccione una opcion" style="width: 300px" @change="select_viaje" disabled>
             <el-option
               v-for="item in opt_via"
               :key="item.via_id"
@@ -840,60 +904,62 @@ export default {
               
             > </el-option>
           </el-select> 
-        </el-col>
       </el-row>
     </el-form-item>
-    </el-row>
 
-    <el-row>
-      <el-col style="text-align:center" :span="12">
-        <h4>Guia Remitente </h4>
-        <el-form-item label="Serie" >
-          <el-input v-model="form_e.gr_serie" style="width: 200px" />
-        </el-form-item>
-        <el-form-item label="Numero" >
-          <el-input v-model="form_e.gr_numero" style="width: 200px" />
-        </el-form-item>
-        <el-form-item label="Fecha emision" >
-          <el-date-picker
-            type="date"
-            v-model="form_e.gr_fecha_em"
-            format="YYYY-MM-DD"
-            value-format="YYYY-MM-DD"
-            placeholder="Seleccione fecha"
-            style="width: 200px"
-            @change="fech_changer"
-          />
-        </el-form-item>
-        <el-form-item label="Peso" >
-          <el-input v-model="form_e.gr_peso" style="width: 200px" />
-        </el-form-item>
-      </el-col>
 
-      <el-col :span="12">
-        <h4>Guia Transportista </h4>
-        <el-form-item label="Serie" >
-          <el-input v-model="form_e.gt_serie" style="width: 200px"/>
-        </el-form-item>
-        <el-form-item label="Numero" >
-          <el-input v-model="form_e.gt_numero" style="width: 200px"/>
-        </el-form-item>
-        <el-form-item label="Fecha emision" >
-          <el-date-picker
-            type="date"
-            v-model="form_e.gt_fecha_em"
-            format="YYYY-MM-DD"
-            value-format="YYYY-MM-DD"
-            placeholder="Seleccione fecha"
-            style="width: 200px"
-            @change="fech_changer"
-          />
-        </el-form-item>
-        <el-form-item label="Producto" >
-          <el-input v-model="form_e.gt_producto" style="width: 200px" disabled/>
-        </el-form-item>
-      </el-col>
-    </el-row>
+    <div v-if="form_e.tipo==gem_id" style="margin-left:50px;margin-right:50px;text-align:center">
+    <h4 style="text">Guia Remitente </h4>
+
+      
+      <el-form-item label="Serie" >
+        <el-input v-model="form_e.gr_serie" style="width: 200px" />
+      </el-form-item>
+      <el-form-item label="Numero" >
+        <el-input v-model="form_e.gr_numero" style="width: 200px" />
+      </el-form-item>
+      <el-form-item label="Fecha emision" >
+        <el-date-picker
+          type="date"
+          v-model="form_e.gr_fecha_em"
+          format="YYYY-MM-DD"
+          value-format="YYYY-MM-DD"
+          placeholder="Seleccione fecha"
+          style="width: 200px"
+          @change="fech_changer"
+        />
+      </el-form-item>
+      <el-form-item label="Peso" >
+        <el-input v-model="form_e.gr_peso" style="width: 200px" />
+      </el-form-item>
+
+    </div>
+
+    <div v-if="form_e.tipo==gtr_id" style="margin-left:50px;margin-right:50px;text-align:center">
+    <h4 style="text">Guia Transportista </h4>
+
+      <el-form-item label="Serie" >
+        <el-input v-model="form_e.gt_serie" style="width: 200px"/>
+      </el-form-item>
+      <el-form-item label="Numero" >
+        <el-input v-model="form_e.gt_numero" style="width: 200px"/>
+      </el-form-item>
+      <el-form-item label="Fecha emision" >
+        <el-date-picker
+          type="date"
+          v-model="form_e.gt_fecha_em"
+          format="YYYY-MM-DD"
+          value-format="YYYY-MM-DD"
+          placeholder="Seleccione fecha"
+          style="width: 200px"
+          @change="fech_changer"
+        />
+      </el-form-item>
+      <el-form-item label="Producto" >
+        <el-input v-model="form_e.gt_producto" style="width: 200px" disabled/>
+      </el-form-item>
+
+    </div>
 
   </el-form>
 </modal>
