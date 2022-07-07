@@ -602,11 +602,11 @@ export default {
 
           <div class="table-container">
           <el-table :data="datap" border header-row-style="color:black;" >
-              <el-table-column prop="emp_razonsocial" label="Razon soc. asoc. " width="140" />
+              <el-table-column prop="emp_razonsocial" label="Razon soc. asoc. " width="140" align="center" />
               <el-table-column prop="veh_placa" label="Placa" width="90" />
-              <el-table-column prop="vcl_nombre" label="Clase" />
-              <el-table-column prop="vti_nombre" label="Tipo" />
-              <el-table-column prop="vma_nombre" label="Marca" width="130" sortable/>
+              <el-table-column prop="vcl_nombre" label="Clase" width="150"/>
+              <el-table-column prop="vti_nombre" label="Tipo" width="130"/>
+              <el-table-column prop="vma_nombre" label="Marca" width="140" sortable/>
               <el-table-column prop="vmo_nombre" label="Modelo" />
               <el-table-column prop="veh_anno" label="Año" width="60"  />
               <el-table-column prop="veh_serie" label="Nro. serie" />

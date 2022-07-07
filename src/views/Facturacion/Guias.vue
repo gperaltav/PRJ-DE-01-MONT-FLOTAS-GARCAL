@@ -79,6 +79,8 @@ export default {
       datap: [],
       opt_rs: [],
 
+      opt_tguia: [],
+
       data_aux: [],
 
       opt_mar:[],
@@ -106,8 +108,8 @@ export default {
         rs: '',
         tipo_guia: '',
         codigo: '',
-        fech_inicio: '',
-        fech_fin:''
+        fech_inicio: null,
+        fech_fin:null
       }),
 
       form_c : reactive({
@@ -389,7 +391,7 @@ export default {
           console.log(resp.data);
           this.succes=resp.data.status;
           if (this.succes) {
-            this.open_succes("Guia anulada correctamente");
+            this.open_succes("Guia eliminada correctamente");
             this.err_code = true;
           }
           else {
@@ -703,12 +705,8 @@ export default {
 
               <el-form-item label="Tipo de guia">
                 <el-select v-model="form_b.tipo_guia" placeholder="Seleccionar" clearable>
-                  <el-option
-                    v-for="item in opt_fpago"
-                    :key="item.fdp_id"
-                    :label="item.fdp_descripcion"
-                    :value="item.fdp_id"
-                  > </el-option>
+                  <el-option label="GUIA DE EMISION" value="GEM" />
+                  <el-option label="GUIA TRANSPORTISTA" value="GTR" />
                 </el-select>
               </el-form-item>
 
@@ -766,7 +764,7 @@ export default {
             <el-table-column prop="gui_fechaemision" label="Fecha emisión" />  
             <el-table-column prop="gui_serienumero" label="Nro. Guia" />
             <el-table-column prop="veh_placa" label="Placa" />
-            <el-table-column prop="via_descripcion" label="Viaje" />  
+            <el-table-column prop="via_descripcion" label="Viaje" width="210"/>  
             <el-table-column prop="gui_estado" label="Estado" /> 
             <el-table-column fixed="right" label="" width="40">
               <template #default="scope">
@@ -960,7 +958,9 @@ export default {
       </el-form-item>
 
     </div>
-
+    <el-row style="text-align=center">
+      <el-button style="margin-left: auto;margin-right: auto" color="#E21747" :icon="CloseBold" @click="open_confirmar('Realmente desea eliminar este documento?')">Eliminar</el-button>
+    </el-row>
   </el-form>
 </modal>
 

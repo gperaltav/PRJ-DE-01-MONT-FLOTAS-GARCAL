@@ -492,7 +492,7 @@ export default {
       </el-col>
     </el-header>
 
-    <el-container style="height: calc( 100vw - 100px );">
+    <el-container style="height: 50%;">
       <el-aside width="200px">
         <el-scrollbar>
           <Sidebar />

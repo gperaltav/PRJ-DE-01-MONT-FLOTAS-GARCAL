@@ -181,6 +181,7 @@ export default {
         tracto_id: '',
         oper_id: '',
         oper_nom:'',
+        cantidad_flete:''
 
       }),
 
@@ -930,8 +931,6 @@ export default {
             <el-row>
             <el-col :span="21">
 
-              
-
               <el-form-item label="Razón social">
                   <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
                     <el-option
@@ -1003,14 +1002,18 @@ export default {
 
           <div class="table-container">
           <el-table :data="datap" border header-row-style="color:black;" >
-              <el-table-column prop="emp_razonsocial" label="Razon soc. asoc. " width="140" />
+              <el-table-column prop="emp_razonsocial" label="Razon soc. asoc. " width="140" align="center"/>
               <el-table-column prop="via_ordenservicio" label="Nro. de servicio" width="140" />
-              <el-table-column prop="via_fechaviaje" label="Fecha de viaje" width="140" />
-              <el-table-column prop="via_horaviaje" label="Hora de viaje" width="140" />
-              <el-table-column prop="veh_conductor" label="Conductor" />
-              <el-table-column prop="vfl_nombre" label="Flete" />
-              <el-table-column prop="ubi_nombreorigen" label="Origen" />
-              <el-table-column prop="ubi_nombredestino" label="Destino" />
+              <el-table-column prop="via_fechaviaje" label="Fecha de programada" width="180" />
+              <el-table-column prop="ubi_nombreorigen" label="Punto de partida" width="140" align="center"/>
+              <el-table-column prop="veh_conductor" label="Conductor" width="150"/>
+              <el-table-column prop="tri_licencianro" label="Licencia nro." width="140" align="center" />
+              <el-table-column prop="veh_tracto" label="Placa de Tracto" width="130" align="center"/>
+              <el-table-column prop="veh_semiremolque" label="Placa de Acople" width="140" align="center"/>
+              <el-table-column prop="ubi_nombredestino" label="Destino" width="140" align="center"/>
+
+              <el-table-column prop="via_horaviaje" label="Hora de viaje" width="130" />              
+              <el-table-column prop="vfl_nombre" label="Flete" width="140"/>
 
               <el-table-column fixed="right" label="" width="40">
                 <template #default="scope">
@@ -1095,7 +1098,7 @@ export default {
       </el-form-item>
 
       <el-form-item  label="Flete " prop="flete">
-        <el-select style="width:250px" v-model="form_c.flete" placeholder="Seleccionar">
+        <el-select style="width:150px" v-model="form_c.flete" placeholder="Seleccionar">
           <el-option
             v-for="item in opt_flete"
             :key="item.vfl_codigo"
@@ -1103,6 +1106,7 @@ export default {
             :value="item.vfl_codigo"
           > </el-option>
         </el-select>
+        <el-input placeholder="Cantidad" style="width:100px" v-model="form_c.cantidad_flete"/>
       </el-form-item>
 
       <el-form-item label="Subtotal" prop="subtotal">
@@ -1155,12 +1159,12 @@ export default {
           />
       </el-form-item>
 
-      <el-form-item  label="Origen " prop="origen">
+      <el-form-item  label="Partida " prop="origen">
         <el-select label="Ruta"
           v-model="form_c.origen"
           filterable
           :remote-method="get_ubigeos"
-          placeholder="Inserte origen"
+          placeholder="Punto de partida"
           remote
           clearable
           style="width:250px"
@@ -1183,7 +1187,7 @@ export default {
           v-model="form_c.destino"
           filterable
           :remote-method="get_ubigeos"
-          placeholder="Inserte origen"
+          placeholder="Punto de destino"
           remote
           clearable
           style="width:250px"

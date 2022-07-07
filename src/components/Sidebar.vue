@@ -16,7 +16,7 @@ export default {
 
 <template>
 
-<el-menu :default-openeds="['1', '2']" router=true>
+<el-menu :default-openeds="['1', '2','4','5']" router=true>
   <el-menu-item index="inicio">
     <template #title>
       <el-icon><office-building /></el-icon>Inicio 
@@ -50,6 +50,7 @@ export default {
     <el-menu-item index="operaciones_combustible">Combustible</el-menu-item>
     <el-menu-item index="operaciones_viaticos">Viáticos</el-menu-item>
     <el-menu-item index="operaciones_personal">Personal</el-menu-item>
+    <el-menu-item index="operaciones_pago">Pago</el-menu-item>
   </el-sub-menu>
   <el-sub-menu index="5">
     <template #title>
@@ -58,7 +59,7 @@ export default {
     <el-menu-item index="facturacion_guias">Guias</el-menu-item>
     <el-menu-item index="facturacion_comprobantes">Comprobantes</el-menu-item>
   </el-sub-menu>
-  <el-menu-item index="disposicion_dinero">
+  <el-menu-item disabled index="disposicion_dinero">
     <template #title>
       <el-icon><Money /></el-icon> Disposicion de dinero
     </template>

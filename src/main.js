@@ -2,6 +2,7 @@ import {createApp} from 'vue'
 import {createStore} from 'vuex'
 import {createRouter, createWebHashHistory} from 'vue-router'
 import ElementPlus from 'element-plus'
+import es from 'element-plus/es/locale/lang/es'
 import 'element-plus/dist/index.css'
 
 import App from './App.vue'
@@ -35,6 +36,7 @@ const store = createStore({
 
 const router = createRouter({
   history: createWebHashHistory(),
+  //history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
@@ -181,6 +183,18 @@ const router = createRouter({
       }
     },
     {
+      path: '/operaciones_pago',
+      name: 'Pagos ',
+      component: () => import('./views/Operaciones/Pago.vue'),
+      beforeEnter: (to, from, next) => {
+        if(store.state.authenticated == false) {
+          next(false);
+        } else {
+          next();
+        }
+      }
+    },
+    {
       path: '/facturacion_guias',
       name: 'Guias',
       component: () => import('./views/Facturacion/Guias.vue'),
@@ -234,12 +248,13 @@ const router = createRouter({
 })
 
 
-
 const app = createApp(App)
 
 app.use(store)
 app.use(router)
 
-app.use(ElementPlus)
+app.use(ElementPlus, {
+  locale: es,
+})
 
 app.mount('#app')

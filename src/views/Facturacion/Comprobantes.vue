@@ -526,7 +526,7 @@ export default {
         "cvc_serie": this.form_c.serie_doc,
         "cvc_numero": this.form_c.nro_doc,
         "cvc_fechaemision": this.form_c.fecha_em,
-        "cvc_fechavencimiento": "",
+        "cvc_fechavencimiento": null,
         "cvc_subtotal": this.form_c.subtotal,
         "cvc_impuesto": this.form_c.impuesto,
         "cvc_total": this.form_c.total,
@@ -755,7 +755,7 @@ export default {
             </el-form>
 
           <div class="table-container">
-          <el-table :data="datap" border header-row-style="color:black;" >
+          <el-table :data="datap" border header-row-style="color:black;"  max-height="75vh">
             <el-table-column prop="emp_razonsocial" label="Razon soc. aso." width="140" />
             <el-table-column prop="cvt_descripcion" label="Tipo de doc."  width="200" sortable/>
             <el-table-column prop="cvc_serienumero" label="Serie-numero" />  

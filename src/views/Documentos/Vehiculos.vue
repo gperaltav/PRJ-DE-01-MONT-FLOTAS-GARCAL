@@ -375,7 +375,7 @@ export default {
     cellStyle2(obj) {
       switch(obj.columnIndex)
       {
-      case 2:
+      case 3:
         if(!obj.row.CITV6m) {
           return 
         }
@@ -389,7 +389,7 @@ export default {
           return "cell-3";
         }
       break;
-      case 3:
+      case 4:
         if(!obj.row.CITV12m) {
           return 
         }
@@ -404,7 +404,7 @@ export default {
         }
 
       break;
-      case 4:
+      case 5:
         if(!obj.row.SOAT) {
           return 
         }
@@ -419,7 +419,7 @@ export default {
         }
         
       break;
-      case 5:
+      case 6:
         if(!obj.row.POLIZA) {
           return 
         }
@@ -434,7 +434,7 @@ export default {
         }
 
       break;
-      case 6:
+      case 7:
         if(!obj.row.ELEMPELIGROSOS) {
           return 
         }
@@ -449,7 +449,7 @@ export default {
         }
 
       break;
-      case 7:
+      case 8:
         if(!obj.row.BONIFICACION) {
           return 
         }
@@ -464,7 +464,7 @@ export default {
         }
 
       break;
-      case 8:
+      case 9:
         if(!obj.row.HERMETECIDAD) {
           return 
         }
@@ -640,9 +640,10 @@ export default {
             </el-form>
           
           <div class="table-container">
-          <el-table :cell-class-name="cellStyle2" :data="datap" border header-row-style="color:black;"  >
+          <el-table :cell-class-name="cellStyle2" :data="datap" border header-row-style="color:black;" max-height="75vh" >
               <el-table-column fixed align="center" prop="emp_razonsocial" label="Razon soc. aso. " width="130" />
-              <el-table-column  fixed prop="veh_placa" label="Placa " width="140" />
+              <el-table-column  fixed prop="veh_placa" label="Placa " width="100" />
+              <el-table-column  fixed prop="vcl_nombre" label="Tipo " width="100" />
               
               <el-table-column label="CITV 6m" width="150">
                 <template #default="scope">
@@ -761,7 +762,7 @@ export default {
   color: rgb(0, 0, 0);
 }
 .el-table .cell-2 .el-button :hover{
-  color: #aeab22;
+  color: #bfbd3a;
 }
 
 .el-table .cell-3 {
