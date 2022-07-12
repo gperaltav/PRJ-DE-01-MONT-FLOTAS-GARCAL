@@ -219,6 +219,19 @@ const router = createRouter({
         }
       }
     },
+    
+    {
+      path: '/facturacion_cobranza',
+      name: 'Cobranza',
+      component: () => import('./views/Facturacion/Cobranza.vue'),
+      beforeEnter: (to, from, next) => {
+        if(store.state.authenticated == false) {
+          next(false);
+        } else {
+          next();
+        }
+      }
+    },
 
     {
       path: '/disposicion_dinero',

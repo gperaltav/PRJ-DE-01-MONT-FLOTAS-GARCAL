@@ -207,6 +207,7 @@ export default {
         tracto_id: '',
         oper_id: '',
         oper_nom:'',
+        cantidad_flete:''
       }),
     }
   },
@@ -267,6 +268,7 @@ export default {
       }
       //cargar listas
       this.load_flete();
+      this.data_prods=[];
     },
     rs_changer2() {
       this.emp_cont=this.form_e.rs;
@@ -786,7 +788,8 @@ export default {
         "vfl_codigo":this.form_c.flete,
         "tri_id":this.form_c.oper_id,
         "pro_id":Number(this.form_c.producto_tipo),
-        "via_usucreacion":"admin"
+        "via_usucreacion":"admin",
+        "via_cantidad":Number(this.form_c.cantidad_flete)
       })
       .then((resp) => {
         console.log(resp.data);
@@ -836,6 +839,7 @@ export default {
         "vfl_codigo":this.form_e.flete,
         "pro_id":Number(this.form_e.producto_tipo),
         "tri_id":this.form_e.oper_id,
+        "via_cantidad":Number(this.form_e.cantidad_flete)
       })
         .then((resp) => {
           console.log(resp.data.status);
@@ -1350,7 +1354,7 @@ export default {
       </el-form-item>
 
       <el-form-item  label="Flete " prop="flete">
-        <el-select style="width:250px" v-model="form_e.flete" placeholder="Seleccionar">
+        <el-select style="width:150px" v-model="form_e.flete" placeholder="Seleccionar">
           <el-option
             v-for="item in opt_flete"
             :key="item.vfl_codigo"
@@ -1358,6 +1362,7 @@ export default {
             :value="item.vfl_codigo"
           > </el-option>
         </el-select>
+        <el-input placeholder="Cantidad" style="width:100px" v-model="form_e.cantidad_flete"/>
       </el-form-item>
 
       <el-form-item label="Subtotal" prop="subtotal">

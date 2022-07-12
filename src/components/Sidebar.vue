@@ -58,6 +58,7 @@ export default {
     </template>
     <el-menu-item index="facturacion_guias">Guias</el-menu-item>
     <el-menu-item index="facturacion_comprobantes">Comprobantes</el-menu-item>
+    <el-menu-item index="facturacion_cobranza">Cobranza</el-menu-item>
   </el-sub-menu>
   <el-menu-item disabled index="disposicion_dinero">
     <template #title>
