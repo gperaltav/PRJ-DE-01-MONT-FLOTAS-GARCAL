@@ -86,8 +86,9 @@ export default {
       opt_rs: [],
       opt_prv: [],
       opt_fp: [],
-      opt_td:[],
+      opt_veh:[],
       opt_via:[],
+      opt_td:[],
 
       data_edit: [],
       data_edit2: [],
@@ -122,7 +123,7 @@ export default {
         via_id:'',
 
         veh_id:'',
-        marca:'',
+        tipo:'',
         modelo:''
       }),
 
@@ -149,16 +150,16 @@ export default {
       this.form_t.via_id='';
 
       this.form_t.veh_id='';
-      this.form_t.marca='';
+      this.form_t.tipo='';
       this.form_t.modelo='';
     },
 
     rs_changer() {
       this.emp_cont=this.form_g.rs;
       this.load_prod();
-
-      
+      this.get_tipos_doc();
     },
+
     fech_changer() {
       //cargar listas
       this.get_viajes();
@@ -214,6 +215,11 @@ export default {
     closeedit() {
       this.$refs.mo_editar_per.hide();
       this.search_rs_clear();
+    },
+
+    closedet() {
+      this.$refs.mo_create_det.hide();
+      this.clear_t();
     },
 
     load_rs() {
@@ -278,8 +284,8 @@ export default {
 
     select_proveedores(idx) {
       for (let tmp in this.opt_prv)  {
-        if (this.opt_prv[tmp].pro_id == idx) {
-          this.form_g.prod_nom  = this.opt_prv[tmp].pro_nombre;
+        if (this.opt_prv[tmp].ent_id == idx) {
+          this.form_g.prv_nom  = this.opt_prv[tmp].ent_nombre;
           return;
         }
       }
@@ -310,7 +316,7 @@ export default {
 
     get_tipos_doc() {
       axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprastipos/'+String(this.form_c.rs))
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprastipos/'+String(this.form_g.rs))
       .then((resp) => {
         console.log(resp);
         this.opt_td = resp.data;
@@ -327,6 +333,29 @@ export default {
       .then((resp) => {
         console.log(resp);
         this.opt_via = resp.data;
+      })
+    },
+
+    veh_changer(id) {
+      for (let tmp in this.opt_veh)  {
+        console.log(tmp);
+        if (this.opt_veh[tmp].veh_id == id) {
+          this.form_t.tipo = this.opt_veh[tmp].vcl_nombre;
+          return;
+        }
+      }
+    },
+
+    get_vehiculos(query) {
+      axios
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/controldocumentosvehiculos', 
+      {
+        "emp_id": this.form_g.rs,
+        "via_fechaviaje":query
+      })
+      .then((resp) => {
+        console.log(resp);
+        this.opt_veh = resp.data;
       })
     },
 
@@ -377,6 +406,9 @@ export default {
         "det_subtotal":num,
       });
       this.subtotal=this.subtotal+num;
+      
+      this.closedet();
+      
     },
 
     transaccion_insertar() {
@@ -661,19 +693,20 @@ export default {
     <div v-if='form_t.afi=="2" '>
       <el-form-item  label="Vehiculo ">
         <el-select
-          v-model="form_c.veh_id"
+          v-model="form_t.veh_id"
           filterable
-          :remote-method="get_vehiculo1"
+          :remote-method="get_vehiculos"
           placeholder="Inserte ID de vehiculo"
           remote
           clearable
+          @change="veh_changer"
           style="width:300px"
         >
           <template #prefix>
             <el-icon><Search /></el-icon>
           </template>
           <el-option
-            v-for="item in data_vh1"
+            v-for="item in opt_veh"
             :key="item.veh_id"
             :label="item.veh_placa"
             :value="item.veh_id"
@@ -682,16 +715,10 @@ export default {
       </el-form-item>
       <el-form-item >
         <el-row style="width:300px">
-          <el-col :span="12">
-            <el-input placeholder="Marca" disabled/>
-          </el-col>
-          <el-col :span="12">
-            <el-input placeholder="Modelo" disabled/>
-          </el-col>
+          <el-input v-model="form_t.tipo" placeholder="Tipo" disabled/>
         </el-row> 
       </el-form-item>
     </div>
-    
   </el-form>
 </modal>
 

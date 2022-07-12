@@ -268,10 +268,7 @@ export default {
         this.get_formas_pago();
         this.get_tipos_doc();
       }
-      
-
     },
-
 
     open_succes(msg) {
       this.alert_mo=msg;
@@ -371,7 +368,6 @@ export default {
           console.log(resp);  
           this.opt_prod = resp.data;
         })
-      
     },
 
     load_edit(id) {
@@ -675,7 +671,7 @@ export default {
       { 
         "emp_id": Number(this.form_p.rs),
         "cvc_id": Number(this.editpointer),
-        "fdc_codigo": this.data_edit[0].cve_codigo,
+        "fdc_codigo": this.form_p.tipo_cobro,
         "vec_monto":Number(this.form_p.monto),
         "vec_nroreferencia":this.form_p.nro_referencia,
         "vec_fechacancelacion":this.form_p.fecha_cobro,
@@ -689,6 +685,8 @@ export default {
         this.succes=resp.data.status;
         if (this.succes) {
           this.open_succes("Operación realizada satisfactoriamente");
+          this.clear_p();
+          this.$refs.mo_create_pago.hide();
           return true;
         }
         else {

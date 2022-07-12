@@ -166,7 +166,7 @@ export default {
         cliente_id: '',
         cliente_nom: '',
         producto_tipo: '',
-        producto_des: '',
+        observacion: '',
         flete: '',
         subtotal: 0,
         igv: 18,
@@ -181,7 +181,7 @@ export default {
         tracto_id: '',
         oper_id: '',
         oper_nom:'',
-        cantidad_flete:''
+        cantidad_flete:'',
 
       }),
 
@@ -192,7 +192,7 @@ export default {
         cliente_id: '',
         cliente_nom: '',
         producto_tipo: '',
-        producto_des: '',
+        observacion: '',
         flete: '',
         subtotal: 0,
         igv: 18,
@@ -207,7 +207,7 @@ export default {
         tracto_id: '',
         oper_id: '',
         oper_nom:'',
-        cantidad_flete:''
+        cantidad_flete:'',
       }),
     }
   },
@@ -256,7 +256,7 @@ export default {
       this.form_c.cliente_id="";
       this.form_c.cliente_nom="";
       this.form_c.producto_tipo="";
-      this.form_c.producto_des="";
+      this.form_c.observacion="";
       this.form_c.semire_id="";
       this.form_c.tracto_id="";
       this.form_c.oper_id="";
@@ -275,7 +275,7 @@ export default {
       this.form_e.cliente_id="";
       this.form_e.cliente_nom="";
       this.form_e.producto_tipo="";
-      this.form_e.producto_des="";
+      this.form_e.observacion="";
       this.form_e.semire_id="";
       this.form_e.tracto_id="";
       this.form_e.oper_id="";
@@ -584,7 +584,7 @@ export default {
           }
         }
         
-      } ,500)
+      } ,600)
 
     },
 
@@ -693,7 +693,7 @@ export default {
       this.form_e.subtotal =this.data_edit[0].via_subtotal;
       this.form_e.impuesto =this.data_edit[0].via_impuesto;
       this.form_e.total =this.data_edit[0].via_total;
-      this.form_e.producto_des =this.data_edit[0].via_observacion;
+      this.form_e.observacion =this.data_edit[0].via_observacion;
       this.form_e.origen =this.data_edit[0].ubi_codigoorigen;
       this.form_e.destino =this.data_edit[0].ubi_codigodestino;
       this.form_e.flete =this.data_edit[0].vfl_codigo;
@@ -782,7 +782,7 @@ export default {
         "via_subtotal":Number(this.form_c.subtotal),
         "via_impuesto":Number(this.form_c.impuesto),
         "via_total":Number(this.form_c.total),
-        "via_observacion":this.form_c.producto_des,
+        "via_observacion":this.form_c.observacion,
         "ubi_codigoorigen":this.form_c.origen,
         "ubi_codigodestino":this.form_c.destino,
         "vfl_codigo":this.form_c.flete,
@@ -831,7 +831,7 @@ export default {
         "via_subtotal":Number(this.form_e.subtotal),
         "via_impuesto":Number(this.form_e.impuesto),
         "via_total":Number(this.form_e.total),
-        "via_observacion":this.form_e.producto_des,
+        "via_observacion":this.form_e.observacion,
         "via_usumodificacion":"admin",
         "vie_codigo":"TER",
         "ubi_codigoorigen":this.form_e.origen,
@@ -1098,7 +1098,6 @@ export default {
           />
         </el-select>
         
-        <el-input style="width:250px" v-model="form_c.producto_des" placeholder="Descripcion"/>
       </el-form-item>
 
       <el-form-item  label="Flete " prop="flete">
@@ -1253,8 +1252,6 @@ export default {
         </el-select>
       </el-form-item>
 
-      
-
       <el-form-item  label="Conductor " prop="conductor">
         <el-select
           v-model="form_c.oper_id"
@@ -1280,8 +1277,16 @@ export default {
         </el-select>
         <el-input style="width:250px" disabled v-model="form_c.oper_nom" placeholder="Nombre de conductor"/>
       </el-form-item>
-
     </el-col>
+    </el-row>
+    <el-row style="text-align=center" >
+      <el-form-item label="Observacion">
+        <el-input 
+          style="width:700px" 
+          v-model="form_c.observacion" 
+          placeholder="Observacion"
+        />
+      </el-form-item>
     </el-row>
   </el-form>
 </modal>
@@ -1350,7 +1355,6 @@ export default {
           />
         </el-select>
         
-        <el-input style="width:250px" v-model="form_e.producto_des" placeholder="Descripcion"/>
       </el-form-item>
 
       <el-form-item  label="Flete " prop="flete">
@@ -1533,6 +1537,17 @@ export default {
 
     </el-col>
     </el-row>
+
+    <el-row style="text-align=center" >
+      <el-form-item label="Observacion">
+        <el-input 
+          style="width:690px" 
+          v-model="form_e.observacion" 
+          placeholder="Observacion"
+        />
+      </el-form-item>
+    </el-row>
+
     <el-row style="text-align=center" >
       <el-button style="margin-left: auto;margin-right: auto" color="#E21747" :icon="CloseBold" @click="open_confirmar('Realmente desea eliminar este viaje pendiente?')">Eliminar</el-button>
     </el-row>

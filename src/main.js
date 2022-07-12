@@ -195,6 +195,30 @@ const router = createRouter({
       }
     },
     {
+      path: '/operaciones_rendicion_cuentas',
+      name: 'Rendición de cuentas ',
+      component: () => import('./views/Operaciones/Rendicion_cuentas.vue'),
+      beforeEnter: (to, from, next) => {
+        if(store.state.authenticated == false) {
+          next(false);
+        } else {
+          next();
+        }
+      }
+    },
+    {
+      path: '/operaciones_compras',
+      name: 'Agregar compra',
+      component: () => import('./views/Operaciones/Compras.vue'),
+      beforeEnter: (to, from, next) => {
+        if(store.state.authenticated == false) {
+          next(false);
+        } else {
+          next();
+        }
+      }
+    },
+    {
       path: '/facturacion_guias',
       name: 'Guias',
       component: () => import('./views/Facturacion/Guias.vue'),

@@ -672,12 +672,6 @@ export default {
                 </el-col>
               </el-row>
             </el-form-item>
-
-
-            
-
-            
-
             <el-row style="text-align=center; margin-left:100px" >
               <el-button  @click="transaccion_insertar" style="margin-left: auto;margin-right: auto" color="#0844a4" >Guardar</el-button>
             </el-row>
