@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { reactive,ref } from 'vue'
 import axios from 'axios'
-import { EditPen, Filter, Plus, Download, CloseBold, List, Search} from '@element-plus/icons-vue'
+import { EditPen, Filter, Plus, Download, CloseBold, List, Search, Flag} from '@element-plus/icons-vue'
 
 import type { FormInstance, FormRules } from 'element-plus'
 
@@ -131,6 +131,7 @@ export default {
       opt_mod:[],
       opt_cla:[],
       opt_ti:[],
+      opt_estados:[],
 
       data_edit: [],
       data_edit2: [],
@@ -473,6 +474,24 @@ export default {
           else {
             return "No name";
           }
+        })
+    },
+
+    get_estados() {
+      axios
+      .get("http://51.222.25.71:8080/garcal-erp-apiv1/api/viajesestados/"+String(this.emp_cont))
+        .then((resp) => {
+          console.log(resp);
+          this.opt_estados = resp.data;
+        })
+    },
+
+    set_estados() {
+      axios
+      .get("http://51.222.25.71:8080/garcal-erp-apiv1/api/viajesestados/"+String(this.emp_cont))
+        .then((resp) => {
+          console.log(resp);
+          this.opt_estados = resp.data;
         })
     },
 
@@ -885,6 +904,14 @@ export default {
         this.emp_cont=this.form_e.rs;
         this.wait = false;
       }, 400)
+    },
+
+    button_handle2(number){
+      console.log(number);
+      this.clear_eop;
+      this.editpointer=number;
+      this.$refs.mo_estado.open();
+      this.get_estados();
     }
   },
   
@@ -1019,7 +1046,13 @@ export default {
               <el-table-column prop="via_horaviaje" label="Hora de viaje" width="130" />              
               <el-table-column prop="vfl_nombre" label="Flete" width="140"/>
 
-              <el-table-column fixed="right" label="" width="40">
+              <el-table-column fixed="right" label="" width="45" align="center">
+                <template #default="scope">
+                  <el-button  type="text"  @click="button_handle2(scope.row.via_id)" size="small"><el-icon :size="17"><Flag /></el-icon></el-button>
+                </template>
+              </el-table-column>
+
+              <el-table-column fixed="right" label="" width="45" align="center">
                 <template #default="scope">
                   <el-button  type="text"  @click="button_handle(scope.row.via_id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
                 </template>
@@ -1552,6 +1585,23 @@ export default {
       <el-button style="margin-left: auto;margin-right: auto" color="#E21747" :icon="CloseBold" @click="open_confirmar('Realmente desea eliminar este viaje pendiente?')">Eliminar</el-button>
     </el-row>
   </el-form>
+</modal>
+
+<modal ref="mo_estado" no-close-on-backdrop title="Estado de viaje" width="500px" @ok="editar_usr" cancel-title="Cancelar" @cancel="closeedit"  centered>
+   <el-form  ref="form_cref" :rules="rules" :model="form_e" label-width="150px" >
+    <el-row style="text-align:center">
+    <el-form-item style="margin-left: auto;margin-right: auto" label="Estado de viaje" >
+      <el-select  v-model="form_e.rs" @change="rs_changer2()" placeholder="Seleccionar">
+        <el-option
+          v-for="item in opt_estados"
+          :key="item.vie_codigo"
+          :label="item.vie_nombre"
+          :value="item.vie_codigo"
+        > </el-option>
+      </el-select>
+    </el-form-item> 
+    </el-row>
+   </el-form>
 </modal>
 
 <modal ref="mo_advertencia_eliim" title="Confirmar" centered @ok="send_delete" @cancel="close_confirmar" ok-title="Si" cancel-title="Cancelar" >

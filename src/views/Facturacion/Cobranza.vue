@@ -378,6 +378,13 @@ export default {
         this.opt_fp = resp.data;
       })
     },
+    
+    get_descargas(uri, name) {
+      var link = document.createElement("a");
+      link.download = name;
+      link.href = uri;
+      link.click();
+    },
 
     get_tipos_doc() {
       axios
@@ -700,7 +707,7 @@ export default {
                 <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
               </el-row>
               <el-row class="mb-4">
-                <el-button color="#95d475" :icon=" Download" @click="get_descarga" disabled>A Excel</el-button>
+                <el-button color="#95d475" :icon=" Download" @click="get_descargas('http://51.222.25.71:8080/reportes/trabajadores.csv','reporte')" >A Excel</el-button>
               </el-row>
               </div>
             </el-col>

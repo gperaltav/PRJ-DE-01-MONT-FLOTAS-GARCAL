@@ -165,7 +165,7 @@ export default {
     },
 
     open_crear() {
-      this.$refs.mo_create_det.open(); 
+      this.$refs.mo_create.open(); 
     },
 
     open_succes(msg) {
@@ -470,7 +470,7 @@ export default {
       <el-col :span="8" style="text-align=center">
         <div class="sitebar">
         <el-tag style="color:white;" color="#0c59cf">
-          Operaciones > Compras
+          Operaciones > Rendicion de cuentas
         </el-tag>
       </div>
       </el-col>
@@ -503,75 +503,48 @@ export default {
             </el-row>
 
             <el-row>
-              <el-form-item style="margin-left:auto;margin-right:auto" label="Proveedor">
+              <el-form-item style="margin-left:auto;margin-right:auto" label="Conductor">
                 <el-row style="width:600px"> 
-                  <el-col :span="8">
-                    <el-select
-                      v-model="form_g.prv_id"
-                      filterable
-                      :remote-method="get_proveedores"
-                      @change="select_proveedores"
-                      @clear="clear_proveedores"
-                      placeholder="Inserte ID de proveedor"
-                      remote
-                      clearable
-                      :disabled="stop_cliente"
-                    >
-                      <template #prefix>
-                        <el-icon><Search /></el-icon>
-                      </template>
+                <el-col :span="8">
+                  <el-select
+                    v-model="form_c.tra_id"
+                    filterable
+                    :remote-method="get_chofer"
+                    @change="select_chofer"
+                    @clear="clear_chofer"
+                    placeholder="Inserte ID de conductor"
+                    remote
+                    clearable
+                  >
+                    <template #prefix>
+                      <el-icon><Search /></el-icon>
+                    </template>
 
-                      <el-option
-                        v-for="item in opt_prv"
-                        :key="item.ent_id"
-                        :label="item.ent_nrodocumento"
-                        :value="item.ent_id"
-                      />
-                    </el-select>
-                  </el-col>
-                  <el-col :span="16">
-                    <el-input disabled v-model="form_g.prv_nom" placeholder="Nombre de proveedor" />
-                  </el-col>
+                    <el-option
+                      v-for="item in data_op"
+                      :key="item.tra_nrodocumento"
+                      :label="item.tra_nrodocumento"
+                      :value="item.tra_id"
+                    />
+                  </el-select>
+                </el-col>
+                <el-col :span="16"><el-input disabled v-model="form_c.tra_nom" placeholder="Nombre del conductor" /></el-col>
                 </el-row>
               </el-form-item>
             </el-row>
 
             <el-row style="width:800px; margin-left:auto; margin-right:auto"> 
-              <el-col :span="6">
-                <el-select v-model="form_g.tipo_doc" style="width:150px; margin-left:50px" placeholder="Tipo de doc."  clearable>
-                <el-option
-                  v-for="item in opt_td"
-                  :key="item.cct_codigo"
-                  :label="item.cct_descripcion"
-                  :value="item.cct_codigo"
-                > </el-option>
+              <el-form-item style="margin-left:auto;margin-right:auto" label="Salida de dinero">
+                <el-select v-model="form_g.rs" @change="rs_changer" @clear="clear_c" placeholder="Seleccionar" style="width:600px" clearable>
+                  <el-option
+                    v-for="item in opt_rs"
+                    :key="item.emp_id"
+                    :label="item.emp_razonsocial"
+                    :value="item.emp_id"
+                  > </el-option>
                 </el-select>
-              </el-col>
-            
-              <el-col :span="18">     
-                  <el-row > 
-                    <el-col :span="12" >
-                      <el-input v-model="form_g.serie_doc" placeholder="nro de serie" />
-                    </el-col>
-                    <el-col :span="12">
-                      <el-input v-model="form_g.nro_doc" placeholder="nro de documento" />
-                    </el-col>
-                  </el-row>
-              </el-col>
+              </el-form-item>
             </el-row>
-
-          <el-row>
-            <el-form-item style="margin-left:auto;margin-right:auto" label="Fecha de pago">
-              <el-date-picker
-                type="date"
-                v-model="form_c.fecha_em"
-                format="YYYY-MM-DD"
-                value-format="YYYY-MM-DD"
-                placeholder="Seleccione fecha"
-                style="width: 300px"
-              />
-            </el-form-item>
-          </el-row>
               
             </el-form>
 
@@ -583,11 +556,20 @@ export default {
                 <el-main>
                   <div class="table-container">
                   <el-table :data="datav" border header-row-style="color:black;" >
-                      <el-table-column prop="det_cantidad" label="Cantidad" width="140" align="center"/>
-                      <el-table-column prop="det_producto" label="Producto"  />
-                      <el-table-column prop="det_unidad" label="Unidad" />
+                      <el-table-column prop='det_rs' label="Razon Soc." width="120" align="center" />
+                      <el-table-column prop='det_td' label="Tipo de doc." width="120" align="center" />
+                      <el-table-column prop='det_cod' label="Serie-Numero" width="120" align="center" />
+                      <el-table-column prop="det_fecha_em" label="Fecha emision" width="140" align="center"/>
+                      <el-table-column prop="det_cliente" label="Cliente" width="140" />
+                      <el-table-column prop="det_subtotal" label="Subtotal"  />
+                      <el-table-column prop="det_impuesto" label="Impuesto" />
                       <el-table-column prop="det_p_unitario" label="Precio unitario" />
                       <el-table-column prop="det_subtotal" label="Sub total"  align="center" />
+                      <el-table-column fixed="right" label="" width="45" align="center">
+                        <template #default="scope">
+                          <el-button  type="text"  @click="button_handle(scope.row.cvc_id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
+                        </template>
+                      </el-table-column>
                     </el-table>
                   </div>
                   <el-row style="text-align=center" >
@@ -595,103 +577,192 @@ export default {
                   </el-row>
                 </el-main>
               </el-container>
+              <el-row>
+                <h3 style="margin-left:auto; margin-right:50px">Resumen: </h3>
+              </el-row>
+              
+              <el-row>
+              <el-form-item style="margin-left:auto; margin-right:50px" label="Total salida de dinero" prop="subtotal">
+                <el-input style="width:250px" v-model="form_g.subtotal">
+                  <template #prepend>S/</template>
+                </el-input>
+              </el-form-item>
+              </el-row>
+
+              <el-row>
+              <el-form-item style="margin-left:auto; margin-right:50px" label="Total documentos" prop="subtotal">
+                <el-input style="width:250px" v-model="form_g.subtotal">
+                  <template #prepend>S/</template>
+                </el-input>
+              </el-form-item>
+              </el-row>
+
+              <el-row>
+              <el-form-item style="margin-left:auto; margin-right:50px" label="TotaL" prop="subtotal">
+                <el-input style="width:250px" v-model="form_g.subtotal">
+                  <template #prepend>S/</template>
+                </el-input>
+              </el-form-item>
+              </el-row>
+
+            <el-row style="text-align=center" >
+              <el-button color="#0844a4"  @click="transaccion_insertar" style="margin-left: auto;margin-right: auto">Guardar</el-button>
+            </el-row>
             </div>
         </el-scrollbar>
       </el-main>
     </el-container>
   </el-container>
 
-<modal ref="mo_create_det" no-close-on-backdrop title="Agregar detalle" width="500px" @ok="create_det" @cancel="closecrear" cancel-title="Atras" centered>
-  <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" >
-
-    <el-form-item label="Producto" >
-      <el-select style="width:300px" v-model="form_t.prod" @change="select_prod" placeholder="Seleccionar">
+<modal ref="mo_create" no-close-on-backdrop title="Agregar Documento" width="900px" @ok="create_usr" @cancel="closecrear" cancel-title="Atras" centered>
+  <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="200px" >
+    <el-form-item  label="Razón social asociada">
+      <el-select v-model="form_c.rs" @change="rs_changer" @clear="clear_c" placeholder="Seleccionar" style="width:600px" clearable>
         <el-option
-          v-for="item in opt_prod"
-          :key="item.pro_id"
-          :label="item.pro_nombre"
-          :value="item.pro_id"
+            v-for="item in opt_rs"
+            :key="item.emp_id"
+            :label="item.emp_razonsocial"
+            :value="item.emp_id"
         > </el-option>
       </el-select>
     </el-form-item>
-    
-    <el-form-item  prop="nro_doc">
-      <el-row style="width:300px">
-        <el-col :span="12">
-          <el-input placeholder="Cantidad" v-model="form_t.cantidad" />
-        </el-col>
-        <el-col :span="12">
-          <el-input placeholder="Precio unitario" v-model="form_t.precio_u" />
-        </el-col>
-      </el-row>
-    </el-form-item>
 
-    <el-form-item label="">
-      <el-radio-group v-model="form_t.afi">
-        <el-radio label="1">Viaje</el-radio>
-        <el-radio label="2">Vehiculo</el-radio>
-        
-      </el-radio-group>
-    </el-form-item>
+  <el-form-item  label="Cliente">
+    <el-row style="width:600px"> 
+    <el-col :span="8">
+    <el-select
+      v-model="form_c.prv_id"
+      filterable
+      :remote-method="get_clientes"
+      @change="select_clientes"
+      @clear="clear_clientes"
+      placeholder="Inserte ID de cliente"
+      remote
+      clearable
+    >
+      <template #prefix>
+        <el-icon><Search /></el-icon>
+      </template>
 
-    <div v-if='form_t.afi=="1" '>
-      <el-form-item label="Fecha de viaje">
-        <el-date-picker
+      <el-option
+      v-for="item in opt_cli"
+      :key="item.ent_id"
+      :label="item.ent_nrodocumento"
+      :value="item.ent_id"
+      />
+    </el-select>
+    </el-col>
+    <el-col :span="16"><el-input disabled v-model="form_c.prv_nom" placeholder="Nombre de cliente" /></el-col>
+    </el-row>
+  </el-form-item>
+
+  
+  <el-form-item label="Fecha de viaje">
+      <el-row style="width:600px">
+      <el-col :span="12">
+      <el-date-picker
           type="date"
-          v-model="form_t.fecha_via"
+          v-model="form_c.fecha_via"
           format="YYYY-MM-DD"
           value-format="YYYY-MM-DD"
           placeholder="Seleccione fecha"
           style="width: 300px"
           @change="fech_changer"
-        />
-      </el-form-item>
-      <el-form-item >
-        <el-select v-model="form_t.via_id" placeholder="Seleccione una opcion" style="width:300px" clearable>
+      />
+      </el-col>
+      
+      <el-col :span="12">
+      <el-select v-model="form_c.via_id" placeholder="Seleccione una opcion" style="width:300px" clearable>
           <el-option
-            v-for="item in opt_via"
-            :key="item.via_id"
-            :label="item.via_descripcion"
-            :value="item.via_id"
+          v-for="item in opt_via"
+          :key="item.via_id"
+          :label="item.via_descripcion"
+          :value="item.via_id"
           > </el-option>
-        </el-select> 
-      </el-form-item>
-    </div>
+      </el-select> 
+      </el-col>
+      </el-row>
+  </el-form-item>
 
-    <div v-if='form_t.afi=="2" '>
-      <el-form-item  label="Vehiculo ">
-        <el-select
-          v-model="form_c.veh_id"
-          filterable
-          :remote-method="get_vehiculo1"
-          placeholder="Inserte ID de vehiculo"
-          remote
-          clearable
-          style="width:300px"
-        >
-          <template #prefix>
-            <el-icon><Search /></el-icon>
+  <el-row style="width:800px; margin-bottom: 18px"> 
+    <el-col :span="6">
+    <el-select v-model="form_c.tipo_doc" style="width:150px; margin-left:50px" placeholder="Tipo de doc."  clearable>
+    <el-option
+      v-for="item in opt_td"
+      :key="item.cct_codigo"
+      :label="item.cct_descripcion"
+      :value="item.cct_codigo"
+    > </el-option>
+    </el-select>
+    </el-col>
+
+    <el-col :span="18">     
+      <el-row > 
+      <el-col :span="12" >
+        <el-input v-model="form_c.serie_doc" placeholder="nro de serie" />
+      </el-col>
+      <el-col :span="12">
+        <el-input v-model="form_c.nro_doc" placeholder="nro de documento" />
+      </el-col>
+      </el-row>
+    </el-col>
+
+  </el-row>
+
+  <el-form-item  label="Fecha de emisión">
+      <el-date-picker
+      type="date"
+      v-model="form_c.fecha_em"
+      format="YYYY-MM-DD"
+      value-format="YYYY-MM-DD"
+      placeholder="Seleccione fecha"
+      style="width: 300px"
+      />
+  </el-form-item>
+
+  <el-form-item style="margin-left: auto;margin-right: auto" label="Valor venta">
+      <div style="width:300px">
+      <el-input v-model="form_c.subtotal" placeholder="Inserte una cantidad">
+          <template #append>
+          <el-button @click="calcular1()" ><img style="fill:#797979" width="15" height="15" src = "../../components/calculadora.svg"/> </el-button>
           </template>
-          <el-option
-            v-for="item in data_vh1"
-            :key="item.veh_id"
-            :label="item.veh_placa"
-            :value="item.veh_id"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item >
-        <el-row style="width:300px">
-          <el-col :span="12">
-            <el-input placeholder="Marca" disabled/>
-          </el-col>
-          <el-col :span="12">
-            <el-input placeholder="Modelo" disabled/>
-          </el-col>
-        </el-row> 
-      </el-form-item>
-    </div>
-    
+          <template #prepend>S/</template>
+      </el-input>
+      </div>
+  </el-form-item>
+
+  <el-form-item style="margin-left: auto;margin-right: auto" label="Impuesto">
+      <div style="width:240px">
+      <el-input v-model="form_c.impuesto" placeholder="Inserte una cantidad">
+          <template #prepend>S/</template>
+      </el-input>
+      </div>
+      <el-input style="width:60px" v-model="form_c.igv">
+      <template #suffix>%</template>
+      </el-input>
+  </el-form-item>
+
+  <el-form-item style="margin-left: auto;margin-right: auto" label="Total">
+      <div style="width:300px">
+      <el-input v-model="form_c.total" placeholder="Inserte una cantidad">
+          <template #append>
+          <el-button  @click="calcular2()"><img style="fill:#797979" width="15" height="15" src = "../../components/calculadora.svg"/> </el-button>
+          </template>
+          <template #prepend>S/</template>
+      </el-input>
+      </div>
+  </el-form-item>
+
+  <el-form-item style="margin-left: auto;margin-right: auto" label="Tipo de cobro">
+      <el-select v-model="form_c.tipo_pago" placeholder="Seleccione una opcion" style="width:300px" clearable>
+      <el-option
+          v-for="item in opt_fp"
+          :key="item.fdc_codigo"
+          :label="item.fdc_descripcion"
+          :value="item.fdc_codigo"
+      > </el-option>
+      </el-select>
+  </el-form-item>
   </el-form>
 </modal>
 

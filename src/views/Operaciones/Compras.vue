@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { reactive,ref } from 'vue'
 import axios from 'axios'
-import { EditPen, Filter, Plus, Download, CloseBold, List,Search} from '@element-plus/icons-vue'
+import { EditPen, Filter, Plus, Download, CloseBold, List,Search,DArrowLeft} from '@element-plus/icons-vue'
 
 import type { FormInstance, FormRules } from 'element-plus'
 
@@ -104,6 +104,18 @@ export default {
         rs: '',
         prv_id:'',
         prv_nom:'',
+        
+        tipo_doc:'',
+        serie_doc:'',
+        nro_doc:'',
+        fecha_em:'',
+
+        tipo_pago:'',
+
+        subtotal:'',
+        impuesto:'',
+        igv: 18,
+        total:'',
       }),
 
       form_c : reactive({
@@ -154,10 +166,49 @@ export default {
       this.form_t.modelo='';
     },
 
+    clear_g() {
+      this.form_g.rs= '';
+      this.form_g.prv_id='';
+      this.form_g.prv_nom='';
+
+      this.form_g.tipo_doc='';
+      this.form_g.serie_doc='';
+      this.form_g.nro_doc='';
+      this.form_g.fecha_em='';
+
+      this.form_g.tipo_pago='';
+
+      this.form_g.subtotal='';
+      this.form_g.impuesto='';
+      this.form_g.igv= 18;
+      this.form_g.total='';
+
+      this.datap= [];
+      this.opt_prv= [];
+      this.opt_fp= [];
+
+    },
+
+    clear_c() {
+      this.form_g.rs= '';
+      this.form_g.prv_id='';
+      this.form_g.prv_nom='';
+
+      this.form_g.tipo_doc='';
+
+      this.form_g.tipo_pago='';
+
+      this.datap= [];
+      this.opt_prv= [];
+      this.opt_fp= [];
+
+    },
+
     rs_changer() {
       this.emp_cont=this.form_g.rs;
       this.load_prod();
       this.get_tipos_doc();
+      this.get_formas_pago();
     },
 
     fech_changer() {
@@ -307,7 +358,7 @@ export default {
 
     get_formas_pago() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdepago/'+String(this.form_c.rs))
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdepago/'+String(this.form_g.rs))
       .then((resp) => {
         console.log(resp);
         this.opt_fp = resp.data;
@@ -410,6 +461,25 @@ export default {
       this.closedet();
       
     },
+    roundUp(num, precision) {
+      precision = Math.pow(10, precision)
+      return Math.ceil(num * precision) / precision
+    },
+    roundDwn(num, precision) {
+      precision = Math.pow(10, precision)
+      return Math.floor(num * precision) / precision
+    },
+    calcular1() {
+      this.form_g.subtotal=Number(this.subtotal);
+      this.form_g.impuesto=String(this.roundUp((Number(this.form_g.igv)/100)*Number(this.form_g.subtotal),1));
+      this.form_g.total=String(Number(this.form_g.impuesto)+Number(this.form_g.subtotal));
+    },
+    calcular2() {
+      this.form_g.total=Number(this.subtotal);
+      var aux=Number(this.form_g.total)/(100+Number(this.form_g.igv));
+      this.form_g.impuesto=String(this.roundUp(aux*Number(this.form_g.igv),1));
+      this.form_g.subtotal=String(this.roundDwn(aux*100,1));
+    },
 
     transaccion_insertar() {
       const tiempoTranscurrido = Date.now();
@@ -430,18 +500,18 @@ export default {
       axios
       .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescompras/nuevo', 
       {
-        "emp_id": Number(this.form_c.rs),
-        "ent_id": Number(this.form_c.prv_id),
-        "ccc_serie": this.form_c.serie_doc,
-        "ccc_numero": this.form_c.nro_doc,
-        "ccc_fechaemision": this.form_c.fecha_em,
-        "ccc_subtotal": Number(this.form_c.subtotal),
-        "ccc_impuesto": Number(this.form_c.impuesto),
-        "ccc_total": Number(this.form_c.total),
-        "cct_codigo": this.form_c.tipo_doc,
+        "emp_id": Number(this.form_g.rs),
+        "ent_id": Number(this.form_g.prv_id),
+        "ccc_serie": this.form_g.serie_doc,
+        "ccc_numero": this.form_g.nro_doc,
+        "ccc_fechaemision": this.form_g.fecha_em,
+        "ccc_subtotal": Number(this.form_g.subtotal),
+        "ccc_impuesto": Number(this.form_g.impuesto),
+        "ccc_total": Number(this.form_g.total),
+        "cct_codigo": this.form_g.tipo_doc,
         "cce_codigo": "CAN",
         "mon_codigo": "SOL",
-        "ccc_observaciones": "",
+        "ccc_observaciones": this.form_g.tipo_pago,
         "ccc_idreferencia":"",
         "ccc_tipocambio": 18,
         "ccc_generamovimiento":false,
@@ -450,24 +520,14 @@ export default {
         "ccr_codigo":"PEA",
         "usu_codigo": "admin",
         "ccc_usucreacion":"admin",
-        "detalle":[{
-          "pro_id":"",
-          "via_id":String(this.form_c.via_id),
-          "veh_id":"",
-          "tra_id":"",
-          "ccd_serie":this.form_c.serie_doc,
-          "ccd_cantidad":this.form_c.cantidad_n,
-          "ccd_preciounitario":this.form_c.cantidad_p_uni,
-          "ccd_subtotal":this.form_c.total,
-          "uni_unidad":"UNI"
-        }]
+        "detalle":this.datap
       })
       .then((resp) => {
         console.log(resp.data);
         this.succes=resp.data.status;
         if (this.succes) {
           this.open_succes("Operación realizada satisfactoriamente");
-          this.clear_c();
+          this.clear_g();
           return true;
         }
         else {
@@ -627,7 +687,58 @@ export default {
                   </el-row>
                 </el-main>
               </el-container>
+              <el-row>
+                <h3 style="margin-left:auto; margin-right:50px">Importe: {{subtotal}}</h3>
+              </el-row>
+              
+              <el-row>
+              <el-form-item style="margin-left:auto; margin-right:50px" label="Subtotal" prop="subtotal">
+                <el-input style="width:250px" v-model="form_g.subtotal">
+                  <template #append>
+                    <el-button @click="calcular1()" :icon="DArrowLeft"> </el-button>
+                  </template>
+                  <template #prepend>S/</template>
+                </el-input>
+              </el-form-item>
+              </el-row>
+
+              <el-row>
+              <el-form-item style="margin-right: auto;" label="Tipo de pago">
+              <el-select v-model="form_g.tipo_pago" placeholder="Seleccione una opcion" style="width:300px" clearable>
+                <el-option
+                  v-for="item in opt_fp"
+                  :key="item.fdp_id"
+                  :label="item.fdp_descripcion"
+                  :value="item.fdp_id"
+                  
+                > </el-option>
+              </el-select>
+            </el-form-item>
+
+              <el-form-item style="margin-left:auto; margin-right:50px" label="Impuesto" prop="impuesto">
+                <el-input style="width:190px" v-model="form_g.impuesto">
+                  <template #prepend>S/</template>
+                </el-input>
+                <el-input style="width:60px" v-model="form_g.igv">
+                  <template #suffix>%</template>
+                </el-input>
+              </el-form-item>
+              </el-row>
+
+              <el-row>
+              <el-form-item style="margin-left:auto; margin-right:50px" label="Total" prop="total">
+                <el-input style="width:250px" v-model="form_g.total">
+                  <template #append>
+                  <el-button  @click="calcular2()" :icon="DArrowLeft"> </el-button>
+                  </template>
+                  <template #prepend>S/</template>
+                </el-input>
+              </el-form-item>
+              </el-row>
             </div>
+            <el-row style="text-align=center" >
+              <el-button color="#0844a4"  @click="transaccion_insertar" style="margin-left: auto;margin-right: auto">Guardar</el-button>
+            </el-row>
         </el-scrollbar>
       </el-main>
     </el-container>
