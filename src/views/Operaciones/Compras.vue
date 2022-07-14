@@ -118,10 +118,6 @@ export default {
         total:'',
       }),
 
-      form_c : reactive({
-
-      }),
-
       form_t : reactive({
         prod:'',
         prod_nom:'',
@@ -281,43 +277,6 @@ export default {
           this.opt_rs = resp.data;
         })
     },
-
-    load_viajes() {
-      
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajesfecha', 
-      {
-        "emp_id": Number(this.form_c.rs),
-        "gui_fechaemision": this.form_c.fecha_em,
-        "gti_codigo": this.form_c.tipo_doc,
-        "gui_serie": this.form_c.serie_doc,
-        "gui_numero": this.form_c.nro_doc ,
-        "via_id": Number(this.form_c.via_id),
-        "gui_entdestinatario":"",
-        "veh_id": 0,
-        "veh_idacople":"",
-        "pro_id":3,
-        "gui_estado":"",
-        "gui_peso":2,
-        "ubi_codigoorigen":"010112",
-        "ubi_codigodestino":"010113",
-        "gui_observacion":"",
-        "gui_usucreacion":"admin"
-      })
-      .then((resp) => {
-        console.log(resp.data);
-        this.succes=resp.data.status;
-        if (this.succes) {
-          this.open_succes("Operación realizada satisfactoriamente");
-          return true;
-          
-        }
-        else {
-          this.open_fail("Hubo un error con el servidor al ejecutar la operación");
-          return false;
-        }
-      })
-    },
     
     get_proveedores(query) {
       axios
@@ -350,10 +309,6 @@ export default {
           return;
         }
       }
-    },
-
-    clear_proveedores() {
-      this.form_c.prv_nom= "";
     },
 
     get_formas_pago() {
@@ -427,11 +382,11 @@ export default {
           "via_id":Number(this.form_t.via_id),
           "veh_id":"",
           "tra_id":"",
-          "ccd_serie":this.form_c.serie_doc,
+          "ccd_serie":this.form_g.serie_doc,
           "ccd_cantidad":this.form_t.cantidad,
           "ccd_preciounitario":this.form_t.precio_u,
-          "ccd_subtotal":this.form_c.subtotal,
-          "uni_unidad":this.form_c.unidad
+          "ccd_subtotal":Number(this.form_t.cantidad)*Number(this.form_t.precio_u),
+          "uni_unidad":"UNI"
         }
       }
       if(this.form_t.afi=="2") {
@@ -440,11 +395,11 @@ export default {
           "via_id":"",
           "veh_id":Number(this.form_t.veh_id),
           "tra_id":"",
-          "ccd_serie":this.form_c.serie_doc,
+          "ccd_serie":this.form_g.serie_doc,
           "ccd_cantidad":this.form_t.cantidad,
           "ccd_preciounitario":this.form_t.precio_u,
-          "ccd_subtotal":this.form_c.subtotal,
-          "uni_unidad":this.form_c.unidad
+          "ccd_subtotal":Number(this.form_t.cantidad)*Number(this.form_t.precio_u),
+          "uni_unidad":"UNI"
         }
       }
       this.datap.push(tmp);
@@ -528,6 +483,7 @@ export default {
         if (this.succes) {
           this.open_succes("Operación realizada satisfactoriamente");
           this.clear_g();
+          this.subtotal=0;
           return true;
         }
         else {
@@ -656,7 +612,7 @@ export default {
             <el-form-item style="margin-left:auto;margin-right:auto" label="Fecha de pago">
               <el-date-picker
                 type="date"
-                v-model="form_c.fecha_em"
+                v-model="form_g.fecha_em"
                 format="YYYY-MM-DD"
                 value-format="YYYY-MM-DD"
                 placeholder="Seleccione fecha"
@@ -745,7 +701,7 @@ export default {
   </el-container>
 
 <modal ref="mo_create_det" no-close-on-backdrop title="Agregar detalle" width="500px" @ok="create_det" @cancel="closecrear" cancel-title="Atras" centered>
-  <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" >
+  <el-form  ref="form_cref" :rules="rules" :model="form_t" label-width="150px" >
 
     <el-form-item label="Producto" >
       <el-select style="width:300px" v-model="form_t.prod" @change="select_prod" placeholder="Seleccionar">

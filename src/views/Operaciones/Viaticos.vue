@@ -265,131 +265,79 @@ export default {
       })
     },
 
-    insertar_comprobante() {
+    transaccion_insertar() {
+      var succ=false;
+      const tiempoTranscurrido = Date.now();
+      const hoy = new Date(tiempoTranscurrido);
+      var mm=String(hoy.getMonth() + 1);
+      var aa=String(hoy.getFullYear());
+      var dd=String(hoy.getDate());
+
+      if(mm.length==1)
+        mm="0"+mm;
+      if(dd.length==1)
+        dd="0"+dd;
+
+      var fech=aa+"-"+mm+"-"+dd;
+
+      console.log(fech);
       axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprascab/nuevo', 
-      {      
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescompras/nuevo', 
+      {
         "emp_id": Number(this.form_c.rs),
-        "ent_id": Number(this.form_c.prv_id),
+        "ent_id": "",
         "ccc_serie": this.form_c.serie_doc,
         "ccc_numero": this.form_c.nro_doc,
         "ccc_fechaemision": this.form_c.fecha_em,
         "ccc_subtotal": Number(this.form_c.subtotal),
         "ccc_impuesto": Number(this.form_c.impuesto),
         "ccc_total": Number(this.form_c.total),
-        "cct_codigo": "BOL",
+        "cct_codigo": "END",
         "cce_codigo": "CAN",
         "mon_codigo": "SOL",
-        "ccc_observaciones": "",
-        "ccc_idreferencia":null,
+        "ccc_observaciones":this.form_c.obs,
+        "ccc_idreferencia":"",
         "ccc_tipocambio": 18,
         "ccc_generamovimiento":false,
-        "ccc_fechaingreso":  this.form_c.fecha_em,
-        "ccc_periodoregistro":"",
+        "ccc_fechaingreso": fech,
+        "ccc_periodoregistro": fech,
+        "ccr_codigo": "VIA",
         "usu_codigo": "admin",
-        "ccc_usucreacion":"admin"
-      })
-      .then((resp) => {
-        console.log(resp.data);
-        this.succes=resp.data.status;
-        if (this.succes) {
-          return true;
-          
-        }
-        else {
-          return false;
-        }
-      })
-    },
+        "ccc_usucreacion":"admin",
 
-    insertar_guia() {
-      axios
-      .post('http://51.222.25.71:8080//garcal-erp-apiv1/api/guias/nuevo', 
-      {
-        "emp_id": Number(this.form_c.rs),
-        "gui_fechaemision": this.form_c.fecha_em,
-        "gti_codigo": this.form_c.tipo_doc,
-        "gui_serie": this.form_c.serie_doc,
-        "gui_numero": this.form_c.nro_doc ,
-        "via_id": Number(this.form_c.via_id),
-        "gui_entdestinatario":"",
-        "veh_id": 0,
-        "veh_idacople":"",
-        "pro_id":3,
-        "gui_estado":"",
-        "gui_peso":2,
-        "ubi_codigoorigen":"010112",
-        "ubi_codigodestino":"010113",
-        "gui_observacion":"",
-        "gui_usucreacion":"admin"
-      })
-      .then((resp) => {
-        console.log(resp.data);
-        this.succes=resp.data.status;
-        if (this.succes) {
-          return true;
-          
-        }
-        else {
-          return false;
-        }
-      })
-    },
-
-    transaccion_insertar() {
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprascab/nuevo', 
-      {
-        "cabecera": {
-          "emp_id": Number(this.form_c.rs),
-          "ent_id": Number(this.form_c.prv_id),
-          "ccc_serie": this.form_c.serie_doc,
-          "ccc_numero": this.form_c.nro_doc,
-          "ccc_fechaemision": this.form_c.fecha_em,
-          "ccc_subtotal": Number(this.form_c.subtotal),
-          "ccc_impuesto": Number(this.form_c.impuesto),
-          "ccc_total": Number(this.form_c.total),
-          "cct_codigo": "BOL",
-          "cce_codigo": "CAN",
-          "mon_codigo": "SOL",
-          "ccc_observaciones": "",
-          "ccc_idreferencia":null,
-          "ccc_tipocambio": 18,
-          "ccc_generamovimiento":false,
-          "ccc_fechaingreso":  this.form_c.fecha_em,
-          "ccc_periodoregistro":"",
-          "usu_codigo": "admin",
-          "ccc_usucreacion":"admin"
-        },
         "detalle": [{
-          "emp_id": Number(this.form_c.rs),
-          "gui_fechaemision": this.form_c.fecha_em,
-          "gti_codigo": this.form_c.tipo_doc,
-          "gui_serie": this.form_c.serie_doc,
-          "gui_numero": this.form_c.nro_doc ,
-          "via_id": Number(this.form_c.via_id),
-          "gui_entdestinatario":"",
-          "veh_id": 0,
-          "veh_idacople":"",
-          "pro_id":3,
-          "gui_estado":"VAR",
-          "gui_peso":2,
-          "ubi_codigoorigen":"010112",
-          "ubi_codigodestino":"010113",
-          "gui_observacion":"",
-          "gui_usucreacion":"admin"
+          "pro_id":"",
+          "via_id":String(this.form_c.via_id),
+          "veh_id":"",
+          "tra_id": Number(this.form_c.tra_id),
+          "ccd_serie":this.form_c.serie_doc,
+          "ccd_cantidad":"1",
+          "ccd_preciounitario":this.form_c.total,
+          "ccd_subtotal":this.form_c.total,
+          "uni_unidad":"UNI"
         }]
       })
       .then((resp) => {
         console.log(resp.data);
         this.succes=resp.data.status;
         if (this.succes) {
+          this.open_succes("Operación realizada satisfactoriamente");
+          succ=true;
           return true;
         }
         else {
+          this.open_fail("Hubo un error con el servidor al ejecutar la operación");
+          succ=true;
           return false;
         }
       })
+      setTimeout(() => {
+          if(!succ) {
+            this.open_fail("Hubo un error al establecer conexión, revise su red");
+          }
+        }, 500)
+      
+
     },
 
     create_api(){
@@ -531,30 +479,14 @@ export default {
               </el-row>
             </el-form-item>
 
-            <el-row style="width:800px; margin-bottom: 18px"> 
-              <el-col :span="6">
-                <el-select v-model="form_c.tipo_doc" style="width:150px; margin-left:50px" placeholder="Tipo de doc."  clearable>
-                <el-option
-                  v-for="item in opt_td"
-                  :key="item.cct_codigo"
-                  :label="item.cct_descripcion"
-                  :value="item.cct_codigo"
-                > </el-option>
-                </el-select>
-              </el-col>
-            
-              <el-col :span="18">     
-                  <el-row > 
-                    <el-col :span="12" >
-                      <el-input v-model="form_c.serie_doc" placeholder="nro de serie" />
-                    </el-col>
-                    <el-col :span="12">
-                      <el-input v-model="form_c.nro_doc" placeholder="nro de documento" />
-                    </el-col>
-                  </el-row>
-              </el-col>
-
-            </el-row>
+            <el-form-item  label="Entrega de dinero">
+              <div style="width:200px" >
+                <el-input v-model="form_c.serie_doc" placeholder="Nro de serie" />
+              </div>
+              <div style="width:400px">
+                <el-input v-model="form_c.nro_doc" placeholder="Nro de documento" />
+              </div>
+            </el-form-item>
 
             <el-form-item  label="Fecha de emisión">
               <el-date-picker
@@ -609,7 +541,7 @@ export default {
             </el-form-item>
 
             <el-row style="text-align=center; margin-left:100px" >
-              <el-button  @click="create_api" style="margin-left: auto;margin-right: auto" color="#0844a4" >Guardar</el-button>
+              <el-button  @click="transaccion_insertar" style="margin-left: auto;margin-right: auto" color="#0844a4" >Guardar</el-button>
             </el-row>
               
             </el-form>

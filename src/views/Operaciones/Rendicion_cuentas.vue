@@ -6,7 +6,6 @@ import { EditPen, Filter, Plus, Download, CloseBold, List,Search} from '@element
 import type { FormInstance, FormRules } from 'element-plus'
 
 
-
 const checkyear = (rule: any, value: any, callback: any) => {
   if (!value) {
     return callback();
@@ -88,6 +87,10 @@ export default {
       opt_fp: [],
       opt_td:[],
       opt_via:[],
+      opt_sald:[],
+      opt_tra:[],
+      opt_prod:[],
+      opt_uni:[],
 
       data_edit: [],
       data_edit2: [],
@@ -96,68 +99,65 @@ export default {
       alert_mo:'',
 
       subtotal:0,
+      ps_id:0,
 
       emp_cont:'1',
 
       form_g : reactive({
         rs: '',
-        prv_id:'',
-        prv_nom:'',
+        tra_id:'',
+        tra_nom:'',
+        sal_dinero:'',
       }),
 
       form_c : reactive({
-
-      }),
-
-      form_t : reactive({
-        prod:'',
-        prod_nom:'',
-        cantidad:'',
-        precio_u:'',
-        subtotal:'',
-        unidad:'UNI',
-        afi:'',
-
-        fecha_via:'',
+        rs:'',
+        rs_nom:'',
+        prv_id:'',
+        prv_nom:'',
+        doc_tipo:'',
+        doc_tipo_nom:'',
+        doc_serie:'',
+        doc_num:'',
+        fech_emi:'',
+        fech_viaje:'',
         via_id:'',
-
-        veh_id:'',
-        marca:'',
-        modelo:''
-      }),
-
-
-      aux : reactive({
-        veh_id:'',
-        acople_id:'',
         pro_id:'',
-
+        cantidad:'',
+        un_id:'',
+        subtotal:'',
+        igv:18,
+        impuesto:'',
+        total:'',
+        tipo_pago:'',
       }),
-
     }
   },
 
   methods: {
-
-    clear_t() {
-      this.form_t.prod='';
-      this.form_t.cantidad='';
-      this.form_t.precio_u='';
-      this.form_t.afi='';
-
-      this.form_t.fecha_via='';
-      this.form_t.via_id='';
-
-      this.form_t.veh_id='';
-      this.form_t.marca='';
-      this.form_t.modelo='';
-    },
-
     rs_changer() {
       this.emp_cont=this.form_g.rs;
+      this.form_g.tra_id='';
+      this.form_g.tra_nom='';
       this.load_prod();
+      this.opt_prv=[];
+      this.opt_tra=[];
+      this.opt_sald=[];
+    },
 
-      
+    rscc_changer() {
+      this.get_tipos_doc();
+      this.get_formas_pago();
+    },
+
+    rscc_clear() {
+      this.opt_td=[];
+    },
+
+    clear_rs() {
+      this.opt_prv=[];
+      this.opt_tra=[];
+      this.opt_sald=[];
     },
     fech_changer() {
       //cargar listas
@@ -172,21 +172,26 @@ export default {
       this.alert_mo=msg;
       this.$refs.mo_realizado.open(); 
     },
+
     open_succes_ed(msg) {
       this.alert_mo=msg;
       this.$refs.mo_realizado_ed.open();
     },
+
     open_confirmar(msg) {
       this.alert_mo=msg;
       this.$refs.mo_advertencia_eliim.open(); 
     },
+
     close_confirmar() {
       this.$refs.mo_advertencia_eliim.hide();
     },
+
     close_succes() {
       this.$refs.mo_realizado.hide();
       this.api_get_all();
     },
+
     close_succes_all() {
       this.$refs.mo_realizado.hide();
       this.clear_c();
@@ -195,11 +200,38 @@ export default {
       this.api_get_all();
       this.search_rs_clear();
     },
+
     close_succes_ed() {
       this.$refs.mo_realizado_ed.hide(); 
       this.$refs.mo_editar_per.hide();
       this.api_get_all();
       this.search_rs_clear();
+    },
+
+    clear_det() {
+      this.form_c.rs='';
+      this.form_c.rs_nom='';
+      this.form_c.prv_id='';
+      this.form_c.prv_nom='';
+      this.form_c.doc_tipo='';
+      this.form_c.doc_tipo_nom='';
+      this.form_c.doc_serie='';
+      this.form_c.doc_num='';
+      this.form_c.fech_emi='';
+      this.form_c.fech_viaje='';
+      this.form_c.via_id='';
+      this.form_c.pro_id='';
+      this.form_c.cantidad='';
+      this.form_c.un_id='';
+      this.form_c.subtotal='';
+      this.form_c.impuesto='';
+      this.form_c.total='';
+      this.form_c.tipo_pago='';
+    },
+
+    close_det() {
+      this.$refs.mo_create.hide();
+      this.clear_det();
     },
     open_fail(msg) {
       this.alert_mo=msg;
@@ -261,12 +293,12 @@ export default {
         }
       })
     },
-    
+
     get_proveedores(query) {
       axios
       .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/buscarentidadnumero', 
       {
-        "emp_id": Number(this.form_g.rs),
+        "emp_id": Number(this.form_c.rs),
         "ent_nrodocumento": query,
         "ext_id": "prv"
       })
@@ -275,21 +307,35 @@ export default {
         this.opt_prv = resp.data;
       })
     },
-
+    
     select_proveedores(idx) {
       for (let tmp in this.opt_prv)  {
-        if (this.opt_prv[tmp].pro_id == idx) {
-          this.form_g.prod_nom  = this.opt_prv[tmp].pro_nombre;
+        if (this.opt_prv[tmp].ent_id == idx) {
+          this.form_c.prv_nom  = this.opt_prv[tmp].ent_nombre;
           return;
         }
       }
+    },
+
+    get_productos(query) {
+      console.log(query);
+      axios
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/productos/buscarnombre" ,
+      {
+        "emp_id":this.form_c.rs,
+        "ent_nrodocumento":query,
+      })
+        .then((resp) => {
+          console.log(resp);
+          this.opt_prod = resp.data;
+        })
     },
 
     select_prod(idx) {
       for (let tmp in this.opt_prod)  {
         console.log(tmp);
         if (this.opt_prod[tmp].pro_id == idx) {
-          this.form_t.prod_nom  = this.opt_prod[tmp].pro_nombre;
+          this.form_c.prod_nom  = this.opt_prod[tmp].pro_nombre;
           return;
         }
       }
@@ -321,8 +367,8 @@ export default {
       axios
       .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajesfecha', 
       {
-        "emp_id": this.form_g.rs,
-        "via_fechaviaje":this.form_t.fecha_via
+        "emp_id": this.form_c.rs,
+        "via_fechaviaje":this.form_c.fech_viaje
       })
       .then((resp) => {
         console.log(resp);
@@ -339,44 +385,56 @@ export default {
         })
     },
 
+    get_chofer(query) {
+      console.log(query);
+      axios
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/tripulacionoperariodocumentos" ,
+      {
+        "emp_id": this.emp_cont,
+        "tra_nrodocumento ": query,
+        "tra_nombre": ""
+      })
+        .then((resp) => {
+          console.log(resp);
+          this.opt_tra = resp.data;
+        })
+    },
+
+    select_chofer(id) {
+      for (let tmp in this.opt_tra)  {
+        console.log(tmp);
+        if (this.opt_tra[tmp].tra_id == id) {
+          this.form_g.tra_nom= this.opt_tra[tmp].tra_nombre;
+          return;
+        }
+      }
+    },
+
     create_det() {
-      var tmp;
-      if(this.form_t.afi=="1") { //viaje
-        tmp={
-          "pro_id":Number(this.form_t.prod),
-          "via_id":Number(this.form_t.via_id),
-          "veh_id":"",
-          "tra_id":"",
-          "ccd_serie":this.form_c.serie_doc,
-          "ccd_cantidad":this.form_t.cantidad,
-          "ccd_preciounitario":this.form_t.precio_u,
-          "ccd_subtotal":this.form_c.subtotal,
-          "uni_unidad":this.form_c.unidad
-        }
-      }
-      if(this.form_t.afi=="2") {
-        tmp={
-          "pro_id":Number(this.form_t.prod),
-          "via_id":"",
-          "veh_id":Number(this.form_t.veh_id),
-          "tra_id":"",
-          "ccd_serie":this.form_c.serie_doc,
-          "ccd_cantidad":this.form_t.cantidad,
-          "ccd_preciounitario":this.form_t.precio_u,
-          "ccd_subtotal":this.form_c.subtotal,
-          "uni_unidad":this.form_c.unidad
-        }
-      }
-      this.datap.push(tmp);
-      var num=Number(this.form_t.precio_u)*Number(this.form_t.cantidad);
-      this.datav.push({
-        "det_cantidad":this.form_t.cantidad,
-        "det_producto":this.form_t.prod_nom,
-        "det_unidad":this.form_t.unidad,
-        "det_p_unitario":this.form_t.precio_u,
-        "det_subtotal":num,
+      this.datap.push({
+        "pro_id":Number(this.form_c.pro_id),
+        "via_id":Number(this.form_c.via_id),
+        "veh_id":"",
+        "tra_id":Number(this.form_g.tra_id),
+        "ccd_serie":this.form_c.doc_serie,
+        "ccd_cantidad":this.form_c.cantidad,
+        "ccd_preciounitario":"",
+        "ccd_subtotal":this.form_c.subtotal,
+        "uni_unidad":this.form_c.unidad
       });
-      this.subtotal=this.subtotal+num;
+      this.datav.push({
+        "id":this.ps_id,
+        "det_rs":this.form_c.rs_nom,
+        "det_td":this.form_c.doc_tipo_nom,
+        "det_cod":this.form_c.doc_serie,
+        "det_fecha_em":this.form_c.fech_emi,
+        "det_proveedor":this.form_c.prv_nom,
+        "det_subtotal":this.form_c.subtotal,
+        "det_impuesto":this.form_c.impuesto,
+        "det_total":this.form_c.total,
+      });
+      this.subtotal=this.subtotal+this.form_c.total;
+      this.ps_id=this.ps_id+1;
     },
 
     transaccion_insertar() {
@@ -398,18 +456,18 @@ export default {
       axios
       .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescompras/nuevo', 
       {
-        "emp_id": Number(this.form_c.rs),
-        "ent_id": Number(this.form_c.prv_id),
-        "ccc_serie": this.form_c.serie_doc,
-        "ccc_numero": this.form_c.nro_doc,
-        "ccc_fechaemision": this.form_c.fecha_em,
-        "ccc_subtotal": Number(this.form_c.subtotal),
-        "ccc_impuesto": Number(this.form_c.impuesto),
-        "ccc_total": Number(this.form_c.total),
-        "cct_codigo": this.form_c.tipo_doc,
+        "emp_id": Number(this.form_g.rs),
+        "ent_id": Number(this.form_g.prv_id),
+        "ccc_serie": this.form_g.serie_doc,
+        "ccc_numero": this.form_g.nro_doc,
+        "ccc_fechaemision": this.form_g.fecha_em,
+        "ccc_subtotal": Number(this.form_g.subtotal),
+        "ccc_impuesto": Number(this.form_g.impuesto),
+        "ccc_total": Number(this.form_g.total),
+        "cct_codigo": this.form_g.tipo_doc,
         "cce_codigo": "CAN",
         "mon_codigo": "SOL",
-        "ccc_observaciones": "",
+        "ccc_observaciones": this.form_g.tipo_pago,
         "ccc_idreferencia":"",
         "ccc_tipocambio": 18,
         "ccc_generamovimiento":false,
@@ -418,24 +476,14 @@ export default {
         "ccr_codigo":"PEA",
         "usu_codigo": "admin",
         "ccc_usucreacion":"admin",
-        "detalle":[{
-          "pro_id":"",
-          "via_id":String(this.form_c.via_id),
-          "veh_id":"",
-          "tra_id":"",
-          "ccd_serie":this.form_c.serie_doc,
-          "ccd_cantidad":this.form_c.cantidad_n,
-          "ccd_preciounitario":this.form_c.cantidad_p_uni,
-          "ccd_subtotal":this.form_c.total,
-          "uni_unidad":"UNI"
-        }]
+        "detalle":this.datap
       })
       .then((resp) => {
         console.log(resp.data);
         this.succes=resp.data.status;
         if (this.succes) {
           this.open_succes("Operación realizada satisfactoriamente");
-          this.clear_c();
+          this.clear_g();
           return true;
         }
         else {
@@ -444,6 +492,38 @@ export default {
         }
       })
     },
+    roundUp(num, precision) {
+      precision = Math.pow(10, precision)
+      return Math.ceil(num * precision) / precision
+    },
+    roundDwn(num, precision) {
+      precision = Math.pow(10, precision)
+      return Math.floor(num * precision) / precision
+    },
+    calcular1() {
+      this.form_c.impuesto=String(this.roundUp((Number(this.form_c.igv)/100)*Number(this.form_c.subtotal),1));
+      this.form_c.total=String(Number(this.form_c.impuesto)+Number(this.form_c.subtotal));
+    },
+    calcular2() {
+      var aux=Number(this.form_c.total)/(100+Number(this.form_c.igv));
+      this.form_c.impuesto=String(this.roundUp(aux*Number(this.form_c.igv),1));
+      this.form_c.subtotal=String(this.roundDwn(aux*100,1));
+    },
+    button_handle(number){
+      console.log(number);
+      this.clear_eop;
+      this.editpointer=number;
+      this.$refs.mo_editar_per.open();
+      this.wait = true;
+      this.load_edit(number);
+      
+      setTimeout(() => {
+        this.load_data_edit();
+        this.emp_cont=this.form_e.rs;
+        this.wait = false;
+      }, 400)
+    },
+
 
   },
 
@@ -491,7 +571,7 @@ export default {
 
             <el-row>
               <el-form-item style="margin-left:auto;margin-right:auto" label="Razón social asociada">
-                <el-select v-model="form_g.rs" @change="rs_changer" @clear="clear_c" placeholder="Seleccionar" style="width:600px" clearable>
+                <el-select v-model="form_g.rs" @change="rs_changer" @clear="clear_rs" placeholder="Seleccionar" style="width:600px" clearable>
                   <el-option
                     v-for="item in opt_rs"
                     :key="item.emp_id"
@@ -502,12 +582,12 @@ export default {
               </el-form-item>
             </el-row>
 
-            <el-row>
+            <el-row style="height:50px">
               <el-form-item style="margin-left:auto;margin-right:auto" label="Conductor">
                 <el-row style="width:600px"> 
                 <el-col :span="8">
                   <el-select
-                    v-model="form_c.tra_id"
+                    v-model="form_g.tra_id"
                     filterable
                     :remote-method="get_chofer"
                     @change="select_chofer"
@@ -521,23 +601,23 @@ export default {
                     </template>
 
                     <el-option
-                      v-for="item in data_op"
+                      v-for="item in opt_tra"
                       :key="item.tra_nrodocumento"
                       :label="item.tra_nrodocumento"
                       :value="item.tra_id"
                     />
                   </el-select>
                 </el-col>
-                <el-col :span="16"><el-input disabled v-model="form_c.tra_nom" placeholder="Nombre del conductor" /></el-col>
+                <el-col :span="16"><el-input disabled v-model="form_g.tra_nom" placeholder="Nombre del conductor" /></el-col>
                 </el-row>
               </el-form-item>
             </el-row>
 
-            <el-row style="width:800px; margin-left:auto; margin-right:auto"> 
+            <el-row>
               <el-form-item style="margin-left:auto;margin-right:auto" label="Salida de dinero">
-                <el-select v-model="form_g.rs" @change="rs_changer" @clear="clear_c" placeholder="Seleccionar" style="width:600px" clearable>
+                <el-select v-model="form_g.sal_dinero"  placeholder="Seleccionar" style="width:600px" clearable>
                   <el-option
-                    v-for="item in opt_rs"
+                    v-for="item in opt_sald"
                     :key="item.emp_id"
                     :label="item.emp_razonsocial"
                     :value="item.emp_id"
@@ -560,14 +640,13 @@ export default {
                       <el-table-column prop='det_td' label="Tipo de doc." width="120" align="center" />
                       <el-table-column prop='det_cod' label="Serie-Numero" width="120" align="center" />
                       <el-table-column prop="det_fecha_em" label="Fecha emision" width="140" align="center"/>
-                      <el-table-column prop="det_cliente" label="Cliente" width="140" />
+                      <el-table-column prop="det_proveedor" label="Proveedor" width="140" />
                       <el-table-column prop="det_subtotal" label="Subtotal"  />
                       <el-table-column prop="det_impuesto" label="Impuesto" />
-                      <el-table-column prop="det_p_unitario" label="Precio unitario" />
-                      <el-table-column prop="det_subtotal" label="Sub total"  align="center" />
+                      <el-table-column prop="det_total" label="Total"  align="center" />
                       <el-table-column fixed="right" label="" width="45" align="center">
                         <template #default="scope">
-                          <el-button  type="text"  @click="button_handle(scope.row.cvc_id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
+                          <el-button  type="text"  @click="button_handle(scope.row.ps_id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
                         </template>
                       </el-table-column>
                     </el-table>
@@ -583,7 +662,7 @@ export default {
               
               <el-row>
               <el-form-item style="margin-left:auto; margin-right:50px" label="Total salida de dinero" prop="subtotal">
-                <el-input style="width:250px" v-model="form_g.subtotal">
+                <el-input style="width:250px" v-model="subtotal">
                   <template #prepend>S/</template>
                 </el-input>
               </el-form-item>
@@ -591,7 +670,7 @@ export default {
 
               <el-row>
               <el-form-item style="margin-left:auto; margin-right:50px" label="Total documentos" prop="subtotal">
-                <el-input style="width:250px" v-model="form_g.subtotal">
+                <el-input style="width:250px" v-model="subtotal">
                   <template #prepend>S/</template>
                 </el-input>
               </el-form-item>
@@ -614,155 +693,198 @@ export default {
     </el-container>
   </el-container>
 
-<modal ref="mo_create" no-close-on-backdrop title="Agregar Documento" width="900px" @ok="create_usr" @cancel="closecrear" cancel-title="Atras" centered>
+<modal ref="mo_create" no-close-on-backdrop title="Agregar Documento" width="900px" @ok="create_det" @cancel="close_det" cancel-title="Atras" centered>
   <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="200px" >
+    
     <el-form-item  label="Razón social asociada">
-      <el-select v-model="form_c.rs" @change="rs_changer" @clear="clear_c" placeholder="Seleccionar" style="width:600px" clearable>
+      <el-select v-model="form_c.rs" @change="rscc_changer" @clear="rscc_clear" placeholder="Seleccionar" style="width:600px" clearable>
         <el-option
-            v-for="item in opt_rs"
-            :key="item.emp_id"
-            :label="item.emp_razonsocial"
-            :value="item.emp_id"
+          v-for="item in opt_rs"
+          :key="item.emp_id"
+          :label="item.emp_razonsocial"
+          :value="item.emp_id"
         > </el-option>
       </el-select>
     </el-form-item>
 
-  <el-form-item  label="Cliente">
-    <el-row style="width:600px"> 
-    <el-col :span="8">
-    <el-select
-      v-model="form_c.prv_id"
-      filterable
-      :remote-method="get_clientes"
-      @change="select_clientes"
-      @clear="clear_clientes"
-      placeholder="Inserte ID de cliente"
-      remote
-      clearable
-    >
-      <template #prefix>
-        <el-icon><Search /></el-icon>
-      </template>
+    <el-form-item  label="Proveedor">
+      <el-row style="width:600px"> 
+      <el-col :span="8">
+        <el-select
+          v-model="form_c.prv_id"
+          filterable
+          :remote-method="get_proveedores"
+          @change="select_proveedores"
+          @clear="clear_proveedores"
+          placeholder="Inserte ID de proveedor"
+          remote
+          clearable
+          :disabled="stop_cliente"
+        >
+          <template #prefix>
+            <el-icon><Search /></el-icon>
+          </template>
 
-      <el-option
-      v-for="item in opt_cli"
-      :key="item.ent_id"
-      :label="item.ent_nrodocumento"
-      :value="item.ent_id"
-      />
-    </el-select>
-    </el-col>
-    <el-col :span="16"><el-input disabled v-model="form_c.prv_nom" placeholder="Nombre de cliente" /></el-col>
+          <el-option
+            v-for="item in opt_prv"
+            :key="item.ent_id"
+            :label="item.ent_nrodocumento"
+            :value="item.ent_id"
+          />
+        </el-select>
+      </el-col>
+      <el-col :span="16"><el-input disabled v-model="form_c.prv_nom" placeholder="Nombre de proveedor" /></el-col>
+      </el-row>
+    </el-form-item>
+
+    <el-row style="width:800px; margin-bottom: 18px"> 
+      <el-col :span="6">
+        <el-select v-model="form_c.doc_tipo" style="width:150px; margin-left:50px" placeholder="Tipo de doc."  clearable>
+        <el-option
+          v-for="item in opt_td"
+          :key="item.cct_codigo"
+          :label="item.cct_descripcion"
+          :value="item.cct_codigo"
+        > </el-option>
+        </el-select>
+      </el-col>
+    
+      <el-col :span="18">     
+          <el-row > 
+            <el-col :span="12" >
+              <el-input v-model="form_c.doc_serie" placeholder="nro de serie" />
+            </el-col>
+            <el-col :span="12">
+              <el-input v-model="form_c.doc_num" placeholder="nro de documento" />
+            </el-col>
+          </el-row>
+      </el-col>
+
     </el-row>
-  </el-form-item>
 
-  
-  <el-form-item label="Fecha de viaje">
+    <el-form-item  label="Fecha de emisión">
+      <el-date-picker
+        type="date"
+        v-model="form_c.fech_emi"
+        format="YYYY-MM-DD"
+        value-format="YYYY-MM-DD"
+        placeholder="Seleccione fecha"
+        style="width: 300px"
+      />
+    </el-form-item>
+
+    <el-form-item label="Fecha de viaje">
       <el-row style="width:600px">
       <el-col :span="12">
-      <el-date-picker
+        <el-date-picker
           type="date"
-          v-model="form_c.fecha_via"
+          v-model="form_c.fech_viaje"
           format="YYYY-MM-DD"
           value-format="YYYY-MM-DD"
           placeholder="Seleccione fecha"
           style="width: 300px"
           @change="fech_changer"
-      />
+        />
       </el-col>
       
       <el-col :span="12">
-      <el-select v-model="form_c.via_id" placeholder="Seleccione una opcion" style="width:300px" clearable>
+        <el-select v-model="form_c.via_id" placeholder="Seleccione una opcion" style="width:300px" clearable>
           <el-option
-          v-for="item in opt_via"
-          :key="item.via_id"
-          :label="item.via_descripcion"
-          :value="item.via_id"
+            v-for="item in opt_via"
+            :key="item.via_id"
+            :label="item.via_descripcion"
+            :value="item.via_id"
           > </el-option>
-      </el-select> 
+        </el-select> 
       </el-col>
       </el-row>
-  </el-form-item>
+    </el-form-item>
 
-  <el-row style="width:800px; margin-bottom: 18px"> 
-    <el-col :span="6">
-    <el-select v-model="form_c.tipo_doc" style="width:150px; margin-left:50px" placeholder="Tipo de doc."  clearable>
-    <el-option
-      v-for="item in opt_td"
-      :key="item.cct_codigo"
-      :label="item.cct_descripcion"
-      :value="item.cct_codigo"
-    > </el-option>
-    </el-select>
-    </el-col>
 
-    <el-col :span="18">     
-      <el-row > 
-      <el-col :span="12" >
-        <el-input v-model="form_c.serie_doc" placeholder="nro de serie" />
-      </el-col>
-      <el-col :span="12">
-        <el-input v-model="form_c.nro_doc" placeholder="nro de documento" />
-      </el-col>
+    <el-form-item  label="Producto">
+      <el-row style="width:600px">
+        <el-col :span="8">
+          <el-select
+            v-model="form_c.pro_id"
+            filterable
+            :remote-method="get_productos"
+            placeholder="Tipo de producto"
+            remote
+            clearable
+          >
+            <template #prefix>
+              <el-icon><Search /></el-icon>
+            </template>
+
+            <el-option
+              v-for="item in opt_prod"
+              :key="item.pro_id"
+              :label="item.pro_descripcion"
+              :value="item.pro_id"
+            />
+          </el-select>
+           
+        </el-col>
+        <el-col :span="8"> 
+          <el-input v-model="form_c.cantidad" placeholder="Cantidad" />
+        </el-col>
+        <el-col :span="8">
+          <el-select v-model="form_c.un_id" placeholder="Unidad"  clearable>
+            <el-option
+              v-for="item in opt_uni"
+              :key="item.fdp_id"
+              :label="item.fdp_descripcion"
+              :value="item.fdp_id"
+            > </el-option>
+          </el-select>
+        </el-col>
       </el-row>
-    </el-col>
+    </el-form-item>
 
-  </el-row>
-
-  <el-form-item  label="Fecha de emisión">
-      <el-date-picker
-      type="date"
-      v-model="form_c.fecha_em"
-      format="YYYY-MM-DD"
-      value-format="YYYY-MM-DD"
-      placeholder="Seleccione fecha"
-      style="width: 300px"
-      />
-  </el-form-item>
-
-  <el-form-item style="margin-left: auto;margin-right: auto" label="Valor venta">
+    <el-form-item style="margin-left: auto;margin-right: auto" label="Valor venta">
       <div style="width:300px">
-      <el-input v-model="form_c.subtotal" placeholder="Inserte una cantidad">
+        <el-input v-model="form_c.subtotal" placeholder="Inserte una cantidad">
           <template #append>
-          <el-button @click="calcular1()" ><img style="fill:#797979" width="15" height="15" src = "../../components/calculadora.svg"/> </el-button>
+            <el-button @click="calcular1()" ><img style="fill:#797979" width="15" height="15" src = "../../components/calculadora.svg"/> </el-button>
           </template>
           <template #prepend>S/</template>
-      </el-input>
+        </el-input>
       </div>
-  </el-form-item>
+    </el-form-item>
 
-  <el-form-item style="margin-left: auto;margin-right: auto" label="Impuesto">
+    <el-form-item style="margin-left: auto;margin-right: auto" label="Impuesto">
       <div style="width:240px">
-      <el-input v-model="form_c.impuesto" placeholder="Inserte una cantidad">
+        <el-input v-model="form_c.impuesto" placeholder="Inserte una cantidad">
           <template #prepend>S/</template>
-      </el-input>
+        </el-input>
       </div>
       <el-input style="width:60px" v-model="form_c.igv">
-      <template #suffix>%</template>
+        <template #suffix>%</template>
       </el-input>
-  </el-form-item>
+    </el-form-item>
 
-  <el-form-item style="margin-left: auto;margin-right: auto" label="Total">
+    <el-form-item style="margin-left: auto;margin-right: auto" label="Total">
       <div style="width:300px">
-      <el-input v-model="form_c.total" placeholder="Inserte una cantidad">
+        <el-input v-model="form_c.total" placeholder="Inserte una cantidad">
           <template #append>
-          <el-button  @click="calcular2()"><img style="fill:#797979" width="15" height="15" src = "../../components/calculadora.svg"/> </el-button>
+            <el-button  @click="calcular2()"><img style="fill:#797979" width="15" height="15" src = "../../components/calculadora.svg"/> </el-button>
           </template>
           <template #prepend>S/</template>
-      </el-input>
+        </el-input>
       </div>
-  </el-form-item>
+    </el-form-item>
 
-  <el-form-item style="margin-left: auto;margin-right: auto" label="Tipo de cobro">
+    <el-form-item style="margin-left: auto;margin-right: auto" label="Tipo de pago">
       <el-select v-model="form_c.tipo_pago" placeholder="Seleccione una opcion" style="width:300px" clearable>
-      <el-option
+        <el-option
           v-for="item in opt_fp"
-          :key="item.fdc_codigo"
-          :label="item.fdc_descripcion"
-          :value="item.fdc_codigo"
-      > </el-option>
+          :key="item.fdp_id"
+          :label="item.fdp_descripcion"
+          :value="item.fdp_id"
+        > </el-option>
       </el-select>
-  </el-form-item>
+    </el-form-item>
+
   </el-form>
 </modal>
 
