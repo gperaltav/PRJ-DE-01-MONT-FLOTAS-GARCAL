@@ -87,6 +87,7 @@ export default {
       opt_fp: [],
       opt_td:[],
       opt_via:[],
+      opt_tp:[],
 
       data_edit: [],
       data_edit2: [],
@@ -112,16 +113,9 @@ export default {
         referencia:'',
         subtotal:0,
         moneda:'',
-        total:null,
+        total:"",
         tipo_pago:'',
         igv:18
-      }),
-
-      aux : reactive({
-        veh_id:'',
-        acople_id:'',
-        pro_id:'',
-
       }),
 
     }
@@ -130,23 +124,24 @@ export default {
   methods: {
 
     clear_c() {
-      this.form_c.rs= '',
-      this.form_c.prv_id='',
-      this.form_c.prv_nom='',
-      this.form_c.tipo_doc='',
-      this.form_c.serie_doc='',
-      this.form_c.nro_doc='',
-      this.form_c.fecha_em='',
-      this.form_c.fecha_via='',
-      this.form_c.via_id='',
-      this.form_c.cantidad_n='',
-      this.form_c.cantidad_un='',
-      this.form_c.cantidad_p_uni='',
-      this.form_c.subtotal=0,
-      this.form_c.impuesto=0,
-      this.form_c.total=0,
-      this.form_c.tipo_pago='',
-      this.form_c.igv=18
+      this.form_c.rs= '';
+      this.form_c.prv_id='';
+      this.form_c.prv_nom='';
+      this.form_c.tipo_doc='';
+      this.form_c.serie_doc='';
+      this.form_c.nro_doc='';
+      this.form_c.fecha_em='';
+      this.form_c.fecha_via='';
+      this.form_c.via_id='';
+      this.form_c.cantidad_n='';
+      this.form_c.cantidad_un='';
+      this.form_c.cantidad_p_uni='';
+      this.form_c.referencia='';
+      this.form_c.subtotal=0;
+      this.form_c.moneda='';
+      this.form_c.total="";
+      this.form_c.tipo_pago='';
+      this.form_c.igv=18;
     },
 
     rs_changer() {
@@ -302,7 +297,7 @@ export default {
       .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdepago/'+String(this.form_c.rs))
       .then((resp) => {
         console.log(resp);
-        this.opt_fp = resp.data;
+        this.opt_tp = resp.data;
       })
     },
 
@@ -424,28 +419,28 @@ export default {
         "ccc_serie": this.form_c.serie_doc,
         "ccc_numero": this.form_c.nro_doc,
         "ccc_fechaemision": this.form_c.fecha_em,
-        "ccc_subtotal": Number(this.form_c.subtotal),
-        "ccc_impuesto": Number(this.form_c.impuesto),
+        "ccc_subtotal": "",
+        "ccc_impuesto":"",
         "ccc_total": Number(this.form_c.total),
         "cct_codigo": this.form_c.tipo_doc,
         "cce_codigo": "CAN",
         "mon_codigo": "SOL",
         "ccc_observaciones": "",
-        "ccc_idreferencia":"",
+        "ccc_idreferencia":this.form_c.referencia,
         "ccc_tipocambio": 18,
         "ccc_generamovimiento":false,
         "ccc_fechaingreso": fech,
         "ccc_periodoregistro": fech,
-        "ccr_codigo":"PEA",
+        "ccr_codigo":"PAG",
         "usu_codigo": "admin",
         "ccc_usucreacion":"admin",
         "detalle":[{
           "pro_id":"",
-          "via_id":String(this.form_c.via_id),
+          "via_id":Number(this.form_c.via_id),
           "veh_id":"",
           "tra_id":"",
           "ccd_serie":this.form_c.serie_doc,
-          "ccd_cantidad":this.form_c.cantidad_n,
+          "ccd_cantidad":"",
           "ccd_preciounitario":this.form_c.cantidad_p_uni,
           "ccd_subtotal":this.form_c.total,
           "uni_unidad":"UNI"
@@ -648,14 +643,13 @@ export default {
                   :key="item.fdp_id"
                   :label="item.fdp_descripcion"
                   :value="item.fdp_id"
-                  
                 > </el-option>
               </el-select>
             </el-form-item>
 
             <el-form-item style="margin-left: auto;margin-right: auto" label="Nro. de referencia">
               <div style="width:300px">
-                <el-input v-model="form_c.referencia" placeholder="Inserte una cantidad"/>
+                <el-input v-model="form_c.referencia" placeholder="Inserte codigo de referencia"/>
               </div>
             </el-form-item>
 
@@ -667,15 +661,14 @@ export default {
                 <el-col :span="6"> 
                   <el-select v-model="form_c.moneda" placeholder="Moneda" style="width:150px" clearable>
                     <el-option label="SOLES (S/.)" value="SOL" />
-                    <el-option label="DOLARES ($)" value="SOL" />
+                    <el-option label="DOLARES ($)" value="DOL" />
                   </el-select> 
                 </el-col>
               </el-row>
             </el-form-item>
             <el-row style="text-align=center; margin-left:100px" >
               <el-button  @click="transaccion_insertar" style="margin-left: auto;margin-right: auto" color="#0844a4" >Guardar</el-button>
-            </el-row>
-              
+            </el-row>   
             </el-form>
             </div>
 

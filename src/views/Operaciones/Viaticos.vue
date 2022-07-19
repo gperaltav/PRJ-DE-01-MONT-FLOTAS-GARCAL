@@ -55,7 +55,7 @@ export default {
 
       form_c : reactive({
         rs: '',
-        prv_id:'',
+        tra_id:'',
         tra_nom:'',
         tipo_doc:'',
         serie_doc:'',
@@ -68,46 +68,49 @@ export default {
         cantidad_p_uni:'',
         subtotal:0,
         impuesto:0,
-        total:0,
+        total:"",
         tipo_pago:'',
         igv:18,
         obs:''
       }),
-
-      aux : reactive({
-        veh_id:'',
-        acople_id:'',
-        pro_id:'',
-      }),
-
     }
   },
 
   methods: {
 
     clear_c() {
-      this.form_c.rs='';
-      this.form_c.placa='';
-      this.form_c.marca='';
-      this.form_c.modelo='';
-      this.form_c.tipo='';
-      this.form_c.clase='';
-      this.form_c.year='';
-      this.form_c.serie='';
-      this.form_c.mtc='';
-      this.form_c.carga_uti='';
-      this.form_c.kilometraje='';
+      this.form_c.rs= '';
+      this.form_c.tra_id='';
+      this.form_c.tra_nom='';
+      this.form_c.tipo_doc='';
+      this.form_c.serie_doc='';
+      this.form_c.nro_doc='';
+      this.form_c.fecha_em='';
+      this.form_c.fecha_via='';
+      this.form_c.via_id='';
+      this.form_c.cantidad_n='';
+      this.form_c.cantidad_un='';
+      this.form_c.cantidad_p_uni='';
+      this.form_c.subtotal=0;
+      this.form_c.impuesto=0;
+      this.form_c.total="";
+      this.form_c.tipo_pago='';
+      this.form_c.igv=18;
+      this.form_c.obs='';
     },
 
     rs_changer() {
       this.emp_cont=this.form_c.rs;
-      this.form_c.prv_id="";
-      this.form_c.prv_nom="";
+      this.form_c.tra_id="";
+      this.form_c.tra_nom='';
       this.form_c.via_id="";
       this.form_c.fecha_via="";
+      //limpiar listas
+      this.data_op=[];
       //cargar listas
       this.get_formas_pago();
       this.get_tipos_doc();
+      this.get_chofer("");
     },
     fech_changer() {
       //cargar listas
@@ -289,11 +292,11 @@ export default {
         "ccc_serie": this.form_c.serie_doc,
         "ccc_numero": this.form_c.nro_doc,
         "ccc_fechaemision": this.form_c.fecha_em,
-        "ccc_subtotal": Number(this.form_c.subtotal),
-        "ccc_impuesto": Number(this.form_c.impuesto),
+        "ccc_subtotal": "",
+        "ccc_impuesto":"",
         "ccc_total": Number(this.form_c.total),
         "cct_codigo": "END",
-        "cce_codigo": "CAN",
+        "cce_codigo": "CRE",
         "mon_codigo": "SOL",
         "ccc_observaciones":this.form_c.obs,
         "ccc_idreferencia":"",
@@ -307,13 +310,13 @@ export default {
 
         "detalle": [{
           "pro_id":"",
-          "via_id":String(this.form_c.via_id),
+          "via_id":Number(this.form_c.via_id),
           "veh_id":"",
           "tra_id": Number(this.form_c.tra_id),
           "ccd_serie":this.form_c.serie_doc,
-          "ccd_cantidad":"1",
-          "ccd_preciounitario":this.form_c.total,
-          "ccd_subtotal":this.form_c.total,
+          "ccd_cantidad":1,
+          "ccd_preciounitario":Number(this.form_c.total),
+          "ccd_subtotal":Number(this.form_c.total),
           "uni_unidad":"UNI"
         }]
       })
@@ -322,6 +325,7 @@ export default {
         this.succes=resp.data.status;
         if (this.succes) {
           this.open_succes("Operación realizada satisfactoriamente");
+          this.clear_c();
           succ=true;
           return true;
         }
@@ -335,7 +339,7 @@ export default {
           if(!succ) {
             this.open_fail("Hubo un error al establecer conexión, revise su red");
           }
-        }, 500)
+        }, 1000)
       
 
     },

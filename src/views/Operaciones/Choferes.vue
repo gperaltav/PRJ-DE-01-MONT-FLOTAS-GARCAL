@@ -85,17 +85,24 @@ export default {
   methods: {
 
     clear_c() {
-      this.form_c.rs='';
-      this.form_c.placa='';
-      this.form_c.marca='';
-      this.form_c.modelo='';
-      this.form_c.tipo='';
-      this.form_c.clase='';
-      this.form_c.year='';
-      this.form_c.serie='';
-      this.form_c.mtc='';
-      this.form_c.carga_uti='';
-      this.form_c.kilometraje='';
+      this.form_c.rs= '';
+      this.form_c.tra_id='';
+      this.form_c.tra_nom='';
+      this.form_c.concepto='';
+      this.form_c.serie_doc='';
+      this.form_c.nro_doc='';
+      this.form_c.fecha_em='';
+      this.form_c.fecha_via='';
+      this.form_c.via_id='';
+      this.form_c.cantidad_n='';
+      this.form_c.cantidad_un='';
+      this.form_c.cantidad_p_uni='';
+      this.form_c.subtotal=0;
+      this.form_c.impuesto=0;
+      this.form_c.total=0;
+      this.form_c.tipo_pago='';
+      this.form_c.igv=18;
+      this.form_c.obs='';
     },
 
     rs_changer() {
@@ -106,6 +113,7 @@ export default {
       this.form_c.fecha_via="";
       this.form_c.concepto="";
       //cargar listas
+      this.data_op=[];
       this.get_formas_pago();
       this.get_tipos_doc();
       this.get_referencia();

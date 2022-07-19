@@ -147,6 +147,8 @@ export default {
       open_op:false,
       aux1:true,
 
+      estado:0,
+
       alert_mo:'',
       id_tmp:-1,
       emp_cont:'1',
@@ -910,6 +912,10 @@ export default {
       console.log(number);
       this.clear_eop;
       this.editpointer=number;
+      this.load_edit(number);
+      //setTimeout(() => {
+      //  this.form_e.fecha =this.data_edit[0].via_fechaviaje;
+      //}, 400)
       this.$refs.mo_estado.open();
       this.get_estados();
     }
@@ -1587,11 +1593,11 @@ export default {
   </el-form>
 </modal>
 
-<modal ref="mo_estado" no-close-on-backdrop title="Estado de viaje" width="500px" @ok="editar_usr" cancel-title="Cancelar" @cancel="closeedit"  centered>
+<modal ref="mo_estado" no-close-on-backdrop title="Estado de viaje" width="500px" @ok="editar_estado" cancel-title="Cancelar" @cancel="close_estado"  centered>
    <el-form  ref="form_cref" :rules="rules" :model="form_e" label-width="150px" >
     <el-row style="text-align:center">
     <el-form-item style="margin-left: auto;margin-right: auto" label="Estado de viaje" >
-      <el-select  v-model="form_e.rs" @change="rs_changer2()" placeholder="Seleccionar">
+      <el-select  v-model="estado" @change="rs_changer2()" placeholder="Seleccionar">
         <el-option
           v-for="item in opt_estados"
           :key="item.vie_codigo"

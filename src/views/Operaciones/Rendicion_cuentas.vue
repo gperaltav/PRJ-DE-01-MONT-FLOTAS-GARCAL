@@ -79,7 +79,9 @@ export default {
   data(){
     return {
       editpointer:0,
+      edit:false,
       succes: false,
+      datag: [],
       datap: [],
       datav: [],
       opt_rs: [],
@@ -100,6 +102,9 @@ export default {
 
       subtotal:0,
       ps_id:0,
+      sal_din:0,
+      doc_din:0,
+      resta:0,
 
       emp_cont:'1',
 
@@ -111,6 +116,7 @@ export default {
       }),
 
       form_c : reactive({
+        id:this.ps_id,
         rs:'',
         rs_nom:'',
         prv_id:'',
@@ -148,6 +154,30 @@ export default {
     rscc_changer() {
       this.get_tipos_doc();
       this.get_formas_pago();
+      this.form_c.prv_id='';
+      this.form_c.prv_nom='';
+      this.form_c.fech_viaje='';
+      this.form_c.via_id='';
+      this.form_c.pro_id='';
+      this.form_c.tipo_pago='';
+      let rscc=this.form_c.rs;
+      for (let tmp in this.opt_rs)  {
+        console.log(tmp);
+        if (this.opt_rs[tmp].emp_id == rscc) {
+          this.form_c.rs_nom= this.opt_rs[tmp].emp_razonsocial;
+          return;
+        }
+      }
+    },
+
+    tdocc_changer() {
+      let tdcc=this.form_c.doc_tipo;
+      for (let tmp in this.opt_td)  {
+        if (this.opt_td[tmp].cct_codigo == tdcc) {
+          this.form_c.doc_tipo_nom= this.opt_td[tmp].cct_descripcion;
+          return;
+        }
+      }
     },
 
     rscc_clear() {
@@ -264,7 +294,7 @@ export default {
       {
         "emp_id": Number(this.form_c.rs),
         "gui_fechaemision": this.form_c.fecha_em,
-        "gti_codigo": this.form_c.tipo_doc,
+        "gti_codigo": this.form_c.doc_tipo,
         "gui_serie": this.form_c.serie_doc,
         "gui_numero": this.form_c.nro_doc ,
         "via_id": Number(this.form_c.via_id),
@@ -317,6 +347,20 @@ export default {
       }
     },
 
+    get_salida_dinero(id) {
+      console.log(id);
+
+      axios
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprasentregardineropendiente" ,
+      {
+        "tra_nrodocumento":id,
+      })
+        .then((resp) => {
+          console.log(resp);
+          this.opt_sald = resp.data;
+        })
+    },
+
     get_productos(query) {
       console.log(query);
       axios
@@ -343,6 +387,11 @@ export default {
 
     clear_proveedores() {
       this.form_c.prv_nom= "";
+    },
+
+    check_dinero() {
+      this.doc_din=this.subtotal;
+      this.resta=Number(this.sal_din)-Number(this.doc_din);
     },
 
     get_formas_pago() {
@@ -394,10 +443,10 @@ export default {
         "tra_nrodocumento ": query,
         "tra_nombre": ""
       })
-        .then((resp) => {
-          console.log(resp);
-          this.opt_tra = resp.data;
-        })
+      .then((resp) => {
+        console.log(resp);
+        this.opt_tra = resp.data;
+      })
     },
 
     select_chofer(id) {
@@ -405,39 +454,132 @@ export default {
         console.log(tmp);
         if (this.opt_tra[tmp].tra_id == id) {
           this.form_g.tra_nom= this.opt_tra[tmp].tra_nombre;
+          this.get_salida_dinero(this.opt_tra[tmp].tra_nrodocumento);
           return;
         }
       }
     },
 
+    api_det_ready() {
+      this.datap=[];
+      for (let tmp in this.datag)  {
+        this.datap.push({
+          "pro_id":Number(this.datag[tmp].pro_id),
+          "via_id":Number(this.datag[tmp].via_id),
+          "veh_id":"",
+          "tra_id":Number(this.form_g.tra_id),
+          "ccd_serie":this.datag[tmp].doc_serie,
+          "ccd_cantidad":this.datag[tmp].cantidad,
+          "ccd_preciounitario":"",
+          "ccd_subtotal":this.datag[tmp].subtotal,
+          "uni_unidad":"UNI"
+        });
+      }
+    },
+
     create_det() {
-      this.datap.push({
-        "pro_id":Number(this.form_c.pro_id),
-        "via_id":Number(this.form_c.via_id),
-        "veh_id":"",
-        "tra_id":Number(this.form_g.tra_id),
-        "ccd_serie":this.form_c.doc_serie,
-        "ccd_cantidad":this.form_c.cantidad,
-        "ccd_preciounitario":"",
-        "ccd_subtotal":this.form_c.subtotal,
-        "uni_unidad":this.form_c.unidad
-      });
-      this.datav.push({
-        "id":this.ps_id,
-        "det_rs":this.form_c.rs_nom,
-        "det_td":this.form_c.doc_tipo_nom,
-        "det_cod":this.form_c.doc_serie,
-        "det_fecha_em":this.form_c.fech_emi,
-        "det_proveedor":this.form_c.prv_nom,
-        "det_subtotal":this.form_c.subtotal,
-        "det_impuesto":this.form_c.impuesto,
-        "det_total":this.form_c.total,
-      });
-      this.subtotal=this.subtotal+this.form_c.total;
-      this.ps_id=this.ps_id+1;
+      if (this.edit) {
+        console.log(this.datav);
+        console.log(this.editpointer);
+        for (let tmp in this.datav)  {
+          if (this.datav[tmp].id == this.editpointer) {
+            this.datav[tmp].det_rs=this.form_c.rs_nom;
+            this.datav[tmp].det_td=this.form_c.doc_tipo_nom;
+            this.datav[tmp].det_cod=this.form_c.doc_serie;
+            this.datav[tmp].det_fecha_em=this.form_c.fech_emi;
+            this.datav[tmp].det_proveedor=this.form_c.prv_nom;
+            this.datav[tmp].det_subtotal=this.form_c.subtotal;
+            this.datav[tmp].det_impuesto=this.form_c.impuesto;
+
+            this.subtotal=Number(this.subtotal)-Number(this.datav[tmp].det_total);
+            this.datav[tmp].det_total=this.form_c.total;
+
+            this.subtotal=Number(this.subtotal)+Number(this.form_c.total);
+
+            this.edit=false;
+            console.log(this.datav);
+            console.log(this.datag);
+            this.clear_det;
+            this.$refs.mo_create.hide(); 
+            this.check_dinero();
+          }
+        }
+
+      }
+      else {
+        this.form_c.id=this.ps_id;
+        this.datag.push(this.form_c);
+      
+        this.datav.push({
+          "id":this.ps_id,
+          "det_rs":this.form_c.rs_nom,
+          "det_td":this.form_c.doc_tipo_nom,
+          "det_cod":this.form_c.doc_serie,
+          "det_fecha_em":this.form_c.fech_emi,
+          "det_proveedor":this.form_c.prv_nom,
+          "det_subtotal":this.form_c.subtotal,
+          "det_impuesto":this.form_c.impuesto,
+          "det_total":this.form_c.total,
+        });
+        this.subtotal=Number(this.subtotal)+Number(this.form_c.total);
+        this.ps_id=this.ps_id+1;
+        this.clear_det;
+        this.$refs.mo_create.hide();
+        this.check_dinero(); 
+      } 
+    },
+
+    open_edit_det(id) {
+      console.log(id);
+      console.log(this.datag);
+      for (let tmp in this.datag)  {
+        if (this.datag[tmp].id == id) {
+          this.editpointer=id;
+          this.edit=true;
+          this.form_c.rs=this.datag[tmp].rs;
+          this.get_tipos_doc();
+          this.get_formas_pago();
+          this.form_c.rs_nom=this.datag[tmp].rs_nom;
+          this.get_proveedores("");
+          this.form_c.prv_id=this.datag[tmp].prv_id;
+          this.form_c.prv_nom=this.datag[tmp].prv_nom;
+          this.form_c.doc_tipo=this.datag[tmp].doc_tipo;
+          this.form_c.doc_tipo_nom=this.datag[tmp].doc_tipo_nom;
+          this.form_c.doc_serie=this.datag[tmp].doc_serie;
+          this.form_c.doc_num=this.datag[tmp].doc_num;
+          this.form_c.fech_emi=this.datag[tmp].fech_emi;
+          this.form_c.fech_viaje=this.datag[tmp].fech_viaje;
+          this.form_c.via_id=this.datag[tmp].via_id;
+          this.form_c.pro_id=this.datag[tmp].pro_id;
+          this.form_c.cantidad=this.datag[tmp].cantidad;
+          this.form_c.un_id=this.datag[tmp].un_id;
+          this.form_c.subtotal=this.datag[tmp].subtotal;
+          this.form_c.igv=18;
+          this.form_c.impuesto=this.datag[tmp].impuesto;
+          this.form_c.total=this.datag[tmp].total;
+          this.form_c.tipo_pago=this.datag[tmp].tipo_pago;
+          this.$refs.mo_create.open();
+          return;
+        }
+      }
+    },
+
+    select_sald(id) {
+      console.log(id);
+      for (let tmp in this.opt_sald)  {
+        console.log(tmp);
+        if (this.opt_sald[tmp].ccc_id == id) {
+          this.sal_din= this.opt_sald[tmp].ccc_total;
+          this.get_salida_dinero(this.opt_sald[tmp].tra_nrodocumento);
+          this.check_dinero();
+          return;
+        }
+      }
+
     },
 
     transaccion_insertar() {
+      this.api_det_ready();
       const tiempoTranscurrido = Date.now();
       const hoy = new Date(tiempoTranscurrido);
       var mm=String(hoy.getMonth() + 1);
@@ -453,21 +595,19 @@ export default {
 
       console.log(fech);
 
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescompras/nuevo', 
-      {
+      console.log({
         "emp_id": Number(this.form_g.rs),
-        "ent_id": Number(this.form_g.prv_id),
-        "ccc_serie": this.form_g.serie_doc,
-        "ccc_numero": this.form_g.nro_doc,
-        "ccc_fechaemision": this.form_g.fecha_em,
-        "ccc_subtotal": Number(this.form_g.subtotal),
-        "ccc_impuesto": Number(this.form_g.impuesto),
-        "ccc_total": Number(this.form_g.total),
-        "cct_codigo": this.form_g.tipo_doc,
+        "ent_id": Number(this.form_g.tra_id),
+        "ccc_serie": "",
+        "ccc_numero": "",
+        "ccc_fechaemision": fech,
+        "ccc_subtotal": "",
+        "ccc_impuesto": "",
+        "ccc_total": Number(this.doc_din),
+        "cct_codigo": "",
         "cce_codigo": "CAN",
         "mon_codigo": "SOL",
-        "ccc_observaciones": this.form_g.tipo_pago,
+        "ccc_observaciones": "",
         "ccc_idreferencia":"",
         "ccc_tipocambio": 18,
         "ccc_generamovimiento":false,
@@ -476,15 +616,57 @@ export default {
         "ccr_codigo":"PEA",
         "usu_codigo": "admin",
         "ccc_usucreacion":"admin",
-        "detalle":this.datap
+        "detalle":this.datap,
+      });
+
+      axios
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescompras/nuevo', 
+      {
+        "emp_id": Number(this.form_g.rs),
+        "ent_id": Number(this.form_g.tra_id),
+        "ccc_serie": "",
+        "ccc_numero": "",
+        "ccc_fechaemision": fech,
+        "ccc_subtotal": "",
+        "ccc_impuesto": "",
+        "ccc_total": Number(this.doc_din),
+        "cct_codigo": "",
+        "cce_codigo": "CAN",
+        "mon_codigo": "SOL",
+        "ccc_observaciones": "",
+        "ccc_idreferencia":"",
+        "ccc_tipocambio": 18,
+        "ccc_generamovimiento":false,
+        "ccc_fechaingreso": fech,
+        "ccc_periodoregistro": fech,
+        "ccr_codigo":"PEA",
+        "usu_codigo": "admin",
+        "ccc_usucreacion":"admin",
+        "detalle":this.datap,
       })
       .then((resp) => {
         console.log(resp.data);
         this.succes=resp.data.status;
         if (this.succes) {
-          this.open_succes("Operación realizada satisfactoriamente");
-          this.clear_g();
-          return true;
+          axios
+          .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprascab/actualizar" ,
+          {
+            "ccc_id":Number(this.form_g.sal_dinero),
+            "cce_codigo":"CAN"
+          })
+          .then((resp) => {
+            console.log(resp.data);
+            this.succes=resp.data.status;
+            if (this.succes) {
+              this.open_succes("Operación realizada satisfactoriamente");
+              this.clear_g();
+              return true;
+            }
+            else {
+              this.open_fail("Hubo un error con el servidor al ejecutar la operación");
+              return false;
+            }
+          })
         }
         else {
           this.open_fail("Hubo un error con el servidor al ejecutar la operación");
@@ -615,12 +797,12 @@ export default {
 
             <el-row>
               <el-form-item style="margin-left:auto;margin-right:auto" label="Salida de dinero">
-                <el-select v-model="form_g.sal_dinero"  placeholder="Seleccionar" style="width:600px" clearable>
+                <el-select v-model="form_g.sal_dinero"  placeholder="Seleccionar" style="width:600px" clearable @change="select_sald">
                   <el-option
                     v-for="item in opt_sald"
-                    :key="item.emp_id"
-                    :label="item.emp_razonsocial"
-                    :value="item.emp_id"
+                    :key="item.ccc_id"
+                    :label="item.ccc_observaciones"
+                    :value="item.ccc_id"
                   > </el-option>
                 </el-select>
               </el-form-item>
@@ -646,7 +828,7 @@ export default {
                       <el-table-column prop="det_total" label="Total"  align="center" />
                       <el-table-column fixed="right" label="" width="45" align="center">
                         <template #default="scope">
-                          <el-button  type="text"  @click="button_handle(scope.row.ps_id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
+                          <el-button  type="text"  @click="open_edit_det(scope.row.id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
                         </template>
                       </el-table-column>
                     </el-table>
@@ -662,7 +844,7 @@ export default {
               
               <el-row>
               <el-form-item style="margin-left:auto; margin-right:50px" label="Total salida de dinero" prop="subtotal">
-                <el-input style="width:250px" v-model="subtotal">
+                <el-input style="width:250px" v-model="sal_din" disabled>
                   <template #prepend>S/</template>
                 </el-input>
               </el-form-item>
@@ -670,15 +852,15 @@ export default {
 
               <el-row>
               <el-form-item style="margin-left:auto; margin-right:50px" label="Total documentos" prop="subtotal">
-                <el-input style="width:250px" v-model="subtotal">
+                <el-input style="width:250px" v-model="doc_din" disabled>
                   <template #prepend>S/</template>
                 </el-input>
               </el-form-item>
               </el-row>
 
               <el-row>
-              <el-form-item style="margin-left:auto; margin-right:50px" label="TotaL" prop="subtotal">
-                <el-input style="width:250px" v-model="form_g.subtotal">
+              <el-form-item style="margin-left:auto; margin-right:50px" label="Resta" prop="subtotal">
+                <el-input style="width:250px" v-model="resta" disabled>
                   <template #prepend>S/</template>
                 </el-input>
               </el-form-item>
@@ -693,7 +875,7 @@ export default {
     </el-container>
   </el-container>
 
-<modal ref="mo_create" no-close-on-backdrop title="Agregar Documento" width="900px" @ok="create_det" @cancel="close_det" cancel-title="Atras" centered>
+<modal ref="mo_create" no-close-on-backdrop title="Documento" width="900px" @ok="create_det" @cancel="close_det" cancel-title="Atras" centered>
   <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="200px" >
     
     <el-form-item  label="Razón social asociada">
@@ -739,7 +921,7 @@ export default {
 
     <el-row style="width:800px; margin-bottom: 18px"> 
       <el-col :span="6">
-        <el-select v-model="form_c.doc_tipo" style="width:150px; margin-left:50px" placeholder="Tipo de doc."  clearable>
+        <el-select v-model="form_c.doc_tipo" @change="tdocc_changer" style="width:150px; margin-left:50px" placeholder="Tipo de doc."  clearable>
         <el-option
           v-for="item in opt_td"
           :key="item.cct_codigo"

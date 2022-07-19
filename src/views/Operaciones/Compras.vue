@@ -180,6 +180,7 @@ export default {
       this.form_g.total='';
 
       this.datap= [];
+      this.datav = [];
       this.opt_prv= [];
       this.opt_fp= [];
 
