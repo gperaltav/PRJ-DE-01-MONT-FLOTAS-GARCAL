@@ -337,10 +337,10 @@ export default {
       break;
       case 6:
         this.tipo_act="ELEMENTOS PELIGROSOS";
-        if(!obj.ELEMPELIGROSOS) {
+        if(!obj.MTCMATPEL) {
           return 
         }
-        this.tipo_doc=obj.ELEMPELIGROSOS[0].id;
+        this.tipo_doc=obj.MTCMATPEL[0].id;
       break;
       case 7:
         this.tipo_act="BONIFICACIÓN";
@@ -355,6 +355,13 @@ export default {
           return 
         }
         this.tipo_doc=obj.HERMETECIDAD[0].id;
+      break;
+      case 9:
+        this.tipo_act="MTC MERCANCIAS";
+        if(!obj.MTCMERCANCIAS) {
+          return 
+        }
+        this.tipo_doc=obj.MTCMERCANCIAS[0].id;
       break;
 
       }
@@ -435,16 +442,16 @@ export default {
 
       break;
       case 7:
-        if(!obj.row.ELEMPELIGROSOS) {
+        if(!obj.row.MTCMATPEL) {
           return 
         }
-        if (obj.row.ELEMPELIGROSOS[0].color=="#92d36e") {
+        if (obj.row.MTCMATPEL[0].color=="#92d36e") {
           return "cell-1";
         }
-        if (obj.row.ELEMPELIGROSOS[0].color=="#fefb64") {
+        if (obj.row.MTCMATPEL[0].color=="#fefb64") {
           return "cell-2";
         }
-        if (obj.row.ELEMPELIGROSOS[0].color=="#ff3823") {
+        if (obj.row.MTCMATPEL[0].color=="#ff3823") {
           return "cell-3";
         }
 
@@ -475,6 +482,21 @@ export default {
           return "cell-2";
         }
         if (obj.row.HERMETECIDAD[0].color=="#ff3823") {
+          return "cell-3";
+        }
+      break;
+
+      case 10:
+        if(!obj.row.MTCMERCANCIAS) {
+          return 
+        }
+        if (obj.row.MTCMERCANCIAS[0].color=="#92d36e") {
+          return "cell-1";
+        }
+        if (obj.row.CITV6m[0].color=="#fefb64") {
+          return "cell-2";
+        }
+        if (obj.row.MTCMERCANCIAS[0].color=="#ff3823") {
           return "cell-3";
         }
 
@@ -534,14 +556,14 @@ export default {
         }
       break;
       case 6:
-        if(!obj.ELEMPELIGROSOS) {
+        if(!obj.MTCMATPEL) {
           return "No info"
         }
         else {
-          if (!obj.ELEMPELIGROSOS[0].fecha) {
+          if (!obj.MTCMATPEL[0].fecha) {
             return "No info"
           }
-          return obj.ELEMPELIGROSOS[0].fecha
+          return obj.MTCMATPEL[0].fecha
         }
       break;
       case 7:
@@ -566,7 +588,17 @@ export default {
           return obj.HERMETECIDAD[0].fecha
         }
       break;
-
+      case 9:
+        if(!obj.MTCMERCANCIAS) {
+          return "No info"
+        }
+        else {
+          if (!obj.MTCMERCANCIAS[0].fecha) {
+            return "No info"
+          }
+          return obj.MTCMERCANCIAS[0].fecha
+        }
+      break;
       }
     }
   },
@@ -665,7 +697,7 @@ export default {
                   <el-button  type="text"  @click="button_handle(scope.row,5)" >{{get_nombre(scope.row,5)}}</el-button>
                 </template>
               </el-table-column>
-              <el-table-column label="ELEM. PELIGROSOS" width="170">
+              <el-table-column label="MTC MATPEL" width="170">
                 <template #default="scope">
                   <el-button  type="text"  @click="button_handle(scope.row,6)" >{{get_nombre(scope.row,6)}}</el-button>
                 </template>
@@ -678,6 +710,11 @@ export default {
               <el-table-column label="HERMETICIDAD" width="150">
                 <template #default="scope">
                   <el-button  type="text"  @click="button_handle(scope.row,8)" >{{get_nombre(scope.row,8)}}</el-button>
+                </template>
+              </el-table-column>
+              <el-table-column label="MTC MERCANCIAS" width="160">
+                <template #default="scope">
+                  <el-button  type="text"  @click="button_handle(scope.row,9)" >{{get_nombre(scope.row,9)}}</el-button>
                 </template>
               </el-table-column>
             </el-table>

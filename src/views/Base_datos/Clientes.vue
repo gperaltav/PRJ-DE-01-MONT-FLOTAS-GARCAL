@@ -275,7 +275,7 @@ export default {
     
     load_fpago() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdepago/'+String(this.emp_cont))
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdecobro/'+String(this.emp_cont))
         .then((resp) => {
           console.log(resp);  
           this.opt_fpago = resp.data;
@@ -599,9 +599,9 @@ export default {
 
           <div class="table-container">
           <el-table :data="datap" border header-row-style="color:black;" >
-              <el-table-column prop="emp_razonsocial" label="Razon soc. aso." width="140" />
-              <el-table-column prop="ent_nombre" label="Nombre" width="200" sortable />
-              <el-table-column prop="dti_id" label="Tipo de doc." />
+              <el-table-column prop="emp_razonsocial" label="Razon soc. aso." width="140" align="center"/>
+              <el-table-column prop="ent_nombre" label="Nombre" width="450" sortable />
+              <el-table-column prop="dti_id" label="Tipo de doc." width="120" align="center"/>
               <el-table-column prop="ent_nrodocumento" label="Nro. de documento" />  
               <el-table-column prop="fdp_descri" label="Condicion de pago" />  
               <el-table-column fixed="right" label="" width="40">
@@ -657,15 +657,15 @@ export default {
       <el-input style="width:300px" v-model="form_c.nombre" />
     </el-form-item>
 
-    <el-form-item label="Condición de pago">
+    <el-form-item label="Condición de cobro">
       <el-row style="width:300px">
       <el-col :span="18">
       <el-select  v-model="form_c.c_pago" >
         <el-option
           v-for="item in opt_fpago"
-          :key="item.fdp_id"
-          :label="item.fdp_descripcion"
-          :value="item.fdp_id"
+          :key="item.fdc_codigo"
+          :label="item.fdc_descripcion"
+          :value="item.fdc_codigo"
         > </el-option>
       </el-select>
       </el-col>
@@ -743,9 +743,9 @@ export default {
       <el-select  v-model="form_e.c_pago" >
         <el-option
           v-for="item in opt_fpago"
-          :key="item.fdp_id"
-          :label="item.fdp_descripcion"
-          :value="item.fdp_id"
+          :key="item.fdc_codigo"
+          :label="item.fdc_descripcion"
+          :value="item.fdc_codigo"
         > </el-option>
       </el-select>
       </el-col>

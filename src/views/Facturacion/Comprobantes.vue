@@ -541,14 +541,25 @@ export default {
 
     api_get_all(){
       //llamada a API
+      const tiempoTranscurrido = Date.now();
+      const hoy = new Date(tiempoTranscurrido);
+
+      var mm=hoy.getMonth() + 1;
+      var aa=hoy.getFullYear();
+      var dd=hoy.getDate();
+
+      var fech=aa+"-"+mm+"-"+dd;
+      var fech2=aa+"-"+mm+"-01";
+
+      console.log(aa+mm+dd);
       axios
       .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventacab', {
         "emp_id": "",
         "cvt_codigo":"",
         "cvc_serienumero":"",
         "cve_codigo":"",
-        "cvc_fechaemisioninicio": null,
-        "cvc_fechaemisionfin": null
+        "cvc_fechaemisioninicio": fech,
+        "cvc_fechaemisionfin": fech
       })
       .then((resp) => {
         this.datap = resp.data;
@@ -654,18 +665,6 @@ export default {
     },  
 
     create_cobranza() {
-      console.log({ 
-        "emp_id": Number(this.form_p.rs),
-        "cvc_id": Number(this.editpointer),
-        "fdc_codigo": this.form_p.tipo_cobro,
-        "vec_monto":Number(this.form_p.monto),
-        "vec_nroreferencia":this.form_p.nro_referencia,
-        "vec_fechacancelacion":this.form_p.fecha_cobro,
-        "vec_descripcion":"",
-        "vec_tipocambio":18,
-        "mon_codigo":this.form_p.moneda,
-        "vec_usucreacion":"admin"
-      });
       axios
       .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventascobros/nuevo', 
       { 

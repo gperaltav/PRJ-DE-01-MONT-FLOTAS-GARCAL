@@ -154,6 +154,7 @@ export default {
     rscc_changer() {
       this.get_tipos_doc();
       this.get_formas_pago();
+      this.get_proveedores("");
       this.form_c.prv_id='';
       this.form_c.prv_nom='';
       this.form_c.fech_viaje='';
@@ -575,7 +576,6 @@ export default {
           return;
         }
       }
-
     },
 
     transaccion_insertar() {
@@ -594,43 +594,19 @@ export default {
       var fech=aa+"-"+mm+"-"+dd;
 
       console.log(fech);
-
-      console.log({
-        "emp_id": Number(this.form_g.rs),
-        "ent_id": Number(this.form_g.tra_id),
-        "ccc_serie": "",
-        "ccc_numero": "",
-        "ccc_fechaemision": fech,
-        "ccc_subtotal": "",
-        "ccc_impuesto": "",
-        "ccc_total": Number(this.doc_din),
-        "cct_codigo": "",
-        "cce_codigo": "CAN",
-        "mon_codigo": "SOL",
-        "ccc_observaciones": "",
-        "ccc_idreferencia":"",
-        "ccc_tipocambio": 18,
-        "ccc_generamovimiento":false,
-        "ccc_fechaingreso": fech,
-        "ccc_periodoregistro": fech,
-        "ccr_codigo":"PEA",
-        "usu_codigo": "admin",
-        "ccc_usucreacion":"admin",
-        "detalle":this.datap,
-      });
-
+      
       axios
       .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescompras/nuevo', 
       {
         "emp_id": Number(this.form_g.rs),
-        "ent_id": Number(this.form_g.tra_id),
+        "ent_id": "",
         "ccc_serie": "",
         "ccc_numero": "",
         "ccc_fechaemision": fech,
         "ccc_subtotal": "",
         "ccc_impuesto": "",
         "ccc_total": Number(this.doc_din),
-        "cct_codigo": "",
+        "cct_codigo": "END",
         "cce_codigo": "CAN",
         "mon_codigo": "SOL",
         "ccc_observaciones": "",

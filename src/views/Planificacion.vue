@@ -127,6 +127,8 @@ export default {
       stop_cliente: true,
       stop_con: true,
 
+      via_estado: '',
+
       opt_mar:[],
       opt_mod:[],
       opt_cla:[],
@@ -146,8 +148,6 @@ export default {
       wait2:false,
       open_op:false,
       aux1:true,
-
-      estado:0,
 
       alert_mo:'',
       id_tmp:-1,
@@ -296,6 +296,30 @@ export default {
       this.alert_mo=msg;
       this.$refs.mo_realizado.open(); 
     },
+
+    open_error_estado() {
+      this.$refs.mo_advertencia_edicion.open(); 
+    },
+
+    close_error_estado() {
+      this.$refs.mo_advertencia_edicion.hide(); 
+    },
+
+    open_succes_estado(msg) {
+      this.alert_mo=msg;
+      this.$refs.mo_realizado_estado.open(); 
+    },
+
+    close_succes_estado() {
+      this.$refs.mo_realizado_estado.hide(); 
+      this.$refs.mo_estado.hide();
+      this.via_estado="";
+    },
+
+    close_succes_estado2() {
+      this.$refs.mo_realizado_estado.hide(); 
+    },
+    
     open_succes_ed(msg) {
       this.alert_mo=msg;
       this.$refs.mo_realizado_ed.open();
@@ -730,41 +754,68 @@ export default {
       this.get_vehiculo22("");
       this.get_operarios2("");
       this.select_operarios2(this.form_e.oper_id);
-      
-      
-      
+    },
 
+    get_estado(id) {
+      axios
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes/codigo/"+String(id))
+      .then((resp) => {
+        console.log(resp);
+        this.via_estado= resp.data[0].vie_codigo;
+      })
+    },
+
+    set_estado() {
+      axios
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes/actualizarcodigo" ,
+      {
+        "via_id":this.editpointer,
+        "vie_codigo":this.via_estado
+      })
+      .then((resp) => {
+        console.log(resp.data);
+        this.succes=resp.data.status;
+        if (this.succes) {
+          this.open_succes_estado("Estado actualizado correctamente");
+          return true;
+        }
+        else {
+          this.open_fail("Hubo un error con el servidor al ejecutar la operación");
+          return false;
+        }
+        
+      })
     },
 
     api_get_all(){
       //llamada a API
-    const tiempoTranscurrido = Date.now();
-    const hoy = new Date(tiempoTranscurrido);
+      const tiempoTranscurrido = Date.now();
+      const hoy = new Date(tiempoTranscurrido);
 
-    var mm=hoy.getMonth() + 1;
-    var aa=hoy.getFullYear();
-    var dd=hoy.getDate();
+      var mm=hoy.getMonth() + 1;
+      var aa=hoy.getFullYear();
+      var dd=hoy.getDate();
 
-    var fech=aa+"-"+mm+"-"+dd;
-    var fech2=aa+"-"+mm+"-01";
+      var fech=aa+"-"+mm+"-"+dd;
+      var fech2=aa+"-"+mm+"-01";
 
-    console.log(aa+mm+dd);
+      console.log(aa+mm+dd);
 
-    axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes', 
-        {
-          "emp_id":"",
-          "via_fechaviajeinicio":fech2,
-          "via_fechaviajefin":fech,
-          "veh_placa":"",
-          "ubi_nombreorigen":"",
-          "ubi_nombredestino":"",
-        })
-        .then((resp) => {
-          console.log(resp);
-          this.datap = resp.data;
-          console.log(this.datap);
-        })
+      axios
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes', 
+      {
+        "emp_id":"",
+        "via_fechaviajeinicio":fech2,
+        "via_fechaviajefin":fech,
+        "veh_placa":"",
+        "ubi_nombreorigen":"",
+        "ubi_nombredestino":"",
+      })
+      .then((resp) => {
+        console.log(resp);
+        this.datap = resp.data;
+        console.log(this.datap);
+      })
     },
 
     api_get_filt(){
@@ -795,6 +846,7 @@ export default {
         "rut_id":"",
         "via_serie":"", 
         "via_numero":"", 
+        "vie_codigo":"PLA",
         "veh_idtracto":Number(this.form_c.tracto_id),
         "veh_idremolque":this.form_c.semire_id,
         "ent_id":Number(this.form_c.cliente_id),
@@ -897,27 +949,39 @@ export default {
       console.log(number);
       this.clear_eop;
       this.editpointer=number;
-      this.$refs.mo_editar_per.open();
-      this.wait = true;
-      this.load_edit(number);
-      
+      this.get_estado(number);
       setTimeout(() => {
-        this.load_data_edit();
-        this.emp_cont=this.form_e.rs;
-        this.wait = false;
-      }, 400)
+
+        if(this.via_estado=="TER") {
+          console.log("si entre");
+          this.open_error_estado();
+          return;
+        }
+        console.log("si pase");
+        this.$refs.mo_editar_per.open();
+        this.wait = true;
+        this.load_edit(number);
+        
+        setTimeout(() => {
+          this.load_data_edit();
+          this.emp_cont=this.form_e.rs;
+          this.wait = false;
+        }, 400)
+      }, 600)
+
+
+      
     },
 
     button_handle2(number){
       console.log(number);
-      this.clear_eop;
       this.editpointer=number;
-      this.load_edit(number);
-      //setTimeout(() => {
-      //  this.form_e.fecha =this.data_edit[0].via_fechaviaje;
-      //}, 400)
-      this.$refs.mo_estado.open();
       this.get_estados();
+      this.get_estado(number);
+      setTimeout(() => {
+        this.$refs.mo_estado.open();
+      }, 800)
+      
     }
   },
   
@@ -1040,7 +1104,8 @@ export default {
           <div class="table-container">
           <el-table :data="datap" border header-row-style="color:black;" >
               <el-table-column prop="emp_razonsocial" label="Razon soc. asoc. " width="140" align="center"/>
-              <el-table-column prop="via_ordenservicio" label="Nro. de servicio" width="140" />
+              <el-table-column prop="via_ordenservicio" label="Nro. de servicio" width="135" align="center"/>
+              <el-table-column prop="vie_nombre" label="Estado de serv." width="130" align="center"/>
               <el-table-column prop="via_fechaviaje" label="Fecha de programada" width="180" />
               <el-table-column prop="ubi_nombreorigen" label="Punto de partida" width="140" align="center"/>
               <el-table-column prop="veh_conductor" label="Conductor" width="150"/>
@@ -1593,11 +1658,11 @@ export default {
   </el-form>
 </modal>
 
-<modal ref="mo_estado" no-close-on-backdrop title="Estado de viaje" width="500px" @ok="editar_estado" cancel-title="Cancelar" @cancel="close_estado"  centered>
+<modal ref="mo_estado" no-close-on-backdrop title="Estado de viaje" width="500px" @ok="set_estado" cancel-title="Cancelar" @cancel="close_estado"  centered>
    <el-form  ref="form_cref" :rules="rules" :model="form_e" label-width="150px" >
     <el-row style="text-align:center">
     <el-form-item style="margin-left: auto;margin-right: auto" label="Estado de viaje" >
-      <el-select  v-model="estado" @change="rs_changer2()" placeholder="Seleccionar">
+      <el-select  v-model="via_estado" placeholder="Seleccionar">
         <el-option
           v-for="item in opt_estados"
           :key="item.vie_codigo"
@@ -1614,7 +1679,15 @@ export default {
   {{alert_mo}}
 </modal>
 
+<modal ref="mo_advertencia_edicion" title="Acceso caducado" centered @cancel="close_error_estado" hide-ok cancel-title="Atras" >
+  El viaje está registrado como terminado por ende ya no se puede modificar
+</modal>
+
 <modal ref="mo_realizado" success title="Operacion completada" centered @ok="close_succes_all" @cancel="close_succes" ok-title="Cerrar" cancel-title="Atras" >
+  {{alert_mo}}
+</modal>
+
+<modal ref="mo_realizado_estado" success title="Operacion completada" centered @ok="close_succes_estado" @cancel="close_succes_estado2" ok-title="Cerrar" cancel-title="Atras" >
   {{alert_mo}}
 </modal>
 

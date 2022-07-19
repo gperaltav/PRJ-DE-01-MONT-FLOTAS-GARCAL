@@ -621,8 +621,8 @@ export default {
 
           <div class="table-container">
           <el-table :data="datap" border header-row-style="color:black;" >
-              <el-table-column prop="emp_razonsocial" label="Razon soc. aso." width="140" />
-              <el-table-column prop="ent_nombre" label="Nombre de proveedor"  width="200" sortable/>
+              <el-table-column prop="emp_razonsocial" label="Razon soc. aso." width="140" align="center"/>
+              <el-table-column prop="ent_nombre" label="Nombre de proveedor"  width="450" sortable/>
               <el-table-column prop="ent_nrodocumento" label="RUC" />  
               <el-table-column prop="pro_descripcion" label="Bien o servicio" />
               <el-table-column prop="fdp_descri" label="Forma típica de pago" />  

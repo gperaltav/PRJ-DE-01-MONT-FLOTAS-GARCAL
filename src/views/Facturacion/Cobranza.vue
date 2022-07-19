@@ -99,10 +99,12 @@ export default {
 
       form_b : reactive({
         rs: '',
+        tipo_gui:'',
         nro_doc: '',
-        nombre: '',
-        f_pago: '',
-        prod:''
+        condicion: '',
+        nro_ref:'',
+        fech_ini: null,
+        fech_fin: null
       }),
 
       form_c : reactive({
@@ -168,13 +170,10 @@ export default {
 
     search_rs_ch() {
       this.emp_cont=this.form_b.rs;
-      this.form_b.prod="";
-      this.form_b.f_pago="";
-
-      //cargar listas
-      this.load_fpago();
-      this.load_prod();
-
+      this.form_b.tipo_gui="";
+      this.form_b.condicion="";
+      this.get_formas_pago2();
+      this.load_tdoc();
     },
     search_rs_clear() {
       this.form_b.prod="";
@@ -275,9 +274,9 @@ export default {
         })
     },
     
-    load_fpago() {
+    load_fcobro() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdepago/'+String(this.emp_cont))
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdecobro/'+String(this.emp_cont))
         .then((resp) => {
           console.log(resp);  
           this.opt_fp = resp.data;
@@ -347,32 +346,37 @@ export default {
 
     send_delete() {
       this.$refs.mo_advertencia_eliim.hide();
-      this.err_code=false;
       axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventascobros/borrar/'+String(this.editpointer))
-        .then((resp) => {
-          console.log(resp.data);
-          this.succes=resp.data.status;
-          if (this.succes) {
-            this.open_succes("Cobranza anulada correctamente");
-            this.err_code = true;
-          }
-          else {
-            this.open_fail2("Hubo un error con el servidor al ejecutar la operación","Código de error: "+resp.data.message);
-          }
-        })
-        setTimeout(() => {
-        if (this.err_code==false) {
-          this.open_fail("Hubo un error al comunicarse con el servidor, revise su conexión");
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventascobros/borrar/'+String(this.editpointer))
+      .then((resp) => {
+        console.log(resp.data);
+        this.succes=resp.data.status;
+        if (this.succes) {
+          this.open_succes("Cobranza anulada correctamente");
         }
-        }, 700)
-        
-        return this.err_code;
+        else {
+          this.open_fail2("Hubo un error con el servidor al ejecutar la operación","Código de error: "+resp.data.message);
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+        this.open_fail("Hubo un error al comunicarse con el servidor:"+error);
+        return false;
+      });
     },
 
     get_formas_pago() {
       axios
       .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdepago/'+String(this.form_c.rs))
+      .then((resp) => {
+        console.log(resp);
+        this.opt_fp = resp.data;
+      })
+    },
+
+    get_formas_pago2() {
+      axios
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdepago/'+String(this.form_b.rs))
       .then((resp) => {
         console.log(resp);
         this.opt_fp = resp.data;
@@ -394,15 +398,25 @@ export default {
         this.opt_td = resp.data;
       })
     },
+    get_tipos_doc2() {
+      axios
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprastipos/'+String(this.form_b.rs))
+      .then((resp) => {
+        console.log(resp);
+        this.opt_td = resp.data;
+      })
+    },
+
 
 
     load_data_edit() {
       this.form_e.rs=this.data_edit[0].emp_id;
       this.emp_cont=this.form_e.rs;
       //carga de listas
-      this.load_fpago();
+      this.load_fcobro();
       this.load_tdoc();
 
+      this.form_e.tipo_cobro=this.data_edit[0].fdc_codigo;
       this.form_e.fecha_cobro=this.data_edit[0].vec_fechacancelacion;
       this.form_e.nro_referencia=this.data_edit[0].vec_nroreferencia;
       this.form_e.monto=this.data_edit[0].vec_monto;
@@ -450,6 +464,16 @@ export default {
 
     api_get_all(){
       //llamada a API
+      const tiempoTranscurrido = Date.now();
+      const hoy = new Date(tiempoTranscurrido);
+
+      var mm=hoy.getMonth() + 1;
+      var aa=hoy.getFullYear();
+      var dd=hoy.getDate();
+
+      var fech=aa+"-"+mm+"-"+dd;
+
+      console.log(aa+mm+dd);
       axios
       .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventascobros',
       {
@@ -458,8 +482,8 @@ export default {
         "cvc_serienumero":"",
         "fdc_codigo":"",
         "vec_nroreferencia":"",
-        "vec_fechacancelacioninicio": null,
-        "vec_fechacancelacionfin": null
+        "vec_fechacancelacioninicio": fech,
+        "vec_fechacancelacionfin": fech
       })
       .then((resp) => {
         console.log(resp);
@@ -488,25 +512,24 @@ export default {
     },
 
     api_get_filt(){
-      console.log(this.form_b.rs);
       axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad', 
-        {
-          "emp_id": String(this.form_b.rs),
-          "ext_id":this.var_type,
-          "ent_nombre":this.form_b.nombre, 
-          "ent_nrodocumento":this.form_b.nro_doc,
-          "fdp_id":this.form_b.f_pago,
-          "pro_id":this.form_b.prod
-        })
-        .then((resp) => {
-          console.log(resp);
-          this.datap = resp.data;
-        })
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventascobros',
+      {
+        "emp_id":this.form_b.rs,
+        "cvt_codigo":this.form_b.tipo_gui,
+        "cvc_serienumero":this.form_b.nro_doc,
+        "fdc_codigo":this.form_b.condicion,
+        "vec_nroreferencia":this.form_b.nro_ref,
+        "vec_fechacancelacioninicio": this.form_b.fech_ini,
+        "vec_fechacancelacionfin": this.form_b.fech_fin
+      })
+      .then((resp) => {
+        console.log(resp);
+        this.datap = resp.data;
+      })
     },
     
     create_usr(){
-
       axios
       .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventascobros/nuevo', 
       { 
@@ -544,19 +567,19 @@ export default {
     editar_usr(){
       //llamada a API
       axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescompraspagos/actualizar', 
-        { 
-          "ccp_id":Number(this.editpointer),
-          "emp_id": Number(this.form_e.rs),
-          "ccc_id": Number(this.data_edit[0].cvc_id),
-          "fdp_codigo": this.form_e.tipo_cobro,
-          "cbp_id":2,
-          "ccp_monto":Number(this.form_e.monto),
-          "ccp_nroreferencia":this.form_e.nro_referencia,
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventascobros/actualizar', 
+        {    
+          "vec_id":this.editpointer,
+          "emp_id":this.form_e.rs,
+          "cvc_id": this.data_edit[0].cvc_id,
+          "fdc_codigo": this.form_e.tipo_cobro,
+          "vec_monto":Number(this.form_e.monto),
+          "vec_nroreferencia":this.form_e.nro_referencia,
+          "vec_fechacancelacion":this.form_e.fecha_cobro,
+          "vec_descripcion":"",
+          "vec_tipocambio":18,
           "mon_codigo":this.form_e.moneda,
-          "ccp_descripcion":"CAR",
-          "ccp_fechacancelacion":this.form_e.fecha_cobro,
-          "ccp_usucreacion":"admin"
+          "vec_usucreacion":"admin"
         })
         .then((resp) => {
           console.log(resp.data.status);
@@ -569,7 +592,12 @@ export default {
           }
           console.log(resp);
         })
-        return false;
+        .catch(function (error) {
+          console.log(error);
+          this.open_fail("Hubo un error al comunicarse con el servidor:"+error);
+          return false;
+        });
+        
     },
     roundUp(num, precision) {
       precision = Math.pow(10, precision)
@@ -659,13 +687,24 @@ export default {
                 </el-select>
               </el-form-item>
 
-              <el-form-item label="Tipo de guia">
+              <el-form-item label="Condicion">
                 <el-select v-model="form_b.f_pago" placeholder="Seleccionar" clearable>
                   <el-option
                     v-for="item in opt_fp"
                     :key="item.fdp_id"
                     :label="item.fdp_descripcion"
                     :value="item.fdp_id"
+                  > </el-option>
+                </el-select>
+              </el-form-item>
+
+              <el-form-item label="Tipo de doc.">
+                <el-select v-model="form_b.tipo_gui" placeholder="Seleccionar" clearable>
+                  <el-option
+                    v-for="item in opt_td"
+                    :key="item.cct_codigo"
+                    :label="item.cct_descripcion"
+                    :value="item.cct_codigo"
                   > </el-option>
                 </el-select>
               </el-form-item>
@@ -737,7 +776,7 @@ export default {
     </el-container>
   </el-container>
 
-<modal ref="mo_editar_per" no-close-on-backdrop title="Agregar Cobranza" width="900px" @ok="create_usr" @cancel="closecrear" cancel-title="Atras" centered>
+<modal ref="mo_editar_per" no-close-on-backdrop title="Editar Cobranza" width="900px" @ok="editar_usr" @cancel="closeedit" cancel-title="Atras" centered>
   <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="200px" >
 
   <el-form-item  label="Razón social asociada">
@@ -784,7 +823,7 @@ export default {
 
   <el-row style="width:800px; margin-bottom: 18px"> 
     <el-col :span="6">
-      <el-select v-model="form_e.tipo_doc" style="width:150px; margin-left:50px" placeholder="Tipo de doc."  clearable>
+      <el-select v-model="form_e.tipo_doc" style="width:150px; margin-left:50px" placeholder="Tipo de doc."  disabled>
         <el-option
           v-for="item in opt_td"
           :key="item.cct_codigo"
@@ -797,10 +836,10 @@ export default {
     <el-col :span="18">     
       <el-row > 
         <el-col :span="12" >
-          <el-input v-model="form_e.serie_doc" placeholder="nro de serie" />
+          <el-input disabled v-model="form_e.serie_doc" placeholder="nro de serie" />
         </el-col>
         <el-col :span="12">
-          <el-input v-model="form_e.nro_doc" placeholder="nro de documento" />
+          <el-input disabled v-model="form_e.nro_doc" placeholder="nro de documento" />
         </el-col>
       </el-row>
     </el-col>
@@ -808,12 +847,12 @@ export default {
   </el-row>
 
   <el-form-item style="margin-left: auto;margin-right: auto" label="Tipo de cobro">
-    <el-select v-model="form_e.tipo_cobro" placeholder="Seleccione una opcion" style="width:300px" clearable>
+    <el-select v-model="form_e.tipo_cobro" placeholder="Seleccione una opcion" style="width:300px" disabled>
       <el-option
           v-for="item in opt_fp"         
-          :key="item.fdp_id"
-          :label="item.fdp_descripcion"
-          :value="item.fdp_id"
+          :key="item.fdc_codigo"
+          :label="item.fdc_descripcion"
+          :value="item.fdc_codigo"
       > </el-option>
     </el-select>
   </el-form-item>
@@ -848,6 +887,9 @@ export default {
       </el-col>
     </el-row>
   </el-form-item>
+  <el-row style="text-align=center" >
+    <el-button style="margin-left: auto;margin-right: auto" color="#E21747" :icon="CloseBold" @click="open_confirmar('Realmente desea eliminar este comprobante?')">Eliminar</el-button>
+  </el-row>
   
   </el-form>
 </modal>

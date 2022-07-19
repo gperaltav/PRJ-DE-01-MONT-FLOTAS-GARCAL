@@ -49,11 +49,10 @@ export default {
     </template>
     <el-menu-item index="operaciones_combustible">Combustible</el-menu-item>
     <el-menu-item index="operaciones_viaticos">Viáticos</el-menu-item>
+    <el-menu-item index="operaciones_rendicion_cuentas">Rendicion de cuentas</el-menu-item>
+    <el-menu-item index="operaciones_compras">Compras</el-menu-item>
     <el-menu-item index="operaciones_personal">Personal</el-menu-item>
     <el-menu-item index="operaciones_pago">Pago</el-menu-item>
-    <el-menu-item index="operaciones_compras">Compras</el-menu-item>
-    <el-menu-item index="operaciones_rendicion_cuentas">Rendicion de cuentas</el-menu-item>
-    
   </el-sub-menu>
   <el-sub-menu index="5">
     <template #title>
