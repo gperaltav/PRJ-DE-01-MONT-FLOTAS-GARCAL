@@ -70,11 +70,9 @@ const rules = reactive({
 </script>
 
 <script lang="ts">
-import Sidebar from "../../components/Sidebar.vue"
 import modal from "../../components/modal.vue"
 export default {
   components: {
-    Sidebar,
     modal
   },
   data(){
@@ -488,142 +486,114 @@ export default {
 
 
 <template>
-  <el-container class="layout-container" style="height: calc( 100vh - 20px );">
-    <el-header style="text-align: left; font-size: 24px">
-      <el-col :span="8" style="text-align=left">
-        <div class="toolbar">
-          <span>ERP Garcal</span>
+  
+  <el-form @submit.prevent :inline="true" :model="formInline" label-width="auto" :size="small" >
+    <el-row>
+      <el-col :span="21">
+        <el-form-item label="Razón social">
+            <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
+              <el-option
+                v-for="item in opt_rs"
+                :key="item.emp_id"
+                :label="item.emp_razonsocial"
+                :value="item.emp_id"
+              > </el-option>
+            </el-select>
+          </el-form-item>
+
+        <el-form-item label="Placa" clearable>
+          <el-input v-model="form_b.placa" />
+        </el-form-item>
+
+        <el-form-item label="Marca" clearable>
+          <el-select  v-model="form_b.marca" >
+            <el-option
+              v-for="item in opt_mar"
+              :key="item.vma_id"
+              :label="item.vma_nombre"
+              :value="item.vma_id"
+            > </el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="Modelo" clearable>
+          <el-select  v-model="form_b.modelo" >
+            <el-option
+              v-for="item in opt_mod"
+              :key="item.vmo_id"
+              :label="item.vmo_nombre"
+              :value="item.vmo_id"
+            > </el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="Año" clearable>
+          <el-col :span="11">
+            <el-date-picker
+              v-model="form_b.fecha_i"
+              format="YYYY"
+              value-format="YYYY"
+              type="year"
+              placeholder="Seleccionar año inicio"
+              style="width: 100%"
+            />
+          </el-col>
+          <el-col :span="2" class="text-center">
+            <span class="text-gray-500">-</span>
+          </el-col>
+          <el-col :span="11">
+            <el-date-picker
+              v-model="form_b.fecha_f"
+              format="YYYY"
+              value-format="YYYY"
+              type="year"
+              placeholder="Seleccionar año fin"
+              style="width: 100%"
+            />
+          </el-col>
+
+        </el-form-item>
+
+      </el-col>
+      <el-col :span="3">
+        
+        <div class="button-container">
+        <el-row class="mb-4">
+          <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
+        </el-row>
+        <el-row class="mb-4">
+          <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
+        </el-row>
+        <el-row class="mb-4">
+          <el-button color="#95d475" :icon=" Download" disabled>A Excel</el-button>
+        </el-row>
         </div>
       </el-col>
-      <el-col :span="8" style="text-align=center">
-        <div class="sitebar">
-        <el-tag style="color:white;" color="#0c59cf">
-          Base de datos > Vehículos
-        </el-tag>
-      </div>
-      </el-col>
-      <el-col :span="8" style="text-align=center">
-      </el-col>
-    </el-header>
+    </el-row>
+      
+    </el-form>
 
-    <el-container style="height: calc( 100vh - 100px );">
-      <el-aside width="200px">
-        <el-scrollbar>
-          <Sidebar />
-        </el-scrollbar>
-      </el-aside>
+  <div class="table-container">
+  <el-table :data="datap" border header-row-style="color:black;" >
+      <el-table-column prop="emp_razonsocial" label="Razon soc. asoc. " width="140" align="center" />
+      <el-table-column prop="veh_placa" label="Placa" width="90" />
+      <el-table-column prop="vcl_nombre" label="Clase" width="150"/>
+      <el-table-column prop="vti_nombre" label="Tipo" width="130"/>
+      <el-table-column prop="vma_nombre" label="Marca" width="140" sortable/>
+      <el-table-column prop="vmo_nombre" label="Modelo" />
+      <el-table-column prop="veh_anno" label="Año" width="60"  />
+      <el-table-column prop="veh_serie" label="Nro. serie" />
+      <el-table-column prop="veh_mtc" label="MTC" />
+      <el-table-column prop="veh_cargautil" label="Carga util" />
+      <el-table-column prop="veh_kilometraje" label="Km" />   
+      <el-table-column fixed="right" label="" width="40">
+        <template #default="scope">
+          <el-button  type="text"  @click="button_handle(scope.row.veh_id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+  </div>
 
-      <el-main style="background-color:white">
-        <el-scrollbar>
-          <el-form @submit.prevent :inline="true" :model="formInline" label-width="auto" :size="small" >
-            <el-col :span="21">
-              <el-form-item label="Razón social">
-                  <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
-                    <el-option
-                      v-for="item in opt_rs"
-                      :key="item.emp_id"
-                      :label="item.emp_razonsocial"
-                      :value="item.emp_id"
-                    > </el-option>
-                  </el-select>
-                </el-form-item>
-
-              <el-form-item label="Placa" clearable>
-                <el-input v-model="form_b.placa" />
-              </el-form-item>
-
-              <el-form-item label="Marca" clearable>
-                <el-select  v-model="form_b.marca" >
-                  <el-option
-                    v-for="item in opt_mar"
-                    :key="item.vma_id"
-                    :label="item.vma_nombre"
-                    :value="item.vma_id"
-                  > </el-option>
-                </el-select>
-              </el-form-item>
-
-              <el-form-item label="Modelo" clearable>
-                <el-select  v-model="form_b.modelo" >
-                  <el-option
-                    v-for="item in opt_mod"
-                    :key="item.vmo_id"
-                    :label="item.vmo_nombre"
-                    :value="item.vmo_id"
-                  > </el-option>
-                </el-select>
-              </el-form-item>
-
-              <el-form-item label="Año" clearable>
-                <el-col :span="11">
-                  <el-date-picker
-                    v-model="form_b.fecha_i"
-                    format="YYYY"
-                    value-format="YYYY"
-                    type="year"
-                    placeholder="Seleccionar año inicio"
-                    style="width: 100%"
-                  />
-                </el-col>
-                <el-col :span="2" class="text-center">
-                  <span class="text-gray-500">-</span>
-                </el-col>
-                <el-col :span="11">
-                  <el-date-picker
-                    v-model="form_b.fecha_f"
-                    format="YYYY"
-                    value-format="YYYY"
-                    type="year"
-                    placeholder="Seleccionar año fin"
-                    style="width: 100%"
-                  />
-                </el-col>
-
-              </el-form-item>
-
-            </el-col>
-              <el-col :span="3">
-                
-                <div class="button-container">
-                <el-row class="mb-4">
-                  <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
-                </el-row>
-                <el-row class="mb-4">
-                  <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
-                </el-row>
-                <el-row class="mb-4">
-                  <el-button color="#95d475" :icon=" Download" disabled>A Excel</el-button>
-                </el-row>
-                </div>
-                
-              </el-col>
-              
-            </el-form>
-
-          <div class="table-container">
-          <el-table :data="datap" border header-row-style="color:black;" >
-              <el-table-column prop="emp_razonsocial" label="Razon soc. asoc. " width="140" align="center" />
-              <el-table-column prop="veh_placa" label="Placa" width="90" />
-              <el-table-column prop="vcl_nombre" label="Clase" width="150"/>
-              <el-table-column prop="vti_nombre" label="Tipo" width="130"/>
-              <el-table-column prop="vma_nombre" label="Marca" width="140" sortable/>
-              <el-table-column prop="vmo_nombre" label="Modelo" />
-              <el-table-column prop="veh_anno" label="Año" width="60"  />
-              <el-table-column prop="veh_serie" label="Nro. serie" />
-              <el-table-column prop="veh_mtc" label="MTC" />
-              <el-table-column prop="veh_cargautil" label="Carga util" />
-              <el-table-column prop="veh_kilometraje" label="Km" />   
-              <el-table-column fixed="right" label="" width="40">
-                <template #default="scope">
-                  <el-button  type="text"  @click="button_handle(scope.row.veh_id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
-                </template>
-              </el-table-column>
-            </el-table>
-          </div>
-        </el-scrollbar>
-      </el-main>
-    </el-container>
-  </el-container>
 
 <modal ref="mo_create_per" no-close-on-backdrop title="Agregar Vehiculo" width="500px" @ok="create_usr" @cancel="closecrear" cancel-title="Atras" centered>
   <el-form  @submit.prevent ref="form_cref" :rules="rules" :model="form_c" label-width="150px" >

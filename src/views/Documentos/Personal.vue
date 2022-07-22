@@ -68,11 +68,9 @@ const rules = reactive({
 </script>
 
 <script lang="ts">
-import Sidebar from "../../components/Sidebar.vue"
 import modal from "../../components/modal.vue"
 export default {
   components: {
-    Sidebar,
     modal
   },
   data(){
@@ -515,100 +513,71 @@ export default {
 </script>
 
 <template>
-  <el-container class="layout-container" style="height: calc( 100vh - 20px );">
-    <el-header style="text-align: left; font-size: 24px">
-      <el-col :span="8" style="text-align=left">
-        <div class="toolbar">
-          <span>ERP Garcal</span>
-        </div>
-      </el-col>
-      <el-col :span="8" style="text-align=center">
-        <div class="sitebar">
-        <el-tag style="color:white;" color="#0c59cf">
-          Documentos > Personal
-        </el-tag>
-      </div>
-      </el-col>
-      <el-col :span="8" style="text-align=center">
-      </el-col>
-    </el-header>
-
-    <el-container style="height: calc( 100vh - 100px );">
-      <el-aside width="200px">
-        <el-scrollbar>
-          <Sidebar />
-        </el-scrollbar>
-      </el-aside>
-
-      <el-main style="background-color:white">
           
-          <el-form  :inline="true" :model="form" label-width="auto" :size="small"  >
-            <el-row style="widht:100%"> 
-            <el-col :span="21">
-              <el-form-item label="Razón social">
-                  <el-select v-model="form_b.rs" placeholder="Seleccionar" clearable>
-                    <el-option
-                      v-for="item in opt_rs"
-                      :key="item.emp_id"
-                      :label="item.emp_razonsocial"
-                      :value="item.emp_id"
-                    > </el-option>
-                  </el-select>
-                </el-form-item>
-              
-              <el-form-item label="Nombre">
-                <el-input v-model="form_b.nombre" />
-              </el-form-item>
+  <el-form  :inline="true" :model="form" label-width="auto" :size="small"  >
+    <el-row> 
+      <el-col :span="21">
+        <el-form-item label="Razón social">
+            <el-select v-model="form_b.rs" placeholder="Seleccionar" clearable>
+              <el-option
+                v-for="item in opt_rs"
+                :key="item.emp_id"
+                :label="item.emp_razonsocial"
+                :value="item.emp_id"
+              > </el-option>
+            </el-select>
+          </el-form-item>
+        
+        <el-form-item label="Nombre">
+          <el-input v-model="form_b.nombre" />
+        </el-form-item>
 
-            </el-col>
-            <el-col :span="3">               
-              <div class="button-container">
-                <el-row class="mb-4">
-                  <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
-                </el-row>
-              </div>    
-            </el-col>
-            </el-row>
-            
-            </el-form>
-          
-          <div class="table-container">
-          <el-table :cell-class-name="cellStyle2" :data="datap" border header-row-style="color:black;" max-height="75vh"  >
-              <el-table-column fixed align="center" prop="emp_razonsocial" label="Razon soc. aso. " width="130" />
-              <el-table-column fixed prop="tri_nombre" label="Nombre " width="140" />
-              <el-table-column prop="tri_nrolicencia" label="Licencia "  />
-              
-              <el-table-column label="Licencia A3" width="150">
-                <template #default="scope">
-                  <el-button  type="text"  @click="button_handle(scope.row,3)"> {{get_nombre(scope.row,3)}}</el-button>
-                </template>
-              </el-table-column>
-              <el-table-column label="Licencia A4" width="150">
-                <template #default="scope">
-                  <el-button  type="text"  @click="button_handle(scope.row,4)"> {{get_nombre(scope.row,4)}}</el-button>
-                </template>
-              </el-table-column>
-              <el-table-column label="SCTR" width="150">
-                <template #default="scope">
-                  <el-button  type="text"  @click="button_handle(scope.row,5)"> {{get_nombre(scope.row,5)}}</el-button>
-                </template>
-              </el-table-column>
-              <el-table-column label="Rev. Medica" width="150">
-                <template #default="scope">
-                  <el-button  type="text"  @click="button_handle(scope.row,6)"> {{get_nombre(scope.row,6)}}</el-button>
-                </template>
-              </el-table-column>
-              <el-table-column label="Seguro de vida ley" width="170">
-                <template #default="scope">
-                  <el-button  type="text"  @click="button_handle(scope.row,7)"> {{get_nombre(scope.row,7)}}</el-button>
-                </template>
-              </el-table-column>
-            </el-table>
-          </div>
+      </el-col>
+      <el-col :span="3">               
+        <div class="button-container">
+          <el-row class="mb-4">
+            <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
+          </el-row>
+        </div>    
+      </el-col>
+    </el-row>
+    
+    </el-form>
+  
+  <div class="table-container">
+  <el-table :cell-class-name="cellStyle2" :data="datap" border header-row-style="color:black;" max-height="75vh"  >
+      <el-table-column fixed align="center" prop="emp_razonsocial" label="Razon soc. aso. " width="140" />
+      <el-table-column fixed prop="tri_nombre" label="Nombre " width="140" />
+      <el-table-column prop="tri_nrolicencia" label="Licencia "  />
+      
+      <el-table-column label="Licencia A3" width="150">
+        <template #default="scope">
+          <el-button  type="text"  @click="button_handle(scope.row,3)"> {{get_nombre(scope.row,3)}}</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="Licencia A4" width="150">
+        <template #default="scope">
+          <el-button  type="text"  @click="button_handle(scope.row,4)"> {{get_nombre(scope.row,4)}}</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="SCTR" width="150">
+        <template #default="scope">
+          <el-button  type="text"  @click="button_handle(scope.row,5)"> {{get_nombre(scope.row,5)}}</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="Rev. Medica" width="150">
+        <template #default="scope">
+          <el-button  type="text"  @click="button_handle(scope.row,6)"> {{get_nombre(scope.row,6)}}</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="Seguro de vida ley" width="170">
+        <template #default="scope">
+          <el-button  type="text"  @click="button_handle(scope.row,7)"> {{get_nombre(scope.row,7)}}</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+  </div>
 
-      </el-main>
-    </el-container>
-  </el-container>
 
 <modal ref="mo_editar_per" no-close-on-backdrop title="Detalles" width="500px" @ok="send_editar_doc" cancel-title="Atrás" @cancel="closeedit"  centered>
   <el-form v-loading="wait" ref="form_edit_ref" :rules="rules" :model="form" label-width="150px" >

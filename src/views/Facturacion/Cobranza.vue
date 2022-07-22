@@ -62,11 +62,9 @@ const rules = reactive({
 </script>
 
 <script lang="ts">
-import Sidebar from "../../components/Sidebar.vue"
 import modal from "../../components/modal.vue"
 export default {
   components: {
-    Sidebar,
     modal
   },
   data(){
@@ -99,10 +97,12 @@ export default {
 
       form_b : reactive({
         rs: '',
+        tipo_gui:'',
         nro_doc: '',
-        nombre: '',
-        f_pago: '',
-        prod:''
+        condicion: '',
+        nro_ref:'',
+        fech_ini: null,
+        fech_fin: null
       }),
 
       form_c : reactive({
@@ -168,13 +168,10 @@ export default {
 
     search_rs_ch() {
       this.emp_cont=this.form_b.rs;
-      this.form_b.prod="";
-      this.form_b.f_pago="";
-
-      //cargar listas
-      this.load_fpago();
-      this.load_prod();
-
+      this.form_b.tipo_gui="";
+      this.form_b.condicion="";
+      this.get_formas_pago2();
+      this.load_tdoc();
     },
     search_rs_clear() {
       this.form_b.prod="";
@@ -275,9 +272,9 @@ export default {
         })
     },
     
-    load_fpago() {
+    load_fcobro() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdepago/'+String(this.emp_cont))
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdecobro/'+String(this.emp_cont))
         .then((resp) => {
           console.log(resp);  
           this.opt_fp = resp.data;
@@ -347,32 +344,37 @@ export default {
 
     send_delete() {
       this.$refs.mo_advertencia_eliim.hide();
-      this.err_code=false;
       axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventascobros/borrar/'+String(this.editpointer))
-        .then((resp) => {
-          console.log(resp.data);
-          this.succes=resp.data.status;
-          if (this.succes) {
-            this.open_succes("Cobranza anulada correctamente");
-            this.err_code = true;
-          }
-          else {
-            this.open_fail2("Hubo un error con el servidor al ejecutar la operación","Código de error: "+resp.data.message);
-          }
-        })
-        setTimeout(() => {
-        if (this.err_code==false) {
-          this.open_fail("Hubo un error al comunicarse con el servidor, revise su conexión");
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventascobros/borrar/'+String(this.editpointer))
+      .then((resp) => {
+        console.log(resp.data);
+        this.succes=resp.data.status;
+        if (this.succes) {
+          this.open_succes("Cobranza anulada correctamente");
         }
-        }, 700)
-        
-        return this.err_code;
+        else {
+          this.open_fail2("Hubo un error con el servidor al ejecutar la operación","Código de error: "+resp.data.message);
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+        this.open_fail("Hubo un error al comunicarse con el servidor:"+error);
+        return false;
+      });
     },
 
     get_formas_pago() {
       axios
       .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdepago/'+String(this.form_c.rs))
+      .then((resp) => {
+        console.log(resp);
+        this.opt_fp = resp.data;
+      })
+    },
+
+    get_formas_pago2() {
+      axios
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdepago/'+String(this.form_b.rs))
       .then((resp) => {
         console.log(resp);
         this.opt_fp = resp.data;
@@ -394,15 +396,25 @@ export default {
         this.opt_td = resp.data;
       })
     },
+    get_tipos_doc2() {
+      axios
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprastipos/'+String(this.form_b.rs))
+      .then((resp) => {
+        console.log(resp);
+        this.opt_td = resp.data;
+      })
+    },
+
 
 
     load_data_edit() {
       this.form_e.rs=this.data_edit[0].emp_id;
       this.emp_cont=this.form_e.rs;
       //carga de listas
-      this.load_fpago();
+      this.load_fcobro();
       this.load_tdoc();
 
+      this.form_e.tipo_cobro=this.data_edit[0].fdc_codigo;
       this.form_e.fecha_cobro=this.data_edit[0].vec_fechacancelacion;
       this.form_e.nro_referencia=this.data_edit[0].vec_nroreferencia;
       this.form_e.monto=this.data_edit[0].vec_monto;
@@ -450,6 +462,16 @@ export default {
 
     api_get_all(){
       //llamada a API
+      const tiempoTranscurrido = Date.now();
+      const hoy = new Date(tiempoTranscurrido);
+
+      var mm=hoy.getMonth() + 1;
+      var aa=hoy.getFullYear();
+      var dd=hoy.getDate();
+
+      var fech=aa+"-"+mm+"-"+dd;
+
+      console.log(aa+mm+dd);
       axios
       .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventascobros',
       {
@@ -458,8 +480,8 @@ export default {
         "cvc_serienumero":"",
         "fdc_codigo":"",
         "vec_nroreferencia":"",
-        "vec_fechacancelacioninicio": null,
-        "vec_fechacancelacionfin": null
+        "vec_fechacancelacioninicio": fech,
+        "vec_fechacancelacionfin": fech
       })
       .then((resp) => {
         console.log(resp);
@@ -488,25 +510,24 @@ export default {
     },
 
     api_get_filt(){
-      console.log(this.form_b.rs);
       axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad', 
-        {
-          "emp_id": String(this.form_b.rs),
-          "ext_id":this.var_type,
-          "ent_nombre":this.form_b.nombre, 
-          "ent_nrodocumento":this.form_b.nro_doc,
-          "fdp_id":this.form_b.f_pago,
-          "pro_id":this.form_b.prod
-        })
-        .then((resp) => {
-          console.log(resp);
-          this.datap = resp.data;
-        })
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventascobros',
+      {
+        "emp_id":this.form_b.rs,
+        "cvt_codigo":this.form_b.tipo_gui,
+        "cvc_serienumero":this.form_b.nro_doc,
+        "fdc_codigo":this.form_b.condicion,
+        "vec_nroreferencia":this.form_b.nro_ref,
+        "vec_fechacancelacioninicio": this.form_b.fech_ini,
+        "vec_fechacancelacionfin": this.form_b.fech_fin
+      })
+      .then((resp) => {
+        console.log(resp);
+        this.datap = resp.data;
+      })
     },
     
     create_usr(){
-
       axios
       .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventascobros/nuevo', 
       { 
@@ -544,19 +565,19 @@ export default {
     editar_usr(){
       //llamada a API
       axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescompraspagos/actualizar', 
-        { 
-          "ccp_id":Number(this.editpointer),
-          "emp_id": Number(this.form_e.rs),
-          "ccc_id": Number(this.data_edit[0].cvc_id),
-          "fdp_codigo": this.form_e.tipo_cobro,
-          "cbp_id":2,
-          "ccp_monto":Number(this.form_e.monto),
-          "ccp_nroreferencia":this.form_e.nro_referencia,
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventascobros/actualizar', 
+        {    
+          "vec_id":this.editpointer,
+          "emp_id":this.form_e.rs,
+          "cvc_id": this.data_edit[0].cvc_id,
+          "fdc_codigo": this.form_e.tipo_cobro,
+          "vec_monto":Number(this.form_e.monto),
+          "vec_nroreferencia":this.form_e.nro_referencia,
+          "vec_fechacancelacion":this.form_e.fecha_cobro,
+          "vec_descripcion":"",
+          "vec_tipocambio":18,
           "mon_codigo":this.form_e.moneda,
-          "ccp_descripcion":"CAR",
-          "ccp_fechacancelacion":this.form_e.fecha_cobro,
-          "ccp_usucreacion":"admin"
+          "vec_usucreacion":"admin"
         })
         .then((resp) => {
           console.log(resp.data.status);
@@ -569,7 +590,12 @@ export default {
           }
           console.log(resp);
         })
-        return false;
+        .catch(function (error) {
+          console.log(error);
+          this.open_fail("Hubo un error al comunicarse con el servidor:"+error);
+          return false;
+        });
+        
     },
     roundUp(num, precision) {
       precision = Math.pow(10, precision)
@@ -619,125 +645,109 @@ export default {
 
 
 <template>
-  <el-container class="layout-container" style="height: calc( 100vh - 20px );">
-    <el-header style="text-align: left; font-size: 24px">
-      <el-col :span="8" style="text-align=left">
-        <div class="toolbar">
-          <span>ERP Garcal</span>
-        </div>
-      </el-col>
-      <el-col :span="8" style="text-align=center">
-        <div class="sitebar">
-        <el-tag style="color:white;" color="#0c59cf">
-          Facturación > Cobranza
-        </el-tag>
+  
+  <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
+    <el-row>
+    <el-col :span="21">
+      <el-form-item label="Razón social">
+        <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
+          <el-option
+            v-for="item in opt_rs"
+            :key="item.emp_id"
+            :label="item.emp_razonsocial"
+            :value="item.emp_id"
+          > </el-option>
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="Condicion">
+        <el-select v-model="form_b.f_pago" placeholder="Seleccionar" clearable>
+          <el-option
+            v-for="item in opt_fp"
+            :key="item.fdp_id"
+            :label="item.fdp_descripcion"
+            :value="item.fdp_id"
+          > </el-option>
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="Tipo de doc.">
+        <el-select v-model="form_b.tipo_gui" placeholder="Seleccionar" clearable>
+          <el-option
+            v-for="item in opt_td"
+            :key="item.cct_codigo"
+            :label="item.cct_descripcion"
+            :value="item.cct_codigo"
+          > </el-option>
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="Codigo">
+        <el-input placeholder="serie-numero" v-model="form_b.nombre" clearable />
+      </el-form-item>
+
+      <el-form-item label="Fecha de emisión">
+        <el-col :span="11">
+          <el-date-picker
+            v-model="form_b.fecha_i"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
+            type="date"
+            placeholder="Seleccionar limite inicial"
+            style="width: 100%"
+          />
+        </el-col>
+        <el-col :span="2" class="text-center">
+          <span class="text-gray-500">-</span>
+        </el-col>
+        <el-col :span="11">
+          <el-date-picker
+            v-model="form_b.fecha_f"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
+            type="date"
+            placeholder="Seleccionar limite final"
+            style="width: 100%"
+          />
+        </el-col>
+      </el-form-item>
+    </el-col>
+
+    <el-col :span="3">
+      <div class="button-container">
+      <el-row class="mb-4">
+        <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
+      </el-row>
+      <el-row class="mb-4">
+        <el-button color="#95d475" :icon=" Download" @click="get_descargas('http://51.222.25.71:8080/reportes/trabajadores.csv','reporte')" >A Excel</el-button>
+      </el-row>
       </div>
-      </el-col>
-      <el-col :span="8" style="text-align=center">
-      </el-col>
-    </el-header>
+    </el-col>
+    </el-row>
 
-    <el-container style="height: calc( 100vh - 100px );">
-      <el-aside width="200px">
-        <el-scrollbar>
-          <Sidebar />
-        </el-scrollbar>
-      </el-aside>
+    </el-form>
 
-      <el-main style="background-color:white">
-        <el-scrollbar>
-          <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
-            <el-col :span="21">
-              <el-form-item label="Razón social">
-                <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
-                  <el-option
-                    v-for="item in opt_rs"
-                    :key="item.emp_id"
-                    :label="item.emp_razonsocial"
-                    :value="item.emp_id"
-                  > </el-option>
-                </el-select>
-              </el-form-item>
+  <div class="table-container">
+    <el-table :data="datap" border header-row-style="color:black;" >
+      <el-table-column prop="emp_razonsocial" label="Razon soc. aso." width="140" />
+      <el-table-column prop="cct_descripcion" label="Tipo de documento"  width="140"/>
+      <el-table-column prop="cvc_serienumero" label="Serie y numero" sorteable/>  
+      <el-table-column prop="vec_fechacancelacion" label="Fecha de cobro" />
+      <el-table-column prop="ent_nombre" label="Cliente" />
+      <el-table-column prop="cce_descripcion" label="Condicion" />  
+      <el-table-column prop="vec_nroreferencia" label="Nro de referencia" /> 
+      <el-table-column prop="cvc_total" label="Total" /> 
+      <el-table-column prop="vec_monto" label="Cobro" /> 
+      <el-table-column fixed="right" label="" width="40">
+        <template #default="scope">
+          <el-button  type="text"  @click="button_handle(scope.row.vec_id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+  </div>
 
-              <el-form-item label="Tipo de guia">
-                <el-select v-model="form_b.f_pago" placeholder="Seleccionar" clearable>
-                  <el-option
-                    v-for="item in opt_fp"
-                    :key="item.fdp_id"
-                    :label="item.fdp_descripcion"
-                    :value="item.fdp_id"
-                  > </el-option>
-                </el-select>
-              </el-form-item>
 
-              <el-form-item label="Codigo">
-                <el-input placeholder="serie-numero" v-model="form_b.nombre" clearable />
-              </el-form-item>
-
-              <el-form-item label="Fecha de emisión">
-                <el-col :span="11">
-                  <el-date-picker
-                    v-model="form_b.fecha_i"
-                    format="YYYY-MM-DD"
-                    value-format="YYYY-MM-DD"
-                    type="date"
-                    placeholder="Seleccionar limite inicial"
-                    style="width: 100%"
-                  />
-                </el-col>
-                <el-col :span="2" class="text-center">
-                  <span class="text-gray-500">-</span>
-                </el-col>
-                <el-col :span="11">
-                  <el-date-picker
-                    v-model="form_b.fecha_f"
-                    format="YYYY-MM-DD"
-                    value-format="YYYY-MM-DD"
-                    type="date"
-                    placeholder="Seleccionar limite final"
-                    style="width: 100%"
-                  />
-                </el-col>
-              </el-form-item>
-            </el-col>
-
-            <el-col :span="3">
-              <div class="button-container">
-              <el-row class="mb-4">
-                <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
-              </el-row>
-              <el-row class="mb-4">
-                <el-button color="#95d475" :icon=" Download" @click="get_descargas('http://51.222.25.71:8080/reportes/trabajadores.csv','reporte')" >A Excel</el-button>
-              </el-row>
-              </div>
-            </el-col>
-
-            </el-form>
-
-          <div class="table-container">
-          <el-table :data="datap" border header-row-style="color:black;" >
-            <el-table-column prop="emp_razonsocial" label="Razon soc. aso." width="140" />
-            <el-table-column prop="cct_descripcion" label="Tipo de documento"  width="140"/>
-            <el-table-column prop="cvc_serienumero" label="Serie y numero" sorteable/>  
-            <el-table-column prop="vec_fechacancelacion" label="Fecha de cobro" />
-            <el-table-column prop="ent_nombre" label="Cliente" />
-            <el-table-column prop="cce_descripcion" label="Condicion" />  
-            <el-table-column prop="vec_nroreferencia" label="Nro de referencia" /> 
-            <el-table-column prop="cvc_total" label="Total" /> 
-            <el-table-column prop="vec_monto" label="Cobro" /> 
-            <el-table-column fixed="right" label="" width="40">
-              <template #default="scope">
-                <el-button  type="text"  @click="button_handle(scope.row.vec_id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-          </div>
-        </el-scrollbar>
-      </el-main>
-    </el-container>
-  </el-container>
-
-<modal ref="mo_editar_per" no-close-on-backdrop title="Agregar Cobranza" width="900px" @ok="create_usr" @cancel="closecrear" cancel-title="Atras" centered>
+<modal ref="mo_editar_per" no-close-on-backdrop title="Editar Cobranza" width="900px" @ok="editar_usr" @cancel="closeedit" cancel-title="Atras" centered>
   <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="200px" >
 
   <el-form-item  label="Razón social asociada">
@@ -784,7 +794,7 @@ export default {
 
   <el-row style="width:800px; margin-bottom: 18px"> 
     <el-col :span="6">
-      <el-select v-model="form_e.tipo_doc" style="width:150px; margin-left:50px" placeholder="Tipo de doc."  clearable>
+      <el-select v-model="form_e.tipo_doc" style="width:150px; margin-left:50px" placeholder="Tipo de doc."  disabled>
         <el-option
           v-for="item in opt_td"
           :key="item.cct_codigo"
@@ -797,10 +807,10 @@ export default {
     <el-col :span="18">     
       <el-row > 
         <el-col :span="12" >
-          <el-input v-model="form_e.serie_doc" placeholder="nro de serie" />
+          <el-input disabled v-model="form_e.serie_doc" placeholder="nro de serie" />
         </el-col>
         <el-col :span="12">
-          <el-input v-model="form_e.nro_doc" placeholder="nro de documento" />
+          <el-input disabled v-model="form_e.nro_doc" placeholder="nro de documento" />
         </el-col>
       </el-row>
     </el-col>
@@ -808,12 +818,12 @@ export default {
   </el-row>
 
   <el-form-item style="margin-left: auto;margin-right: auto" label="Tipo de cobro">
-    <el-select v-model="form_e.tipo_cobro" placeholder="Seleccione una opcion" style="width:300px" clearable>
+    <el-select v-model="form_e.tipo_cobro" placeholder="Seleccione una opcion" style="width:300px" disabled>
       <el-option
           v-for="item in opt_fp"         
-          :key="item.fdp_id"
-          :label="item.fdp_descripcion"
-          :value="item.fdp_id"
+          :key="item.fdc_codigo"
+          :label="item.fdc_descripcion"
+          :value="item.fdc_codigo"
       > </el-option>
     </el-select>
   </el-form-item>
@@ -848,6 +858,9 @@ export default {
       </el-col>
     </el-row>
   </el-form-item>
+  <el-row style="text-align=center" >
+    <el-button style="margin-left: auto;margin-right: auto" color="#E21747" :icon="CloseBold" @click="open_confirmar('Realmente desea eliminar este comprobante?')">Eliminar</el-button>
+  </el-row>
   
   </el-form>
 </modal>

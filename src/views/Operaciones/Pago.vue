@@ -70,11 +70,9 @@ const rules = reactive({
 </script>
 
 <script lang="ts">
-import Sidebar from "../../components/Sidebar.vue"
 import modal from "../../components/modal.vue"
 export default {
   components: {
-    Sidebar,
     modal
   },
   data(){
@@ -522,161 +520,128 @@ export default {
 
 
 <template>
-  <el-container class="layout-container" style="height: calc( 100vh - 20px );" >
-    <el-header style="text-align: left; font-size: 24px">
-      <el-col :span="8" style="text-align=left">
-        <div class="toolbar">
-          <span>ERP Garcal</span>
-        </div>
+  
+  <div style="width:900px; margin-left:4.3vw ">
+
+    <el-row style="text-align=center; margin-left:85px">
+      <h1 style="margin-left: auto;margin-right: auto">Añadir pago</h1>
+    </el-row>
+
+  
+  <el-form :model="form" :label-position="left" label-width="200px" >
+
+    <el-form-item  label="Razón social asociada">
+      <el-select v-model="form_c.rs" @change="rs_changer" @clear="clear_c" placeholder="Seleccionar" style="width:600px" clearable>
+        <el-option
+          v-for="item in opt_rs"
+          :key="item.emp_id"
+          :label="item.emp_razonsocial"
+          :value="item.emp_id"
+        > </el-option>
+      </el-select>
+    </el-form-item>
+
+    <el-form-item  label="Proveedor">
+      <el-row style="width:600px"> 
+      <el-col :span="8">
+        <el-select
+          v-model="form_c.prv_id"
+          filterable
+          :remote-method="get_proveedores"
+          @change="select_proveedores"
+          @clear="clear_proveedores"
+          placeholder="Inserte ID de proveedor"
+          remote
+          clearable
+          :disabled="stop_cliente"
+        >
+          <template #prefix>
+            <el-icon><Search /></el-icon>
+          </template>
+
+          <el-option
+            v-for="item in opt_prv"
+            :key="item.ent_id"
+            :label="item.ent_nrodocumento"
+            :value="item.ent_id"
+          />
+        </el-select>
       </el-col>
-      <el-col :span="8" style="text-align=center">
-        <div class="sitebar">
-        <el-tag style="color:white;" color="#0c59cf">
-          Operaciones > Pago
-        </el-tag>
+      <el-col :span="16"><el-input disabled v-model="form_c.prv_nom" placeholder="Nombre de proveedor" /></el-col>
+      </el-row>
+    </el-form-item>
+
+    <el-row style="width:800px; margin-bottom: 18px"> 
+      <el-col :span="6">
+        <el-select v-model="form_c.tipo_doc" style="width:150px; margin-left:50px" placeholder="Tipo de doc."  clearable>
+        <el-option
+          v-for="item in opt_td"
+          :key="item.cct_codigo"
+          :label="item.cct_descripcion"
+          :value="item.cct_codigo"
+        > </el-option>
+        </el-select>
+      </el-col>
+    
+      <el-col :span="18">     
+          <el-row > 
+            <el-col :span="12" >
+              <el-input v-model="form_c.serie_doc" placeholder="nro de serie" />
+            </el-col>
+            <el-col :span="12">
+              <el-input v-model="form_c.nro_doc" placeholder="nro de documento" />
+            </el-col>
+          </el-row>
+      </el-col>
+
+    </el-row>
+
+    <el-form-item  label="Fecha de pago">
+      <el-date-picker
+        type="date"
+        v-model="form_c.fecha_em"
+        format="YYYY-MM-DD"
+        value-format="YYYY-MM-DD"
+        placeholder="Seleccione fecha"
+        style="width: 300px"
+      />
+    </el-form-item>
+
+    <el-form-item style="margin-left: auto;margin-right: auto" label="Tipo de pago">
+      <el-select v-model="form_c.tipo_pago" placeholder="Seleccione una opcion" style="width:300px" clearable>
+        <el-option
+          v-for="item in opt_tp"
+          :key="item.fdp_id"
+          :label="item.fdp_descripcion"
+          :value="item.fdp_id"
+        > </el-option>
+      </el-select>
+    </el-form-item>
+
+    <el-form-item style="margin-left: auto;margin-right: auto" label="Nro. de referencia">
+      <div style="width:300px">
+        <el-input v-model="form_c.referencia" placeholder="Inserte codigo de referencia"/>
       </div>
-      </el-col>
-      <el-col :span="8" style="text-align=center">
-      </el-col>
-    </el-header>
+    </el-form-item>
 
-    <el-container style="height: 50%;">
-      <el-aside width="200px">
-        <el-scrollbar>
-          <Sidebar />
-        </el-scrollbar>
-      </el-aside>
-
-      <el-main style="background-color:white">
-        <el-scrollbar>
-          
-          <div style="width:900px; margin-left:4.3vw ">
-
-            <el-row style="text-align=center; margin-left:85px">
-              <h1 style="margin-left: auto;margin-right: auto">Añadir pago</h1>
-            </el-row>
-
-          
-          <el-form :model="form" :label-position="left" label-width="200px" >
-
-            <el-form-item  label="Razón social asociada">
-              <el-select v-model="form_c.rs" @change="rs_changer" @clear="clear_c" placeholder="Seleccionar" style="width:600px" clearable>
-                <el-option
-                  v-for="item in opt_rs"
-                  :key="item.emp_id"
-                  :label="item.emp_razonsocial"
-                  :value="item.emp_id"
-                > </el-option>
-              </el-select>
-            </el-form-item>
-
-            <el-form-item  label="Proveedor">
-              <el-row style="width:600px"> 
-              <el-col :span="8">
-                <el-select
-                  v-model="form_c.prv_id"
-                  filterable
-                  :remote-method="get_proveedores"
-                  @change="select_proveedores"
-                  @clear="clear_proveedores"
-                  placeholder="Inserte ID de proveedor"
-                  remote
-                  clearable
-                  :disabled="stop_cliente"
-                >
-                  <template #prefix>
-                    <el-icon><Search /></el-icon>
-                  </template>
-
-                  <el-option
-                    v-for="item in opt_prv"
-                    :key="item.ent_id"
-                    :label="item.ent_nrodocumento"
-                    :value="item.ent_id"
-                  />
-                </el-select>
-              </el-col>
-              <el-col :span="16"><el-input disabled v-model="form_c.prv_nom" placeholder="Nombre de proveedor" /></el-col>
-              </el-row>
-            </el-form-item>
-
-            <el-row style="width:800px; margin-bottom: 18px"> 
-              <el-col :span="6">
-                <el-select v-model="form_c.tipo_doc" style="width:150px; margin-left:50px" placeholder="Tipo de doc."  clearable>
-                <el-option
-                  v-for="item in opt_td"
-                  :key="item.cct_codigo"
-                  :label="item.cct_descripcion"
-                  :value="item.cct_codigo"
-                > </el-option>
-                </el-select>
-              </el-col>
-            
-              <el-col :span="18">     
-                  <el-row > 
-                    <el-col :span="12" >
-                      <el-input v-model="form_c.serie_doc" placeholder="nro de serie" />
-                    </el-col>
-                    <el-col :span="12">
-                      <el-input v-model="form_c.nro_doc" placeholder="nro de documento" />
-                    </el-col>
-                  </el-row>
-              </el-col>
-
-            </el-row>
-
-            <el-form-item  label="Fecha de pago">
-              <el-date-picker
-                type="date"
-                v-model="form_c.fecha_em"
-                format="YYYY-MM-DD"
-                value-format="YYYY-MM-DD"
-                placeholder="Seleccione fecha"
-                style="width: 300px"
-              />
-            </el-form-item>
-
-            <el-form-item style="margin-left: auto;margin-right: auto" label="Tipo de pago">
-              <el-select v-model="form_c.tipo_pago" placeholder="Seleccione una opcion" style="width:300px" clearable>
-                <el-option
-                  v-for="item in opt_tp"
-                  :key="item.fdp_id"
-                  :label="item.fdp_descripcion"
-                  :value="item.fdp_id"
-                > </el-option>
-              </el-select>
-            </el-form-item>
-
-            <el-form-item style="margin-left: auto;margin-right: auto" label="Nro. de referencia">
-              <div style="width:300px">
-                <el-input v-model="form_c.referencia" placeholder="Inserte codigo de referencia"/>
-              </div>
-            </el-form-item>
-
-            <el-form-item  label="Monto">
-              <el-row style="width:600px">
-                <el-col :span="6">
-                  <el-input v-model="form_c.total" placeholder="Monto" /> 
-                </el-col>
-                <el-col :span="6"> 
-                  <el-select v-model="form_c.moneda" placeholder="Moneda" style="width:150px" clearable>
-                    <el-option label="SOLES (S/.)" value="SOL" />
-                    <el-option label="DOLARES ($)" value="DOL" />
-                  </el-select> 
-                </el-col>
-              </el-row>
-            </el-form-item>
-            <el-row style="text-align=center; margin-left:100px" >
-              <el-button  @click="transaccion_insertar" style="margin-left: auto;margin-right: auto" color="#0844a4" >Guardar</el-button>
-            </el-row>   
-            </el-form>
-            </div>
-
-          
-        </el-scrollbar>
-      </el-main>
-    </el-container>
-  </el-container>
+    <el-form-item  label="Monto">
+      <el-row style="width:600px">
+        <el-col :span="6">
+          <el-input v-model="form_c.total" placeholder="Monto" /> 
+        </el-col>
+        <el-col :span="6"> 
+          <el-select v-model="form_c.moneda" placeholder="Moneda" style="width:150px" clearable>
+            <el-option label="SOLES (S/.)" value="SOL" />
+            <el-option label="DOLARES ($)" value="DOL" />
+          </el-select> 
+        </el-col>
+      </el-row>
+    </el-form-item>
+    <el-row style="text-align=center; margin-left:100px" >
+      <el-button  @click="transaccion_insertar" style="margin-left: auto;margin-right: auto" color="#0844a4" >Guardar</el-button>
+    </el-row>   
+    </el-form>
+  </div>
 
 
 <modal ref="mo_advertencia_eliim" title="Confirmar" centered @ok="send_delete" @cancel="close_confirmar" ok-title="Si" cancel-title="Cancelar" >

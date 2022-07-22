@@ -69,11 +69,9 @@ const rules = reactive({
 </script>
 
 <script lang="ts">
-import Sidebar from "../../components/Sidebar.vue"
 import modal from "../../components/modal.vue"
 export default {
   components: {
-    Sidebar,
     modal
   },
   data(){
@@ -154,6 +152,7 @@ export default {
     rscc_changer() {
       this.get_tipos_doc();
       this.get_formas_pago();
+      this.get_proveedores("");
       this.form_c.prv_id='';
       this.form_c.prv_nom='';
       this.form_c.fech_viaje='';
@@ -575,7 +574,6 @@ export default {
           return;
         }
       }
-
     },
 
     transaccion_insertar() {
@@ -594,43 +592,19 @@ export default {
       var fech=aa+"-"+mm+"-"+dd;
 
       console.log(fech);
-
-      console.log({
-        "emp_id": Number(this.form_g.rs),
-        "ent_id": Number(this.form_g.tra_id),
-        "ccc_serie": "",
-        "ccc_numero": "",
-        "ccc_fechaemision": fech,
-        "ccc_subtotal": "",
-        "ccc_impuesto": "",
-        "ccc_total": Number(this.doc_din),
-        "cct_codigo": "",
-        "cce_codigo": "CAN",
-        "mon_codigo": "SOL",
-        "ccc_observaciones": "",
-        "ccc_idreferencia":"",
-        "ccc_tipocambio": 18,
-        "ccc_generamovimiento":false,
-        "ccc_fechaingreso": fech,
-        "ccc_periodoregistro": fech,
-        "ccr_codigo":"PEA",
-        "usu_codigo": "admin",
-        "ccc_usucreacion":"admin",
-        "detalle":this.datap,
-      });
-
+      
       axios
       .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescompras/nuevo', 
       {
         "emp_id": Number(this.form_g.rs),
-        "ent_id": Number(this.form_g.tra_id),
+        "ent_id": "",
         "ccc_serie": "",
         "ccc_numero": "",
         "ccc_fechaemision": fech,
         "ccc_subtotal": "",
         "ccc_impuesto": "",
         "ccc_total": Number(this.doc_din),
-        "cct_codigo": "",
+        "cct_codigo": "END",
         "cce_codigo": "CAN",
         "mon_codigo": "SOL",
         "ccc_observaciones": "",
@@ -722,158 +696,128 @@ export default {
 
 
 <template>
-  <el-container class="layout-container" style="height: calc( 100vh - 20px );">
-    <el-header style="text-align: left; font-size: 24px">
-      <el-col :span="8" style="text-align=left">
-        <div class="toolbar">
-          <span>ERP Garcal</span>
-        </div>
-      </el-col>
-      <el-col :span="8" style="text-align=center">
-        <div class="sitebar">
-        <el-tag style="color:white;" color="#0c59cf">
-          Operaciones > Rendicion de cuentas
-        </el-tag>
-      </div>
-      </el-col>
-      <el-col :span="8" style="text-align=center">
-      </el-col>
-    </el-header>
+  
+  <el-form :inline="true"  label-width="auto" :size="small" >
+    <el-row>
+      <el-form-item style="margin-left:auto;margin-right:auto" label="Razón social asociada">
+        <el-select v-model="form_g.rs" @change="rs_changer" @clear="clear_rs" placeholder="Seleccionar" style="width:600px" clearable>
+          <el-option
+            v-for="item in opt_rs"
+            :key="item.emp_id"
+            :label="item.emp_razonsocial"
+            :value="item.emp_id"
+          > </el-option>
+        </el-select>
+      </el-form-item>
+    </el-row>
 
-    <el-container style="height: calc( 100vh - 100px );">
-      <el-aside width="200px">
-        <el-scrollbar>
-          <Sidebar />
-        </el-scrollbar>
-      </el-aside>
+    <el-row style="height:50px">
+      <el-form-item style="margin-left:auto;margin-right:auto" label="Conductor">
+        <el-row style="width:600px"> 
+        <el-col :span="8">
+          <el-select
+            v-model="form_g.tra_id"
+            filterable
+            :remote-method="get_chofer"
+            @change="select_chofer"
+            @clear="clear_chofer"
+            placeholder="Inserte ID de conductor"
+            remote
+            clearable
+          >
+            <template #prefix>
+              <el-icon><Search /></el-icon>
+            </template>
 
-      <el-main style="background-color:white">
-        <el-scrollbar>
-          <el-form :inline="true"  label-width="auto" :size="small" >
+            <el-option
+              v-for="item in opt_tra"
+              :key="item.tra_nrodocumento"
+              :label="item.tra_nrodocumento"
+              :value="item.tra_id"
+            />
+          </el-select>
+        </el-col>
+        <el-col :span="16"><el-input disabled v-model="form_g.tra_nom" placeholder="Nombre del conductor" /></el-col>
+        </el-row>
+      </el-form-item>
+    </el-row>
 
-            <el-row>
-              <el-form-item style="margin-left:auto;margin-right:auto" label="Razón social asociada">
-                <el-select v-model="form_g.rs" @change="rs_changer" @clear="clear_rs" placeholder="Seleccionar" style="width:600px" clearable>
-                  <el-option
-                    v-for="item in opt_rs"
-                    :key="item.emp_id"
-                    :label="item.emp_razonsocial"
-                    :value="item.emp_id"
-                  > </el-option>
-                </el-select>
-              </el-form-item>
-            </el-row>
+    <el-row>
+      <el-form-item style="margin-left:auto;margin-right:auto" label="Salida de dinero">
+        <el-select v-model="form_g.sal_dinero"  placeholder="Seleccionar" style="width:600px" clearable @change="select_sald">
+          <el-option
+            v-for="item in opt_sald"
+            :key="item.ccc_id"
+            :label="item.ccc_observaciones"
+            :value="item.ccc_id"
+          > </el-option>
+        </el-select>
+      </el-form-item>
+    </el-row>
+      
+    </el-form>
 
-            <el-row style="height:50px">
-              <el-form-item style="margin-left:auto;margin-right:auto" label="Conductor">
-                <el-row style="width:600px"> 
-                <el-col :span="8">
-                  <el-select
-                    v-model="form_g.tra_id"
-                    filterable
-                    :remote-method="get_chofer"
-                    @change="select_chofer"
-                    @clear="clear_chofer"
-                    placeholder="Inserte ID de conductor"
-                    remote
-                    clearable
-                  >
-                    <template #prefix>
-                      <el-icon><Search /></el-icon>
-                    </template>
+    <div >
+      <el-container style="border-style: solid; border-color:grey">
+        <el-header style="background-color:grey; height:40px">
+          Detalle
+        </el-header>
+        <el-main>
+          <div class="table-container">
+          <el-table :data="datav" border header-row-style="color:black;" >
+              <el-table-column prop='det_rs' label="Razon Soc." width="120" align="center" />
+              <el-table-column prop='det_td' label="Tipo de doc." width="120" align="center" />
+              <el-table-column prop='det_cod' label="Serie-Numero" width="120" align="center" />
+              <el-table-column prop="det_fecha_em" label="Fecha emision" width="140" align="center"/>
+              <el-table-column prop="det_proveedor" label="Proveedor" width="140" />
+              <el-table-column prop="det_subtotal" label="Subtotal"  />
+              <el-table-column prop="det_impuesto" label="Impuesto" />
+              <el-table-column prop="det_total" label="Total"  align="center" />
+              <el-table-column fixed="right" label="" width="45" align="center">
+                <template #default="scope">
+                  <el-button  type="text"  @click="open_edit_det(scope.row.id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+          <el-row style="text-align=center" >
+            <el-button color="#008db1" :icon="Plus"  @click="open_crear" style="margin-left: auto;margin-right: auto">Agregar</el-button>
+          </el-row>
+        </el-main>
+      </el-container>
+      <el-row>
+        <h3 style="margin-left:auto; margin-right:50px">Resumen: </h3>
+      </el-row>
+      
+      <el-row>
+      <el-form-item style="margin-left:auto; margin-right:50px" label="Total salida de dinero" prop="subtotal">
+        <el-input style="width:250px" v-model="sal_din" disabled>
+          <template #prepend>S/</template>
+        </el-input>
+      </el-form-item>
+      </el-row>
 
-                    <el-option
-                      v-for="item in opt_tra"
-                      :key="item.tra_nrodocumento"
-                      :label="item.tra_nrodocumento"
-                      :value="item.tra_id"
-                    />
-                  </el-select>
-                </el-col>
-                <el-col :span="16"><el-input disabled v-model="form_g.tra_nom" placeholder="Nombre del conductor" /></el-col>
-                </el-row>
-              </el-form-item>
-            </el-row>
+      <el-row>
+      <el-form-item style="margin-left:auto; margin-right:50px" label="Total documentos" prop="subtotal">
+        <el-input style="width:250px" v-model="doc_din" disabled>
+          <template #prepend>S/</template>
+        </el-input>
+      </el-form-item>
+      </el-row>
 
-            <el-row>
-              <el-form-item style="margin-left:auto;margin-right:auto" label="Salida de dinero">
-                <el-select v-model="form_g.sal_dinero"  placeholder="Seleccionar" style="width:600px" clearable @change="select_sald">
-                  <el-option
-                    v-for="item in opt_sald"
-                    :key="item.ccc_id"
-                    :label="item.ccc_observaciones"
-                    :value="item.ccc_id"
-                  > </el-option>
-                </el-select>
-              </el-form-item>
-            </el-row>
-              
-            </el-form>
+      <el-row>
+      <el-form-item style="margin-left:auto; margin-right:50px" label="Resta" prop="subtotal">
+        <el-input style="width:250px" v-model="resta" disabled>
+          <template #prepend>S/</template>
+        </el-input>
+      </el-form-item>
+      </el-row>
 
-            <div >
-              <el-container style="border-style: solid; border-color:grey">
-                <el-header style="background-color:grey; height:40px">
-                  Detalle
-                </el-header>
-                <el-main>
-                  <div class="table-container">
-                  <el-table :data="datav" border header-row-style="color:black;" >
-                      <el-table-column prop='det_rs' label="Razon Soc." width="120" align="center" />
-                      <el-table-column prop='det_td' label="Tipo de doc." width="120" align="center" />
-                      <el-table-column prop='det_cod' label="Serie-Numero" width="120" align="center" />
-                      <el-table-column prop="det_fecha_em" label="Fecha emision" width="140" align="center"/>
-                      <el-table-column prop="det_proveedor" label="Proveedor" width="140" />
-                      <el-table-column prop="det_subtotal" label="Subtotal"  />
-                      <el-table-column prop="det_impuesto" label="Impuesto" />
-                      <el-table-column prop="det_total" label="Total"  align="center" />
-                      <el-table-column fixed="right" label="" width="45" align="center">
-                        <template #default="scope">
-                          <el-button  type="text"  @click="open_edit_det(scope.row.id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
-                        </template>
-                      </el-table-column>
-                    </el-table>
-                  </div>
-                  <el-row style="text-align=center" >
-                    <el-button color="#008db1" :icon="Plus"  @click="open_crear" style="margin-left: auto;margin-right: auto">Agregar</el-button>
-                  </el-row>
-                </el-main>
-              </el-container>
-              <el-row>
-                <h3 style="margin-left:auto; margin-right:50px">Resumen: </h3>
-              </el-row>
-              
-              <el-row>
-              <el-form-item style="margin-left:auto; margin-right:50px" label="Total salida de dinero" prop="subtotal">
-                <el-input style="width:250px" v-model="sal_din" disabled>
-                  <template #prepend>S/</template>
-                </el-input>
-              </el-form-item>
-              </el-row>
+    <el-row style="text-align=center" >
+      <el-button color="#0844a4"  @click="transaccion_insertar" style="margin-left: auto;margin-right: auto">Guardar</el-button>
+    </el-row>
+  </div>
 
-              <el-row>
-              <el-form-item style="margin-left:auto; margin-right:50px" label="Total documentos" prop="subtotal">
-                <el-input style="width:250px" v-model="doc_din" disabled>
-                  <template #prepend>S/</template>
-                </el-input>
-              </el-form-item>
-              </el-row>
-
-              <el-row>
-              <el-form-item style="margin-left:auto; margin-right:50px" label="Resta" prop="subtotal">
-                <el-input style="width:250px" v-model="resta" disabled>
-                  <template #prepend>S/</template>
-                </el-input>
-              </el-form-item>
-              </el-row>
-
-            <el-row style="text-align=center" >
-              <el-button color="#0844a4"  @click="transaccion_insertar" style="margin-left: auto;margin-right: auto">Guardar</el-button>
-            </el-row>
-            </div>
-        </el-scrollbar>
-      </el-main>
-    </el-container>
-  </el-container>
 
 <modal ref="mo_create" no-close-on-backdrop title="Documento" width="900px" @ok="create_det" @cancel="close_det" cancel-title="Atras" centered>
   <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="200px" >

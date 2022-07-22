@@ -57,11 +57,10 @@ const rules = reactive({
 </script>
 
 <script lang="ts">
-import Sidebar from "../../components/Sidebar.vue"
-import modal from "../../components/modal.vue"
+
+import modal from "../../components/modal.vue" 
 export default {
   components: {
-    Sidebar,
     modal
   },
   data(){
@@ -275,7 +274,7 @@ export default {
     
     load_fpago() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdepago/'+String(this.emp_cont))
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdecobro/'+String(this.emp_cont))
         .then((resp) => {
           console.log(resp);  
           this.opt_fpago = resp.data;
@@ -356,6 +355,34 @@ export default {
       this.form_e.c_activo=this.data_edit[0].ent_estadocontribuyente;
       this.form_e.c_habido=this.data_edit[0].ent_condicioncontribuyente;
 
+    },
+
+    get_descargas(uri, name) {
+      var link = document.createElement("a");
+      link.download = name;
+      link.href = uri;
+      link.click();
+    },
+
+    send_descarga() {
+      axios
+        .post('http://51.222.25.71:8080/garcal-report-api/api/clientescsv')
+        .then((resp) => {
+          console.log(resp.data);
+          this.succes=resp.data.status;
+          if (this.succes) {
+            this.get_descargas(resp.data.message,'Reporte_clientes')
+            return true;
+          }
+          else {
+            this.open_fail("Hubo un error con el servidor al ejecutar la operación");
+            return false;
+          }
+        })
+        .catch(function (error) {
+          this.open_fail("Hubo un error con el servidor al ejecutar la operación, error:"+String(error));
+            return false;
+        });
     },
 
     api_get_all(){
@@ -518,103 +545,76 @@ export default {
 
 
 <template>
-  <el-container class="layout-container" style="height: calc( 100vh - 20px );">
-    <el-header style="text-align: left; font-size: 24px">
-      <el-col :span="8" style="text-align=left">
-        <div class="toolbar">
-          <span>ERP Garcal</span>
+
+  <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
+    <el-row>
+      <el-col :span="21">
+        <el-form-item label="Razón social">
+            <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
+              <el-option
+                v-for="item in opt_rs"
+                :key="item.emp_id"
+                :label="item.emp_razonsocial"
+                :value="item.emp_id"
+              > </el-option>
+            </el-select>
+          </el-form-item>
+
+        <el-form-item label="Nro. de documento">
+          <el-input v-model="form_b.nro_doc" clearable />
+        </el-form-item>
+
+        <el-form-item label="Nombre">
+          <el-input v-model="form_b.nombre" clearable />
+        </el-form-item>
+
+        <el-form-item label="Forma de pago preferido">
+          <el-select v-model="form_b.f_pago" placeholder="Seleccionar" clearable>
+              <el-option
+                v-for="item in opt_fpago"
+                :key="item.fdp_id"
+                :label="item.fdp_descripcion"
+                :value="item.fdp_id"
+              > </el-option>
+            </el-select>
+
+        </el-form-item>
+
+      </el-col>
+
+      <el-col :span="3">
+        
+        <div class="button-container">
+        <el-row class="mb-4">
+          <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
+        </el-row>
+        <el-row class="mb-4">
+          <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
+        </el-row>
+        <el-row class="mb-4">
+          <el-button color="#95d475" :icon=" Download" disabled>A Excel</el-button>
+        </el-row>
         </div>
+      
       </el-col>
-      <el-col :span="8" style="text-align=center">
-        <div class="sitebar">
-        <el-tag style="color:white;" color="#0c59cf">
-          Base de datos > Clientes
-        </el-tag>
-      </div>
-      </el-col>
-      <el-col :span="8" style="text-align=center">
-      </el-col>
-    </el-header>
+    </el-row>
 
-    <el-container style="height: calc( 100vh - 100px );">
-      <el-aside width="200px">
-        <el-scrollbar>
-          <Sidebar />
-        </el-scrollbar>
-      </el-aside>
+    </el-form>
 
-      <el-main style="background-color:white">
-        <el-scrollbar>
-          <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
-            <el-col :span="21">
-              <el-form-item label="Razón social">
-                  <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
-                    <el-option
-                      v-for="item in opt_rs"
-                      :key="item.emp_id"
-                      :label="item.emp_razonsocial"
-                      :value="item.emp_id"
-                    > </el-option>
-                  </el-select>
-                </el-form-item>
-
-              <el-form-item label="Nro. de documento">
-                <el-input v-model="form_b.nro_doc" clearable />
-              </el-form-item>
-
-              <el-form-item label="Nombre">
-                <el-input v-model="form_b.nombre" clearable />
-              </el-form-item>
-
-              <el-form-item label="Forma de pago preferido">
-                <el-select v-model="form_b.f_pago" placeholder="Seleccionar" clearable>
-                    <el-option
-                      v-for="item in opt_fpago"
-                      :key="item.fdp_id"
-                      :label="item.fdp_descripcion"
-                      :value="item.fdp_id"
-                    > </el-option>
-                  </el-select>
-
-              </el-form-item>
-
-            </el-col>
-              <el-col :span="3">
-                
-                <div class="button-container">
-                <el-row class="mb-4">
-                  <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
-                </el-row>
-                <el-row class="mb-4">
-                  <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
-                </el-row>
-                <el-row class="mb-4">
-                  <el-button color="#95d475" :icon=" Download" disabled>A Excel</el-button>
-                </el-row>
-                </div>
-              
-              </el-col>
-
-            </el-form>
-
-          <div class="table-container">
-          <el-table :data="datap" border header-row-style="color:black;" >
-              <el-table-column prop="emp_razonsocial" label="Razon soc. aso." width="140" />
-              <el-table-column prop="ent_nombre" label="Nombre" width="200" sortable />
-              <el-table-column prop="dti_id" label="Tipo de doc." />
-              <el-table-column prop="ent_nrodocumento" label="Nro. de documento" />  
-              <el-table-column prop="fdp_descri" label="Condicion de pago" />  
-              <el-table-column fixed="right" label="" width="40">
-              <template #default="scope">
-                <el-button  type="text"  @click="button_handle(scope.row.ent_id,scope.row.emp_id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
-              </template>
-            </el-table-column>
-            </el-table>
-          </div>
-        </el-scrollbar>
-      </el-main>
-    </el-container>
-  </el-container>
+  <div class="table-container">
+  <el-table :data="datap" border header-row-style="color:black;" >
+      <el-table-column prop="emp_razonsocial" label="Razon soc. aso." width="140" align="center"/>
+      <el-table-column prop="ent_nombre" label="Nombre" width="450" sortable />
+      <el-table-column prop="dti_id" label="Tipo de doc." width="120" align="center"/>
+      <el-table-column prop="ent_nrodocumento" label="Nro. de documento" />  
+      <el-table-column prop="fdp_descri" label="Condicion de pago" />  
+      <el-table-column fixed="right" label="" width="45" align="center">
+      <template #default="scope">
+        <el-button  type="text"  @click="button_handle(scope.row.ent_id,scope.row.emp_id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
+      </template>
+    </el-table-column>
+    </el-table>
+  </div>
 
 <modal ref="mo_create_per" no-close-on-backdrop title="Agregar Cliente" width="500px" @ok="create_usr()" @cancel="closecrear" cancel-title="Atras" centered>
   <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" >
@@ -657,15 +657,15 @@ export default {
       <el-input style="width:300px" v-model="form_c.nombre" />
     </el-form-item>
 
-    <el-form-item label="Condición de pago">
+    <el-form-item label="Condición de cobro">
       <el-row style="width:300px">
       <el-col :span="18">
       <el-select  v-model="form_c.c_pago" >
         <el-option
           v-for="item in opt_fpago"
-          :key="item.fdp_id"
-          :label="item.fdp_descripcion"
-          :value="item.fdp_id"
+          :key="item.fdc_codigo"
+          :label="item.fdc_descripcion"
+          :value="item.fdc_codigo"
         > </el-option>
       </el-select>
       </el-col>
@@ -743,9 +743,9 @@ export default {
       <el-select  v-model="form_e.c_pago" >
         <el-option
           v-for="item in opt_fpago"
-          :key="item.fdp_id"
-          :label="item.fdp_descripcion"
-          :value="item.fdp_id"
+          :key="item.fdc_codigo"
+          :label="item.fdc_descripcion"
+          :value="item.fdc_codigo"
         > </el-option>
       </el-select>
       </el-col>

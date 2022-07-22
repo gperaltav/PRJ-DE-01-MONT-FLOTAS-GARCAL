@@ -26,11 +26,9 @@ const rules = reactive({
 </script>
 
 <script lang="ts">
-import Sidebar from "../components/Sidebar.vue"
 import modal from "../components/modal.vue"
 export default {
   components: {
-    Sidebar,
     modal
   },
   data(){
@@ -444,40 +442,6 @@ export default {
 
 
 <template>
-  <el-container class="layout-container" style="height: calc( 100vh - 20px );" >
-    <el-header style="text-align: left; font-size: 24px">
-      <el-col :span="8" style="text-align=left">
-        <div class="toolbar">
-          <span>ERP Garcal</span>
-        </div>
-      </el-col>
-      <el-col :span="8" style="text-align=center">
-        <div class="sitebar">
-        <el-tag style="color:white;" color="#0c59cf">
-          Disposición de dinero
-        </el-tag>
-      </div>
-      </el-col>
-      <el-col :span="8" style="text-align=center">
-      </el-col>
-    </el-header>
-
-    <el-container style="height: calc( 100vw - 100px );">
-      <el-aside width="200px">
-        <el-scrollbar>
-          <Sidebar />
-        </el-scrollbar>
-      </el-aside>
-
-      <el-main style="background-color:white">
-        <el-scrollbar>
-
-
-          
-        </el-scrollbar>
-      </el-main>
-    </el-container>
-  </el-container>
 
 
 <modal ref="mo_advertencia_eliim" title="Confirmar" centered @ok="send_delete" @cancel="close_confirmar" ok-title="Si" cancel-title="Cancelar" >

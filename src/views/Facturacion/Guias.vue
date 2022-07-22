@@ -62,11 +62,9 @@ const rules = reactive({
 </script>
 
 <script lang="ts">
-import Sidebar from "../../components/Sidebar.vue"
 import modal from "../../components/modal.vue"
 export default {
   components: {
-    Sidebar,
     modal
   },
   data(){
@@ -663,120 +661,93 @@ export default {
 
 
 <template>
-  <el-container class="layout-container" style="height: calc( 100vh - 20px );">
-    <el-header style="text-align: left; font-size: 24px">
-      <el-col :span="8" style="text-align=left">
-        <div class="toolbar">
-          <span>ERP Garcal</span>
-        </div>
-      </el-col>
-      <el-col :span="8" style="text-align=center">
-        <div class="sitebar">
-        <el-tag style="color:white;" color="#0c59cf">
-          Facturación > Guias
-        </el-tag>
+  
+  <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
+    <el-row>
+    <el-col :span="21">
+      <el-form-item label="Razón social">
+        <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
+          <el-option
+            v-for="item in opt_rs"
+            :key="item.emp_id"
+            :label="item.emp_razonsocial"
+            :value="item.emp_id"
+          > </el-option>
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="Tipo de guia">
+        <el-select v-model="form_b.tipo_guia" placeholder="Seleccionar" clearable>
+          <el-option label="GUIA DE EMISION" value="GEM" />
+          <el-option label="GUIA TRANSPORTISTA" value="GTR" />
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="Codigo">
+        <el-input placeholder="serie-numero" v-model="form_b.codigo" clearable />
+      </el-form-item>
+
+      <el-form-item label="Fecha de emisión">
+        <el-col :span="11">
+          <el-date-picker
+            v-model="form_b.fech_inicio"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
+            type="date"
+            placeholder="Seleccionar limite inicial"
+            style="width: 100%"
+          />
+        </el-col>
+        <el-col :span="2" class="text-center">
+          <span class="text-gray-500">-</span>
+        </el-col>
+        <el-col :span="11">
+          <el-date-picker
+            v-model="form_b.fech_fin"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
+            type="date"
+            placeholder="Seleccionar limite final"
+            style="width: 100%"
+          />
+        </el-col>
+      </el-form-item>
+    </el-col>
+
+    <el-col :span="3">
+      <div class="button-container">
+      <el-row class="mb-4">
+        <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
+      </el-row>
+      <el-row class="mb-4">
+        <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
+      </el-row>
+      <el-row class="mb-4">
+        <el-button color="#95d475" :icon=" Download"  disabled>A Excel</el-button>
+      </el-row>
       </div>
-      </el-col>
-      <el-col :span="8" style="text-align=center">
-      </el-col>
-    </el-header>
+    </el-col>
+    </el-row>
 
-    <el-container style="height: calc( 100vh - 100px );">
-      <el-aside width="200px">
-        <el-scrollbar>
-          <Sidebar />
-        </el-scrollbar>
-      </el-aside>
+    </el-form>
 
-      <el-main style="background-color:white">
-        <el-scrollbar>
-          <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
-            <el-col :span="21">
-              <el-form-item label="Razón social">
-                <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
-                  <el-option
-                    v-for="item in opt_rs"
-                    :key="item.emp_id"
-                    :label="item.emp_razonsocial"
-                    :value="item.emp_id"
-                  > </el-option>
-                </el-select>
-              </el-form-item>
+  <div class="table-container">
+    <el-table :data="datap" border header-row-style="color:black;" >
+      <el-table-column prop="emp_razonsocial" label="Razon soc. aso." width="140" align="center"/>
+      <el-table-column prop="gti_descripcion" label="Tipo de guia"  width="200"/>
+      <el-table-column prop="gui_fechaemision" label="Fecha emisión" />  
+      <el-table-column prop="gui_serienumero" label="Nro. Guia" />
+      <el-table-column prop="veh_placa" label="Placa" />
+      <el-table-column prop="via_descripcion" label="Viaje" width="210"/>  
+      <el-table-column prop="gui_estado" label="Estado" /> 
+      <el-table-column fixed="right" label="" width="40">
+        <template #default="scope">
+          <el-button  type="text"  @click="button_handle(scope.row.gui_id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+  </div>
 
-              <el-form-item label="Tipo de guia">
-                <el-select v-model="form_b.tipo_guia" placeholder="Seleccionar" clearable>
-                  <el-option label="GUIA DE EMISION" value="GEM" />
-                  <el-option label="GUIA TRANSPORTISTA" value="GTR" />
-                </el-select>
-              </el-form-item>
-
-              <el-form-item label="Codigo">
-                <el-input placeholder="serie-numero" v-model="form_b.codigo" clearable />
-              </el-form-item>
-
-              <el-form-item label="Fecha de emisión">
-                <el-col :span="11">
-                  <el-date-picker
-                    v-model="form_b.fech_inicio"
-                    format="YYYY-MM-DD"
-                    value-format="YYYY-MM-DD"
-                    type="date"
-                    placeholder="Seleccionar limite inicial"
-                    style="width: 100%"
-                  />
-                </el-col>
-                <el-col :span="2" class="text-center">
-                  <span class="text-gray-500">-</span>
-                </el-col>
-                <el-col :span="11">
-                  <el-date-picker
-                    v-model="form_b.fech_fin"
-                    format="YYYY-MM-DD"
-                    value-format="YYYY-MM-DD"
-                    type="date"
-                    placeholder="Seleccionar limite final"
-                    style="width: 100%"
-                  />
-                </el-col>
-              </el-form-item>
-            </el-col>
-
-            <el-col :span="3">
-              <div class="button-container">
-              <el-row class="mb-4">
-                <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
-              </el-row>
-              <el-row class="mb-4">
-                <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
-              </el-row>
-              <el-row class="mb-4">
-                <el-button color="#95d475" :icon=" Download"  disabled>A Excel</el-button>
-              </el-row>
-              </div>
-            </el-col>
-
-            </el-form>
-
-          <div class="table-container">
-          <el-table :data="datap" border header-row-style="color:black;" >
-            <el-table-column prop="emp_razonsocial" label="Razon soc. aso." width="140" align="center"/>
-            <el-table-column prop="gti_descripcion" label="Tipo de guia"  width="200"/>
-            <el-table-column prop="gui_fechaemision" label="Fecha emisión" />  
-            <el-table-column prop="gui_serienumero" label="Nro. Guia" />
-            <el-table-column prop="veh_placa" label="Placa" />
-            <el-table-column prop="via_descripcion" label="Viaje" width="210"/>  
-            <el-table-column prop="gui_estado" label="Estado" /> 
-            <el-table-column fixed="right" label="" width="40">
-              <template #default="scope">
-                <el-button  type="text"  @click="button_handle(scope.row.gui_id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-          </div>
-        </el-scrollbar>
-      </el-main>
-    </el-container>
-  </el-container>
 
 <modal ref="mo_create_per" no-close-on-backdrop title="Agregar Guia" width="900px" @ok="crear_guia" @cancel="closecrear" cancel-title="Atras" centered>
   <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" >

@@ -62,11 +62,9 @@ const rules = reactive({
 </script>
 
 <script lang="ts">
-import Sidebar from "../../components/Sidebar.vue"
 import modal from "../../components/modal.vue"
 export default {
   components: {
-    Sidebar,
     modal
   },
   data(){
@@ -541,14 +539,25 @@ export default {
 
     api_get_all(){
       //llamada a API
+      const tiempoTranscurrido = Date.now();
+      const hoy = new Date(tiempoTranscurrido);
+
+      var mm=hoy.getMonth() + 1;
+      var aa=hoy.getFullYear();
+      var dd=hoy.getDate();
+
+      var fech=aa+"-"+mm+"-"+dd;
+      var fech2=aa+"-"+mm+"-01";
+
+      console.log(aa+mm+dd);
       axios
       .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventacab', {
         "emp_id": "",
         "cvt_codigo":"",
         "cvc_serienumero":"",
         "cve_codigo":"",
-        "cvc_fechaemisioninicio": null,
-        "cvc_fechaemisionfin": null
+        "cvc_fechaemisioninicio": fech,
+        "cvc_fechaemisionfin": fech
       })
       .then((resp) => {
         this.datap = resp.data;
@@ -654,18 +663,6 @@ export default {
     },  
 
     create_cobranza() {
-      console.log({ 
-        "emp_id": Number(this.form_p.rs),
-        "cvc_id": Number(this.editpointer),
-        "fdc_codigo": this.form_p.tipo_cobro,
-        "vec_monto":Number(this.form_p.monto),
-        "vec_nroreferencia":this.form_p.nro_referencia,
-        "vec_fechacancelacion":this.form_p.fecha_cobro,
-        "vec_descripcion":"",
-        "vec_tipocambio":18,
-        "mon_codigo":this.form_p.moneda,
-        "vec_usucreacion":"admin"
-      });
       axios
       .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventascobros/nuevo', 
       { 
@@ -804,131 +801,104 @@ export default {
 
 
 <template>
-  <el-container class="layout-container" style="height: calc( 100vh - 20px );">
-    <el-header style="text-align: left; font-size: 24px">
-      <el-col :span="8" style="text-align=left">
-        <div class="toolbar">
-          <span>ERP Garcal</span>
-        </div>
-      </el-col>
-      <el-col :span="8" style="text-align=center">
-        <div class="sitebar">
-        <el-tag style="color:white;" color="#0c59cf">
-          Facturación > Comprobantes
-        </el-tag>
+  
+  <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
+    <el-row>
+    <el-col :span="21">
+      <el-form-item label="Razón social">
+        <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
+          <el-option
+            v-for="item in opt_rs"
+            :key="item.emp_id"
+            :label="item.emp_razonsocial"
+            :value="item.emp_id"
+          > </el-option>
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="Tipo de guia">
+        <el-select v-model="form_b.tipo_gui" placeholder="Seleccionar" clearable>
+          <el-option
+            v-for="item in opt_td"
+            :key="item.cct_codigo"
+            :label="item.cct_descripcion"
+            :value="item.cct_codigo"
+          > </el-option>
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="Codigo">
+        <el-input placeholder="serie-numero" v-model="form_b.nombre" clearable />
+      </el-form-item>
+
+      <el-form-item label="Fecha de emisión">
+        <el-col :span="11">
+          <el-date-picker
+            v-model="form_b.fecha_i"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
+            type="date"
+            placeholder="Seleccionar limite inicial"
+            style="width: 100%"
+          />
+        </el-col>
+        <el-col :span="2" class="text-center">
+          <span class="text-gray-500">-</span>
+        </el-col>
+        <el-col :span="11">
+          <el-date-picker
+            v-model="form_b.fecha_f"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
+            type="date"
+            placeholder="Seleccionar limite final"
+            style="width: 100%"
+          />
+        </el-col>
+      </el-form-item>
+    </el-col>
+
+    <el-col :span="3">
+      <div class="button-container">
+      <el-row class="mb-4">
+        <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
+      </el-row>
+      <el-row class="mb-4">
+        <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
+      </el-row>
+      <el-row class="mb-4">
+        <el-button color="#95d475" :icon=" Download" @click="get_descarga" disabled>A Excel</el-button>
+      </el-row>
       </div>
-      </el-col>
-      <el-col :span="8" style="text-align=center">
-      </el-col>
-    </el-header>
+    </el-col>
+    </el-row>
 
-    <el-container style="height: calc( 100vh - 100px );">
-      <el-aside width="200px">
-        <el-scrollbar>
-          <Sidebar />
-        </el-scrollbar>
-      </el-aside>
+    </el-form>
 
-      <el-main style="background-color:white">
-        <el-scrollbar>
-          <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
-            <el-col :span="21">
-              <el-form-item label="Razón social">
-                <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
-                  <el-option
-                    v-for="item in opt_rs"
-                    :key="item.emp_id"
-                    :label="item.emp_razonsocial"
-                    :value="item.emp_id"
-                  > </el-option>
-                </el-select>
-              </el-form-item>
+  <div class="table-container">
+    <el-table :data="datap" border header-row-style="color:black;"  max-height="75vh">
+      <el-table-column prop="emp_razonsocial" label="Razon soc. aso." width="140" align="center" />
+      <el-table-column prop="cvt_descripcion" label="Tipo de doc."  width="120" align="center" />
+      <el-table-column prop="cvc_serienumero" label="Serie-numero" width="140" sortable/>  
+      <el-table-column prop="cvc_fechaemision" label="Fecha emision" width="130" align="center"/>  
+      <el-table-column prop="ent_nombre" label="Nombre cliente" width="160"/>
+      <el-table-column prop="cvc_subtotal" label="Subtotal" />
+      <el-table-column prop="cvc_impuesto" label="Impuesto" />
+      <el-table-column prop="cvc_total" label="Total" /> 
+      <el-table-column prop="cvc_comprobantereferencia" label="Referencia" />
+      <el-table-column fixed="right" label="" width="45" align="center">
+        <template #default="scope">
+          <el-button  type="text"  @click="button_handle_pago(scope.row.cvc_id)" size="small"><el-icon :size="17"><CreditCard /></el-icon></el-button>
+        </template>
+      </el-table-column>
+      <el-table-column fixed="right" label="" width="45" align="center">
+        <template #default="scope">
+          <el-button  type="text"  @click="button_handle(scope.row.cvc_id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+  </div>
 
-              <el-form-item label="Tipo de guia">
-                <el-select v-model="form_b.tipo_gui" placeholder="Seleccionar" clearable>
-                  <el-option
-                    v-for="item in opt_td"
-                    :key="item.cct_codigo"
-                    :label="item.cct_descripcion"
-                    :value="item.cct_codigo"
-                  > </el-option>
-                </el-select>
-              </el-form-item>
-
-              <el-form-item label="Codigo">
-                <el-input placeholder="serie-numero" v-model="form_b.nombre" clearable />
-              </el-form-item>
-
-              <el-form-item label="Fecha de emisión">
-                <el-col :span="11">
-                  <el-date-picker
-                    v-model="form_b.fecha_i"
-                    format="YYYY-MM-DD"
-                    value-format="YYYY-MM-DD"
-                    type="date"
-                    placeholder="Seleccionar limite inicial"
-                    style="width: 100%"
-                  />
-                </el-col>
-                <el-col :span="2" class="text-center">
-                  <span class="text-gray-500">-</span>
-                </el-col>
-                <el-col :span="11">
-                  <el-date-picker
-                    v-model="form_b.fecha_f"
-                    format="YYYY-MM-DD"
-                    value-format="YYYY-MM-DD"
-                    type="date"
-                    placeholder="Seleccionar limite final"
-                    style="width: 100%"
-                  />
-                </el-col>
-              </el-form-item>
-            </el-col>
-
-            <el-col :span="3">
-              <div class="button-container">
-              <el-row class="mb-4">
-                <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
-              </el-row>
-              <el-row class="mb-4">
-                <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
-              </el-row>
-              <el-row class="mb-4">
-                <el-button color="#95d475" :icon=" Download" @click="get_descarga" disabled>A Excel</el-button>
-              </el-row>
-              </div>
-            </el-col>
-
-            </el-form>
-
-          <div class="table-container">
-          <el-table :data="datap" border header-row-style="color:black;"  max-height="75vh">
-            <el-table-column prop="emp_razonsocial" label="Razon soc. aso." width="140" align="center" />
-            <el-table-column prop="cvt_descripcion" label="Tipo de doc."  width="120" align="center" />
-            <el-table-column prop="cvc_serienumero" label="Serie-numero" width="140" sortable/>  
-            <el-table-column prop="cvc_fechaemision" label="Fecha emision" width="130" align="center"/>  
-            <el-table-column prop="ent_nombre" label="Nombre cliente" width="160"/>
-            <el-table-column prop="cvc_subtotal" label="Subtotal" />
-            <el-table-column prop="cvc_impuesto" label="Impuesto" />
-            <el-table-column prop="cvc_total" label="Total" /> 
-            <el-table-column prop="cvc_comprobantereferencia" label="Referencia" />
-            <el-table-column fixed="right" label="" width="45" align="center">
-              <template #default="scope">
-                <el-button  type="text"  @click="button_handle_pago(scope.row.cvc_id)" size="small"><el-icon :size="17"><CreditCard /></el-icon></el-button>
-              </template>
-            </el-table-column>
-            <el-table-column fixed="right" label="" width="45" align="center">
-              <template #default="scope">
-                <el-button  type="text"  @click="button_handle(scope.row.cvc_id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-          </div>
-        </el-scrollbar>
-      </el-main>
-    </el-container>
-  </el-container>
 
 <modal ref="mo_create" no-close-on-backdrop title="Agregar Comprobante" width="900px" @ok="create_usr" @cancel="closecrear" cancel-title="Atras" centered>
   <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="200px" >

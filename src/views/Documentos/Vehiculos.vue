@@ -68,11 +68,9 @@ const rules = reactive({
 </script>
 
 <script lang="ts">
-import Sidebar from "../../components/Sidebar.vue"
 import modal from "../../components/modal.vue"
 export default {
   components: {
-    Sidebar,
     modal
   },
   data(){
@@ -337,10 +335,10 @@ export default {
       break;
       case 6:
         this.tipo_act="ELEMENTOS PELIGROSOS";
-        if(!obj.ELEMPELIGROSOS) {
+        if(!obj.MTCMATPEL) {
           return 
         }
-        this.tipo_doc=obj.ELEMPELIGROSOS[0].id;
+        this.tipo_doc=obj.MTCMATPEL[0].id;
       break;
       case 7:
         this.tipo_act="BONIFICACIÓN";
@@ -355,6 +353,13 @@ export default {
           return 
         }
         this.tipo_doc=obj.HERMETECIDAD[0].id;
+      break;
+      case 9:
+        this.tipo_act="MTC MERCANCIAS";
+        if(!obj.MTCMERCANCIAS) {
+          return 
+        }
+        this.tipo_doc=obj.MTCMERCANCIAS[0].id;
       break;
 
       }
@@ -435,16 +440,16 @@ export default {
 
       break;
       case 7:
-        if(!obj.row.ELEMPELIGROSOS) {
+        if(!obj.row.MTCMATPEL) {
           return 
         }
-        if (obj.row.ELEMPELIGROSOS[0].color=="#92d36e") {
+        if (obj.row.MTCMATPEL[0].color=="#92d36e") {
           return "cell-1";
         }
-        if (obj.row.ELEMPELIGROSOS[0].color=="#fefb64") {
+        if (obj.row.MTCMATPEL[0].color=="#fefb64") {
           return "cell-2";
         }
-        if (obj.row.ELEMPELIGROSOS[0].color=="#ff3823") {
+        if (obj.row.MTCMATPEL[0].color=="#ff3823") {
           return "cell-3";
         }
 
@@ -475,6 +480,21 @@ export default {
           return "cell-2";
         }
         if (obj.row.HERMETECIDAD[0].color=="#ff3823") {
+          return "cell-3";
+        }
+      break;
+
+      case 10:
+        if(!obj.row.MTCMERCANCIAS) {
+          return 
+        }
+        if (obj.row.MTCMERCANCIAS[0].color=="#92d36e") {
+          return "cell-1";
+        }
+        if (obj.row.CITV6m[0].color=="#fefb64") {
+          return "cell-2";
+        }
+        if (obj.row.MTCMERCANCIAS[0].color=="#ff3823") {
           return "cell-3";
         }
 
@@ -534,14 +554,14 @@ export default {
         }
       break;
       case 6:
-        if(!obj.ELEMPELIGROSOS) {
+        if(!obj.MTCMATPEL) {
           return "No info"
         }
         else {
-          if (!obj.ELEMPELIGROSOS[0].fecha) {
+          if (!obj.MTCMATPEL[0].fecha) {
             return "No info"
           }
-          return obj.ELEMPELIGROSOS[0].fecha
+          return obj.MTCMATPEL[0].fecha
         }
       break;
       case 7:
@@ -566,7 +586,17 @@ export default {
           return obj.HERMETECIDAD[0].fecha
         }
       break;
-
+      case 9:
+        if(!obj.MTCMERCANCIAS) {
+          return "No info"
+        }
+        else {
+          if (!obj.MTCMERCANCIAS[0].fecha) {
+            return "No info"
+          }
+          return obj.MTCMERCANCIAS[0].fecha
+        }
+      break;
       }
     }
   },
@@ -581,112 +611,85 @@ export default {
 
 
 <template>
-  <el-container class="layout-container" style="height: calc( 100vh - 20px );">
-    <el-header style="text-align: left; font-size: 24px">
-      <el-col :span="8" style="text-align=left">
-        <div class="toolbar">
-          <span>ERP Garcal</span>
-        </div>
-      </el-col>
-      <el-col :span="8" style="text-align=center">
-        <div class="sitebar">
-        <el-tag style="color:white;" color="#0c59cf">
-          Documentos > Vehículos
-        </el-tag>
-      </div>
-      </el-col>
-      <el-col :span="8" style="text-align=center">
-      </el-col>
-    </el-header>
+  
+  <el-form  :inline="true" :model="form" label-width="auto" :size="small"  >
+    <el-row> 
+      <el-col :span="21">
+        <el-form-item label="Razón social">
+            <el-select v-model="form_b.rs" placeholder="Seleccionar" clearable>
+              <el-option
+                v-for="item in opt_rs"
+                :key="item.emp_id"
+                :label="item.emp_razonsocial"
+                :value="item.emp_id"
+              > </el-option>
+            </el-select>
+          </el-form-item>
+        
+        <el-form-item label="Placa">
+          <el-input v-model="form_b.placa" />
+        </el-form-item>
 
-    <el-container style="height: calc( 100vh - 100px );">
-      <el-aside width="200px">
-        <el-scrollbar>
-          <Sidebar />
-        </el-scrollbar>
-      </el-aside>
-
-      <el-main style="background-color:white">
-        <el-scrollbar>
+      </el-col>
+      <el-col :span="3">               
+        <div class="button-container">
+          <el-row class="mb-4">
+            <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
+          </el-row>
+        </div>    
+      </el-col>
+    </el-row>  
+  </el-form>
+  
+  <div class="table-container">
+  <el-table :cell-class-name="cellStyle2" :data="datap" border header-row-style="color:black;" max-height="75vh" >
+      <el-table-column fixed align="center" prop="emp_razonsocial" label="Razon soc. aso. " width="140" />
+      <el-table-column  fixed prop="veh_placa" label="Placa " width="100" />
+      <el-table-column  fixed prop="vcl_nombre" label="Tipo " width="100" />
+      
+      <el-table-column label="CITV 6m" width="150">
+        <template #default="scope">
+          <el-button  type="text"  @click="button_handle(scope.row,2)" >{{get_nombre(scope.row,2)}}</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="CITV 12m" width="150">
+        <template #default="scope">
+          <el-button  type="text"  @click="button_handle(scope.row,3)" >{{get_nombre(scope.row,3)}}</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="SOAT" width="150">
+        <template #default="scope">
+          <el-button  type="text"  @click="button_handle(scope.row,4)" >{{get_nombre(scope.row,4)}}</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="POLIZA" width="150">
+        <template #default="scope">
+          <el-button  type="text"  @click="button_handle(scope.row,5)" >{{get_nombre(scope.row,5)}}</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="MTC MATPEL" width="170">
+        <template #default="scope">
+          <el-button  type="text"  @click="button_handle(scope.row,6)" >{{get_nombre(scope.row,6)}}</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="BONIFICACIÓN" width="150">
+        <template #default="scope">
+          <el-button  type="text"  @click="button_handle(scope.row,7)" >{{get_nombre(scope.row,7)}}</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="HERMETICIDAD" width="150">
+        <template #default="scope">
+          <el-button  type="text"  @click="button_handle(scope.row,8)" >{{get_nombre(scope.row,8)}}</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="MTC MERCANCIAS" width="160">
+        <template #default="scope">
+          <el-button  type="text"  @click="button_handle(scope.row,9)" >{{get_nombre(scope.row,9)}}</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+  </div>
           
-          <el-form  :inline="true" :model="form" label-width="auto" :size="small"  >
-            <el-row style="widht:100%"> 
-            <el-col :span="21">
-              <el-form-item label="Razón social">
-                  <el-select v-model="form_b.rs" placeholder="Seleccionar" clearable>
-                    <el-option
-                      v-for="item in opt_rs"
-                      :key="item.emp_id"
-                      :label="item.emp_razonsocial"
-                      :value="item.emp_id"
-                    > </el-option>
-                  </el-select>
-                </el-form-item>
-              
-              <el-form-item label="Placa">
-                <el-input v-model="form_b.placa" />
-              </el-form-item>
-
-            </el-col>
-            <el-col :span="3">               
-              <div class="button-container">
-                <el-row class="mb-4">
-                  <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
-                </el-row>
-              </div>    
-            </el-col>
-            </el-row>
-            
-            </el-form>
-          
-          <div class="table-container">
-          <el-table :cell-class-name="cellStyle2" :data="datap" border header-row-style="color:black;" max-height="75vh" >
-              <el-table-column fixed align="center" prop="emp_razonsocial" label="Razon soc. aso. " width="130" />
-              <el-table-column  fixed prop="veh_placa" label="Placa " width="100" />
-              <el-table-column  fixed prop="vcl_nombre" label="Tipo " width="100" />
-              
-              <el-table-column label="CITV 6m" width="150">
-                <template #default="scope">
-                  <el-button  type="text"  @click="button_handle(scope.row,2)" >{{get_nombre(scope.row,2)}}</el-button>
-                </template>
-              </el-table-column>
-              <el-table-column label="CITV 12m" width="150">
-                <template #default="scope">
-                  <el-button  type="text"  @click="button_handle(scope.row,3)" >{{get_nombre(scope.row,3)}}</el-button>
-                </template>
-              </el-table-column>
-              <el-table-column label="SOAT" width="150">
-                <template #default="scope">
-                  <el-button  type="text"  @click="button_handle(scope.row,4)" >{{get_nombre(scope.row,4)}}</el-button>
-                </template>
-              </el-table-column>
-              <el-table-column label="POLIZA" width="150">
-                <template #default="scope">
-                  <el-button  type="text"  @click="button_handle(scope.row,5)" >{{get_nombre(scope.row,5)}}</el-button>
-                </template>
-              </el-table-column>
-              <el-table-column label="ELEM. PELIGROSOS" width="170">
-                <template #default="scope">
-                  <el-button  type="text"  @click="button_handle(scope.row,6)" >{{get_nombre(scope.row,6)}}</el-button>
-                </template>
-              </el-table-column>
-              <el-table-column label="BONIFICACIÓN" width="150">
-                <template #default="scope">
-                  <el-button  type="text"  @click="button_handle(scope.row,7)" >{{get_nombre(scope.row,7)}}</el-button>
-                </template>
-              </el-table-column>
-              <el-table-column label="HERMETICIDAD" width="150">
-                <template #default="scope">
-                  <el-button  type="text"  @click="button_handle(scope.row,8)" >{{get_nombre(scope.row,8)}}</el-button>
-                </template>
-              </el-table-column>
-            </el-table>
-          </div>
-          
-        </el-scrollbar>
-      </el-main>
-    </el-container>
-  </el-container>
 
 <modal ref="mo_editar_per" no-close-on-backdrop title="Detalles" width="500px" @ok="send_editar_doc" cancel-title="Atrás" @cancel="closeedit"  centered>
   <el-form v-loading="wait" ref="form_edit_ref" :rules="rules" :model="form" label-width="150px" >

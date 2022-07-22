@@ -1,5 +1,5 @@
 {
-  "name": "garcal-sys",
+  "name": "router-test",
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
@@ -9,22 +9,14 @@
     "preview2": "vite preview --base=/garcalapp/ --port 5050"
   },
   "dependencies": {
-    "axios": "^0.27.1",
-    "bootstrap": "^4.6.0",
-    "cors": "^2.8.5",
-    "element-plus": "^2.1.10",
-    "express": "^4.18.0",
-    "jquery": "^3.6.0",
-    "nodemon": "^2.0.15",
-    "pg": "^8.7.3",
-    "popper.js": "^1.16.1",
-    "vue": "^3.2.31",
-    "vue-router": "^4.0.14",
-    "vuesax": "^3.12.2",
+    "axios": "^0.27.2",
+    "element-plus": "^2.2.9",
+    "vue": "^3.2.37",
+    "vue-router": "^4.1.2",
     "vuex": "^4.0.2"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^2.3.1",
-    "vite": "^2.9.1"
+    "@vitejs/plugin-vue": "^3.0.1",
+    "vite": "^3.0.1"
   }
 }

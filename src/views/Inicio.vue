@@ -61,7 +61,6 @@ export default {
     
   },
   mounted () {
-    //llamada a API
      this.onSubmitall();
   },
 }
@@ -69,7 +68,7 @@ export default {
 
 
 <template>
- 
+  
   <el-form @submit.prevent :inline="true" :model="form" label-width="auto" :size="small" >
 
       <el-form-item label="Nombre">
@@ -81,26 +80,27 @@ export default {
         <el-button color="#008db1"  :icon="Plus"  @click="open_mod()" >Crear</el-button>
       </el-form-item>
     </el-form>
-  
+
   <div class="table-container">
-  <el-table :data="users" border header-row-style="color:black;" >
-    <el-table-column prop="uid" label="Codigo" width="120" />
-    <el-table-column prop="unombre" label="Nombre" width="240" />
-    <el-table-column prop="unrodocumento" label="Nro. de doc." />
-    <el-table-column prop="utelefono" label="Telefono" />
-    <el-table-column prop="udireccion" label="Direccion" />
-    <el-table-column fixed="right" label="" width="40">
-      <template #default="scope">
-        <el-button type="text" size="small" @click="setactual(scope.row)"><el-icon :size="17"><EditPen /></el-icon></el-button>
-      </template>
-    </el-table-column>
-  </el-table>
-</div>
+    <el-table :data="users" border header-row-style="color:black;" >
+      <el-table-column prop="uid" label="Codigo" width="120" />
+      <el-table-column prop="unombre" label="Nombre" width="240" />
+      <el-table-column prop="unrodocumento" label="Nro. de doc." />
+      <el-table-column prop="utelefono" label="Telefono" />
+      <el-table-column prop="udireccion" label="Direccion" />
+      <el-table-column fixed="right" label="" width="40">
+        <template #default="scope">
+          <el-button type="text" size="small" @click="setactual(scope.row)"><el-icon :size="17"><EditPen /></el-icon></el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+  </div>
+
 
 
 <modal ref="EditMo" title="Editar usuario" width="600px"  hide-footer centered>
-<el-form label-width="150px">
-
+  
+  <el-form label-width="150px">
     <el-form-item style="z-index: 10000" label="Razón soc. asoc.">
       <el-select  v-model="form.region" placeholder="Seleccionar">
         <el-option label="Garcal " value="0" />
@@ -189,43 +189,6 @@ export default {
 
 
 <style scoped>
-.layout-container .el-header {
-  position: relative;
-  background-color: rgb(8, 68, 164);
-  color: rgb(240, 240, 240);
-  text-align: left;
-  font-family: "Roboto", sans-serif;
-}
-.layout-container .el-aside {
-  color: var(--el-text-color-primary);
-  background: white;
-}
-.layout-container .el-menu {
-  border-right: none;
-}
-.layout-container .el-main {
-  padding: 0;
-}
-
-.layout-container .el-header {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.layout-container .toolbar {
-  display: block;
-  text-align: left;
-  margin-left: 0;
-  margin-right: auto;
-}
-
-.layout-container .sitebar {
-  display: block;
-  text-align: center;
-  margin-left: auto;
-  margin-right: auto;
-}
 
 .layout-container .el-form {
   padding-top: 15px;
@@ -246,7 +209,6 @@ export default {
 .el-row {
   margin-bottom: 5px;
 }
-
 
 </style>
 

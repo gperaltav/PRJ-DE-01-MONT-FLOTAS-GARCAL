@@ -26,11 +26,9 @@ const rules = reactive({
 </script>
 
 <script lang="ts">
-import Sidebar from "../../components/Sidebar.vue"
 import modal from "../../components/modal.vue"
 export default {
   components: {
-    Sidebar,
     modal
   },
   data(){
@@ -405,157 +403,123 @@ export default {
 
 
 <template>
-  <el-container class="layout-container" style="height: calc( 100vh - 20px );" >
-    <el-header style="text-align: left; font-size: 24px">
-      <el-col :span="8" style="text-align=left">
-        <div class="toolbar">
-          <span>ERP Garcal</span>
-        </div>
+  
+  <div style="width:900px; margin-left:4.3vw ">
+
+    <el-row style="text-align=center; margin-left:85px">
+      <h1 style="margin-left: auto;margin-right: auto">Viático</h1>
+    </el-row>
+
+  
+  <el-form :model="form" :label-position="left" label-width="200px"  >
+
+    <el-form-item  label="Razón social asociada">
+      <el-select v-model="form_c.rs" @change="rs_changer" @clear="clear_c" placeholder="Seleccionar" style="width:600px" clearable>
+        <el-option
+          v-for="item in opt_rs"
+          :key="item.emp_id"
+          :label="item.emp_razonsocial"
+          :value="item.emp_id"
+        > </el-option>
+      </el-select>
+    </el-form-item>
+
+    <el-form-item  label="Conductor">
+      <el-row style="width:600px"> 
+      <el-col :span="8">
+        <el-select
+          v-model="form_c.tra_id"
+          filterable
+          :remote-method="get_chofer"
+          @change="select_chofer"
+          @clear="clear_chofer"
+          placeholder="Inserte ID de conductor"
+          remote
+          clearable
+        >
+          <template #prefix>
+            <el-icon><Search /></el-icon>
+          </template>
+
+          <el-option
+            v-for="item in data_op"
+            :key="item.tra_nrodocumento"
+            :label="item.tra_nrodocumento"
+            :value="item.tra_id"
+          />
+        </el-select>
       </el-col>
-      <el-col :span="8" style="text-align=center">
-        <div class="sitebar">
-        <el-tag style="color:white;" color="#0c59cf">
-          Operaciones > Viaticos
-        </el-tag>
+      <el-col :span="16"><el-input disabled v-model="form_c.tra_nom" placeholder="Nombre del conductor" /></el-col>
+      </el-row>
+    </el-form-item>
+
+    <el-form-item  label="Entrega de dinero">
+      <div style="width:200px" >
+        <el-input v-model="form_c.serie_doc" placeholder="Nro de serie" />
       </div>
+      <div style="width:400px">
+        <el-input v-model="form_c.nro_doc" placeholder="Nro de documento" />
+      </div>
+    </el-form-item>
+
+    <el-form-item  label="Fecha de emisión">
+      <el-date-picker
+        type="date"
+        v-model="form_c.fecha_em"
+        format="YYYY-MM-DD"
+        value-format="YYYY-MM-DD"
+        placeholder="Seleccione fecha"
+        style="width: 300px"
+      />
+    </el-form-item>
+
+    <el-form-item label="Fecha de viaje">
+      <el-row style="width:600px">
+      <el-col :span="12">
+        <el-date-picker
+          type="date"
+          v-model="form_c.fecha_via"
+          format="YYYY-MM-DD"
+          value-format="YYYY-MM-DD"
+          placeholder="Seleccione fecha"
+          style="width: 300px"
+          @change="fech_changer"
+        />
       </el-col>
-      <el-col :span="8" style="text-align=center">
+      
+      <el-col :span="12">
+        <el-select v-model="form_c.via_id" placeholder="Seleccione una opcion" style="width:300px" clearable>
+          <el-option
+            v-for="item in opt_via"
+            :key="item.via_id"
+            :label="item.via_descripcion"
+            :value="item.via_id"
+          > </el-option>
+        </el-select> 
       </el-col>
-    </el-header>
+      </el-row>
+    </el-form-item>
 
-    <el-container style="height: 50%;">
-      <el-aside width="200px">
-        <el-scrollbar>
-          <Sidebar />
-        </el-scrollbar>
-      </el-aside>
+    <el-form-item style="margin-left: auto;margin-right: auto" label="Total">
+      <div style="width:300px">
+        <el-input v-model="form_c.total" placeholder="Inserte una cantidad">
+          <template #prepend>S/</template>
+        </el-input>
+      </div>
+    </el-form-item>
 
-      <el-main style="background-color:white">
-        <div >
-        <el-scrollbar>
-          
-          <div style="width:900px; margin-left:4.3vw ">
+    <el-form-item style="margin-left: auto;margin-right: auto" label="Observaciones">
+      <div style="width:600px">
+        <el-input v-model="form_c.obs" placeholder=""/>
+      </div>
+    </el-form-item>
 
-            <el-row style="text-align=center; margin-left:85px">
-              <h1 style="margin-left: auto;margin-right: auto">Viático</h1>
-            </el-row>
-
-          
-          <el-form :model="form" :label-position="left" label-width="200px"  >
-
-            <el-form-item  label="Razón social asociada">
-              <el-select v-model="form_c.rs" @change="rs_changer" @clear="clear_c" placeholder="Seleccionar" style="width:600px" clearable>
-                <el-option
-                  v-for="item in opt_rs"
-                  :key="item.emp_id"
-                  :label="item.emp_razonsocial"
-                  :value="item.emp_id"
-                > </el-option>
-              </el-select>
-            </el-form-item>
-
-            <el-form-item  label="Conductor">
-              <el-row style="width:600px"> 
-              <el-col :span="8">
-                <el-select
-                  v-model="form_c.tra_id"
-                  filterable
-                  :remote-method="get_chofer"
-                  @change="select_chofer"
-                  @clear="clear_chofer"
-                  placeholder="Inserte ID de conductor"
-                  remote
-                  clearable
-                >
-                  <template #prefix>
-                    <el-icon><Search /></el-icon>
-                  </template>
-
-                  <el-option
-                    v-for="item in data_op"
-                    :key="item.tra_nrodocumento"
-                    :label="item.tra_nrodocumento"
-                    :value="item.tra_id"
-                  />
-                </el-select>
-              </el-col>
-              <el-col :span="16"><el-input disabled v-model="form_c.tra_nom" placeholder="Nombre del conductor" /></el-col>
-              </el-row>
-            </el-form-item>
-
-            <el-form-item  label="Entrega de dinero">
-              <div style="width:200px" >
-                <el-input v-model="form_c.serie_doc" placeholder="Nro de serie" />
-              </div>
-              <div style="width:400px">
-                <el-input v-model="form_c.nro_doc" placeholder="Nro de documento" />
-              </div>
-            </el-form-item>
-
-            <el-form-item  label="Fecha de emisión">
-              <el-date-picker
-                type="date"
-                v-model="form_c.fecha_em"
-                format="YYYY-MM-DD"
-                value-format="YYYY-MM-DD"
-                placeholder="Seleccione fecha"
-                style="width: 300px"
-              />
-            </el-form-item>
-
-            <el-form-item label="Fecha de viaje">
-              <el-row style="width:600px">
-              <el-col :span="12">
-                <el-date-picker
-                  type="date"
-                  v-model="form_c.fecha_via"
-                  format="YYYY-MM-DD"
-                  value-format="YYYY-MM-DD"
-                  placeholder="Seleccione fecha"
-                  style="width: 300px"
-                  @change="fech_changer"
-                />
-              </el-col>
-              
-              <el-col :span="12">
-                <el-select v-model="form_c.via_id" placeholder="Seleccione una opcion" style="width:300px" clearable>
-                  <el-option
-                    v-for="item in opt_via"
-                    :key="item.via_id"
-                    :label="item.via_descripcion"
-                    :value="item.via_id"
-                  > </el-option>
-                </el-select> 
-              </el-col>
-              </el-row>
-            </el-form-item>
-
-            <el-form-item style="margin-left: auto;margin-right: auto" label="Total">
-              <div style="width:300px">
-                <el-input v-model="form_c.total" placeholder="Inserte una cantidad">
-                  <template #prepend>S/</template>
-                </el-input>
-              </div>
-            </el-form-item>
-
-            <el-form-item style="margin-left: auto;margin-right: auto" label="Observaciones">
-              <div style="width:600px">
-                <el-input v-model="form_c.obs" placeholder=""/>
-              </div>
-            </el-form-item>
-
-            <el-row style="text-align=center; margin-left:100px" >
-              <el-button  @click="transaccion_insertar" style="margin-left: auto;margin-right: auto" color="#0844a4" >Guardar</el-button>
-            </el-row>
-              
-            </el-form>
-            </div>
-          
-        </el-scrollbar>
-        </div>
-      </el-main>
-    </el-container>
-  </el-container>
+    <el-row style="text-align=center; margin-left:100px" >
+      <el-button  @click="transaccion_insertar" style="margin-left: auto;margin-right: auto" color="#0844a4" >Guardar</el-button>
+    </el-row>
+      
+    </el-form>
+  </div>
 
 
 <modal ref="mo_advertencia_eliim" title="Confirmar" centered @ok="send_delete" @cancel="close_confirmar" ok-title="Si" cancel-title="Cancelar" >
