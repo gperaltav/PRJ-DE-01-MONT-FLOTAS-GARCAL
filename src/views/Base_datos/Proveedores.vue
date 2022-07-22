@@ -150,7 +150,7 @@ export default {
         }
       })
     },
-    
+
     search_rs_ch() {
       this.emp_cont=this.form_b.rs;
       this.form_b.prod="";

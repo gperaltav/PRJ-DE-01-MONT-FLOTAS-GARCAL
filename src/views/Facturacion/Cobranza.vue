@@ -746,7 +746,6 @@ export default {
     </el-table>
   </div>
 
-
 <modal ref="mo_editar_per" no-close-on-backdrop title="Editar Cobranza" width="900px" @ok="editar_usr" @cancel="closeedit" cancel-title="Atras" centered>
   <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="200px" >
 
