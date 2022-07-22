@@ -215,6 +215,34 @@ export default {
         return false;
     },
 
+    get_descargas(uri, name) {
+      var link = document.createElement("a");
+      link.download = name;
+      link.href = uri;
+      link.click();
+    },
+
+    send_descarga() {
+      axios
+        .post('http://51.222.25.71:8080/garcal-report-api/api/controldocumentoschoferescsv')
+        .then((resp) => {
+          console.log(resp.data);
+          this.succes=resp.data.status;
+          if (this.succes) {
+            this.get_descargas(resp.data.message,'Reporte_doc_personal')
+            return true;
+          }
+          else {
+            this.open_fail("Hubo un error con el servidor al ejecutar la operación");
+            return false;
+          }
+        })
+        .catch(function (error) {
+          this.open_fail("Hubo un error con el servidor al ejecutar la operación, error:"+String(error));
+            return false;
+        });
+    },
+
     api_get_all(){
       //llamada a API
      axios
@@ -537,6 +565,9 @@ export default {
         <div class="button-container">
           <el-row class="mb-4">
             <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
+          </el-row>
+          <el-row class="mb-4">
+            <el-button color="#95d475" :icon=" Download" @click="send_descarga">A Excel</el-button>
           </el-row>
         </div>    
       </el-col>

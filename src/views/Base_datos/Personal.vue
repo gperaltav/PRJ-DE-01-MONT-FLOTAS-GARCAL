@@ -454,7 +454,6 @@ export default {
         });
     },
 
-
     load_data_edit() {
       this.form_e.rs=this.data_edit[0].emp_id;
       this.emp_cont=this.form_e.rs;
