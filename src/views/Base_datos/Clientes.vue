@@ -546,6 +546,7 @@ export default {
 
 <template>
 
+<div class="main-container">
   <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
     <el-row>
       <el-col :span="21">
@@ -602,19 +603,21 @@ export default {
     </el-form>
 
   <div class="table-container">
-  <el-table :data="datap" border header-row-style="color:black;" >
+    <el-table :data="datap" border header-row-style="color:black;" height="100%">
       <el-table-column prop="emp_razonsocial" label="Razon soc. aso." width="140" align="center"/>
       <el-table-column prop="ent_nombre" label="Nombre" width="450" sortable />
       <el-table-column prop="dti_id" label="Tipo de doc." width="120" align="center"/>
       <el-table-column prop="ent_nrodocumento" label="Nro. de documento" />  
       <el-table-column prop="fdp_descri" label="Condicion de pago" />  
       <el-table-column fixed="right" label="" width="45" align="center">
-      <template #default="scope">
-        <el-button  type="text"  @click="button_handle(scope.row.ent_id,scope.row.emp_id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
-      </template>
+        <template #default="scope">
+          <el-button  type="text"  @click="button_handle(scope.row.ent_id,scope.row.emp_id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
+        </template>
     </el-table-column>
     </el-table>
   </div>
+</div>
+
 
 <modal ref="mo_create_per" no-close-on-backdrop title="Agregar Cliente" width="500px" @ok="create_usr()" @cancel="closecrear" cancel-title="Atras" centered>
   <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" >
@@ -812,6 +815,6 @@ export default {
 </template>
 
 
-<style scoped src="../styles/basededatos.css">
+<style scoped src="../styles/internal.css">
 
 </style>

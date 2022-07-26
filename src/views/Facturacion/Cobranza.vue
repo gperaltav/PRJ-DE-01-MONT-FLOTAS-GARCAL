@@ -895,6 +895,6 @@ export default {
 </template>
 
 
-<style scoped src="../styles/basededatos.css">
+<style scoped src="../styles/internal.css">
 
 </style>

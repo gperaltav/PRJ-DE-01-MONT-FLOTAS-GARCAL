@@ -486,7 +486,8 @@ export default {
 
 
 <template>
-  
+
+<div class="main-container">
   <el-form @submit.prevent :inline="true" :model="formInline" label-width="auto" :size="small" >
     <el-row>
       <el-col :span="21">
@@ -574,7 +575,7 @@ export default {
     </el-form>
 
   <div class="table-container">
-  <el-table :data="datap" border header-row-style="color:black;" >
+    <el-table :data="datap" border header-row-style="color:black;" height="100%">
       <el-table-column prop="emp_razonsocial" label="Razon soc. asoc. " width="140" align="center" />
       <el-table-column prop="veh_placa" label="Placa" width="90" />
       <el-table-column prop="vcl_nombre" label="Clase" width="150"/>
@@ -593,6 +594,7 @@ export default {
       </el-table-column>
     </el-table>
   </div>
+</div>
 
 
 <modal ref="mo_create_per" no-close-on-backdrop title="Agregar Vehiculo" width="500px" @ok="create_usr" @cancel="closecrear" cancel-title="Atras" centered>
@@ -813,6 +815,6 @@ export default {
 </template>
 
 
-<style scoped src="../styles/basededatos.css">
+<style scoped src="../styles/internal.css">
 
 </style>

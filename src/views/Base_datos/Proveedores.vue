@@ -547,6 +547,7 @@ export default {
 
 <template>
  
+<div class="main-container">
   <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
     <el-row>
       <el-col :span="21">
@@ -605,7 +606,7 @@ export default {
     </el-form>
 
   <div class="table-container">
-  <el-table :data="datap" border header-row-style="color:black;" >
+  <el-table :data="datap" border header-row-style="color:black;" height="100%" >
       <el-table-column prop="emp_razonsocial" label="Razon soc. aso." width="140" align="center"/>
       <el-table-column prop="ent_nombre" label="Nombre de proveedor"  width="450" sortable/>
       <el-table-column prop="ent_nrodocumento" label="RUC" />  
@@ -618,6 +619,7 @@ export default {
     </el-table-column>
     </el-table>
   </div>
+</div>
 
 <modal ref="mo_create_per" no-close-on-backdrop title="Agregar Proveedor" width="500px" @ok="create_usr" @cancel="closecrear" cancel-title="Atras" centered>
   <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" >
@@ -813,6 +815,6 @@ export default {
 </template>
 
 
-<style scoped src="../styles/basededatos.css">
+<style scoped src="../styles/internal.css">
 
 </style>
