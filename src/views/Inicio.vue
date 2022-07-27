@@ -18,8 +18,15 @@ export default {
       users:[],
       open_m:false,
       puntero_edit:1,
+      editpointer:'',
+
       form : reactive({
         nombre: '',
+      }),
+      form_b : reactive({
+        nombre: '',
+        nro_doc:'',
+        
       }),
       form_edit : reactive({
         nombre: '',
@@ -33,7 +40,7 @@ export default {
     check() {
       //verificar campos
       if (nombre=='') {
-        this.onSubmitall();
+        this.api_get_all();
       }
       else {
         this.onSubmit2();
@@ -49,7 +56,25 @@ export default {
     okis() {
       console.log("Todo ok");
     },
-    onSubmitall (){
+
+    button_handle(key){
+      console.log(key);
+      this.editpointer=key;
+
+      this.$refs.EditMo.open();
+      this.wait = true;
+      this.load_edit(key);
+      
+      setTimeout(() => {
+        this.load_data_edit();
+        this.emp_cont=this.form_e.rs;
+        this.wait = false;
+      }, 400)
+
+      
+    },
+
+    api_get_all (){
       //llamada a API
      axios
         .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/usuarios')
@@ -61,40 +86,54 @@ export default {
     
   },
   mounted () {
-     this.onSubmitall();
+     this.api_get_all();
   },
 }
 </script>
 
 
 <template>
-  
-  <el-form @submit.prevent :inline="true" :model="form" label-width="auto" :size="small" >
 
-      <el-form-item label="Nombre">
-        <el-input v-model="form.nombre" />
-      </el-form-item>
+<div class="main-container">
+  <el-form :inline="true" model="formInline" label-width="auto" :size="small" >
+    <el-row>
+      <el-col :span="21">
+        <el-form-item label="Nombre">
+          <el-input v-model="form_b.nombre" />
+        </el-form-item>
+        <el-form-item label="Nro. de documento">
+          <el-input v-model="form_b.nro_doc" />
+        </el-form-item>
+      </el-col>
 
-      <el-form-item>
-        <el-button color="#0844a4"  :icon="Filter" @click="onSubmit2()">Filtrar</el-button>
-        <el-button color="#008db1"  :icon="Plus"  @click="open_mod()" >Crear</el-button>
-      </el-form-item>
-    </el-form>
+      <el-col :span="3">
+          <div class="button-container">
+            <el-row class="mb-4">
+              <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
+            </el-row>
+            <el-row class="mb-4">
+              <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
+            </el-row>
+          </div>  
+      </el-col>
+    </el-row>
+  </el-form>
 
   <div class="table-container">
-    <el-table :data="users" border header-row-style="color:black;" >
-      <el-table-column prop="uid" label="Codigo" width="120" />
-      <el-table-column prop="unombre" label="Nombre" width="240" />
-      <el-table-column prop="unrodocumento" label="Nro. de doc." />
-      <el-table-column prop="utelefono" label="Telefono" />
-      <el-table-column prop="udireccion" label="Direccion" />
-      <el-table-column fixed="right" label="" width="40">
+    <el-table :data="users" border header-row-style="color:black;" height="100%" >
+      <el-table-column prop="usu_codigo" label="Codigo" width="120" />
+      <el-table-column prop="usu_nombres" label="Nombre" width="240" />
+      <el-table-column prop="usu_nrodocumento" label="Nro. de doc." />
+      <el-table-column prop="usu_telefono" label="Telefono" />
+      <el-table-column prop="usu_direccion" label="Direccion" />
+      <el-table-column fixed="right" label="" width="45">
         <template #default="scope">
-          <el-button type="text" size="small" @click="setactual(scope.row)"><el-icon :size="17"><EditPen /></el-icon></el-button>
+          <el-button type="text"  @click="button_handle(scope.row.usu_codigo)"><el-icon :size="17"><EditPen /></el-icon></el-button>
         </template>
       </el-table-column>
     </el-table>
   </div>
+</div>
 
 
 
@@ -143,7 +182,8 @@ export default {
 
 
 <modal ref="CreateMo" title="Crear usuario" width="600px"  @ok="okis()" centered>
-<el-form  label-width="150px">
+
+  <el-form  label-width="150px">
 
     <el-form-item style="z-index: 10000" label="Razón soc. asoc.">
       <el-select  v-model="form.region" placeholder="Seleccionar">
@@ -188,27 +228,7 @@ export default {
 </template>
 
 
-<style scoped>
-
-.layout-container .el-form {
-  padding-top: 15px;
-  background-color: white;
-}
-
-.table-container {
-  padding: 20px;
-}
-.el-table {
-  font-family: "Roboto", sans-serif;
-  --el-table-header-bg-color:rgb(199, 199, 199);
-}
-.el-col {
-  text-align:center;
-}
-
-.el-row {
-  margin-bottom: 5px;
-}
+<style scoped src="./styles/internal.css">
 
 </style>
 

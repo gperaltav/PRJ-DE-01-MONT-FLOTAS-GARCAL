@@ -841,9 +841,9 @@ export default {
       <el-table-column prop="tra_tipocontrato" label="Tipo de contrato" />
       <el-table-column prop="tra_fechaingreso" label="Fecha de ingreso" />
       <el-table-column prop="tra_fechacese" label="Fecha de cese" />
-      <el-table-column fixed="right" label="" width="40">
+      <el-table-column fixed="right" label="" width="45" align="center">
         <template #default="scope">
-          <el-button  type="text"  @click="button_handle(scope.row.tra_id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
+          <el-button  type="text"  @click="button_handle(scope.row.tra_id)"><el-icon :size="17"><EditPen /></el-icon></el-button>
         </template>
       </el-table-column>
     </el-table>

@@ -611,7 +611,7 @@ export default {
       <el-table-column prop="fdp_descri" label="Condicion de pago" />  
       <el-table-column fixed="right" label="" width="45" align="center">
         <template #default="scope">
-          <el-button  type="text"  @click="button_handle(scope.row.ent_id,scope.row.emp_id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
+          <el-button  type="text"  @click="button_handle(scope.row.ent_id,scope.row.emp_id)" ><el-icon :size="17"><EditPen /></el-icon></el-button>
         </template>
     </el-table-column>
     </el-table>

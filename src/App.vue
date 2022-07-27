@@ -165,6 +165,7 @@ const handleClose = (key: string, keyPath: string[]) => {
   width: 200px;
   min-height: 400px;
 }
+
 .layout-container {
   width: 100%;
   height: 100%;

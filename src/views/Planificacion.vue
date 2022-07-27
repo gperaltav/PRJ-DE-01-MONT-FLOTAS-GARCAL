@@ -995,8 +995,6 @@ export default {
           this.wait = false;
         }, 400)
       }, 600)
-
-
       
     },
 
@@ -1029,20 +1027,20 @@ export default {
 
 <template>
  
-  <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
+ <div class="main-container">
+  <el-form :inline="true" model="formInline" label-width="auto" :size="small" >
     <el-row>
       <el-col :span="21">
-        
         <el-form-item label="Razón social">
-            <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
-              <el-option
-                v-for="item in opt_rs"
-                :key="item.emp_id"
-                :label="item.emp_razonsocial"
-                :value="item.emp_id"
-              > </el-option>
-            </el-select>
-          </el-form-item>
+          <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
+            <el-option
+              v-for="item in opt_rs"
+              :key="item.emp_id"
+              :label="item.emp_razonsocial"
+              :value="item.emp_id"
+            > </el-option>
+          </el-select>
+        </el-form-item>
 
         <el-form-item label="Origen" clearable>
           <el-input v-model='form_b.origen'/>
@@ -1098,10 +1096,10 @@ export default {
       </el-col>
     </el-row>
       
-    </el-form>
+  </el-form>
 
   <div class="table-container">
-  <el-table :data="datap" border header-row-style="color:black;" >
+  <el-table :data="datap" border header-row-style="color:black;" height="100%">
       <el-table-column prop="emp_razonsocial" label="Razon soc. asoc. " width="140" align="center"/>
       <el-table-column prop="via_ordenservicio" label="Nro. de servicio" width="135" align="center"/>
       <el-table-column prop="vie_nombre" label="Estado de serv." width="130" align="center"/>
@@ -1118,17 +1116,18 @@ export default {
 
       <el-table-column fixed="right" label="" width="45" align="center">
         <template #default="scope">
-          <el-button  type="text"  @click="button_handle2(scope.row.via_id)" size="small"><el-icon :size="17"><Flag /></el-icon></el-button>
+          <el-button  type="text"  @click="button_handle2(scope.row.via_id)" ><el-icon :size="17"><Flag /></el-icon></el-button>
         </template>
       </el-table-column>
 
       <el-table-column fixed="right" label="" width="45" align="center">
         <template #default="scope">
-          <el-button  type="text"  @click="button_handle(scope.row.via_id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
+          <el-button  type="text"  @click="button_handle(scope.row.via_id)" ><el-icon :size="17"><EditPen /></el-icon></el-button>
         </template>
       </el-table-column>
     </el-table>
   </div>
+</div>
 
 
 

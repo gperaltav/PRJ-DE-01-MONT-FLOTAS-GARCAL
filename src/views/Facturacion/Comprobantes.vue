@@ -888,12 +888,12 @@ export default {
       <el-table-column prop="cvc_comprobantereferencia" label="Referencia" />
       <el-table-column fixed="right" label="" width="45" align="center">
         <template #default="scope">
-          <el-button  type="text"  @click="button_handle_pago(scope.row.cvc_id)" size="small"><el-icon :size="17"><CreditCard /></el-icon></el-button>
+          <el-button  type="text"  @click="button_handle_pago(scope.row.cvc_id)" ><el-icon :size="17"><CreditCard /></el-icon></el-button>
         </template>
       </el-table-column>
       <el-table-column fixed="right" label="" width="45" align="center">
         <template #default="scope">
-          <el-button  type="text"  @click="button_handle(scope.row.cvc_id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
+          <el-button  type="text"  @click="button_handle(scope.row.cvc_id)" ><el-icon :size="17"><EditPen /></el-icon></el-button>
         </template>
       </el-table-column>
     </el-table>

@@ -738,9 +738,9 @@ export default {
       <el-table-column prop="vec_nroreferencia" label="Nro de referencia" /> 
       <el-table-column prop="cvc_total" label="Total" /> 
       <el-table-column prop="vec_monto" label="Cobro" /> 
-      <el-table-column fixed="right" label="" width="40">
+      <el-table-column fixed="right" label="" width="45" align="center">
         <template #default="scope">
-          <el-button  type="text"  @click="button_handle(scope.row.vec_id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
+          <el-button  type="text"  @click="button_handle(scope.row.vec_id)" ><el-icon :size="17"><EditPen /></el-icon></el-button>
         </template>
       </el-table-column>
     </el-table>

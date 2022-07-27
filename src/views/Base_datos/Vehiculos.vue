@@ -577,19 +577,19 @@ export default {
   <div class="table-container">
     <el-table :data="datap" border header-row-style="color:black;" height="100%">
       <el-table-column prop="emp_razonsocial" label="Razon soc. asoc. " width="140" align="center" />
-      <el-table-column prop="veh_placa" label="Placa" width="90" />
+      <el-table-column prop="veh_placa" label="Placa" width="90" align="center"/>
       <el-table-column prop="vcl_nombre" label="Clase" width="150"/>
       <el-table-column prop="vti_nombre" label="Tipo" width="130"/>
       <el-table-column prop="vma_nombre" label="Marca" width="140" sortable/>
       <el-table-column prop="vmo_nombre" label="Modelo" />
-      <el-table-column prop="veh_anno" label="Año" width="60"  />
-      <el-table-column prop="veh_serie" label="Nro. serie" />
-      <el-table-column prop="veh_mtc" label="MTC" />
-      <el-table-column prop="veh_cargautil" label="Carga util" />
+      <el-table-column prop="veh_anno" label="Año" width="70" align="center" />
+      <el-table-column prop="veh_serie" label="Nro. serie" width="140"/>
+      <el-table-column prop="veh_mtc" label="MTC" width="130"/>
+      <el-table-column prop="veh_cargautil" label="Carga util" width="90" align="center"/>
       <el-table-column prop="veh_kilometraje" label="Km" />   
-      <el-table-column fixed="right" label="" width="40">
+      <el-table-column fixed="right" label="" width="45" align="center">
         <template #default="scope">
-          <el-button  type="text"  @click="button_handle(scope.row.veh_id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
+          <el-button  type="text"  @click="button_handle(scope.row.veh_id)" ><el-icon :size="17"><EditPen /></el-icon></el-button>
         </template>
       </el-table-column>
     </el-table>

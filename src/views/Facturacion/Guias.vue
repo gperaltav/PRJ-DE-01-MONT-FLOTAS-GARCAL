@@ -740,9 +740,9 @@ export default {
       <el-table-column prop="veh_placa" label="Placa" />
       <el-table-column prop="via_descripcion" label="Viaje" width="210"/>  
       <el-table-column prop="gui_estado" label="Estado" /> 
-      <el-table-column fixed="right" label="" width="40">
+      <el-table-column fixed="right" label="" width="45" align="center">
         <template #default="scope">
-          <el-button  type="text"  @click="button_handle(scope.row.gui_id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
+          <el-button  type="text"  @click="button_handle(scope.row.gui_id)" ><el-icon :size="17"><EditPen /></el-icon></el-button>
         </template>
       </el-table-column>
     </el-table>
