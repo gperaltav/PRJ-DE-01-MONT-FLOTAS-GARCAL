@@ -415,58 +415,48 @@ export default {
     },
     
     create_usr(){
-      //llamada a API
-      //this.form_cref.validate((valid, fields) => {
-        //if (valid) {
-          axios
-          .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/nuevo', 
-          { 
-            "emp_id":parseInt(this.form_c.rs),
-            "Ubi_codigo":"",
-            "ent_nombre":this.form_c.nombre,
-            "dti_id":this.form_c.tipo_doc,
-            "ent_nrodocumento":this.form_c.nro_doc,
-            "ent_apellidopaterno":"",
-            "ent_apellidomaterno":"",
-            "ent_activo":true,
-            "zon_id":0,
-            "ent_direccion":this.form_c.direccion,
-            "ent_telefono":this.form_c.telefono,
-            "ent_celular":"",
-            "ent_paginaweb":"",
-            "ent_correo":this.form_c.correo,
-            "ent_contacto":"",
-            "ent_sexo":"",
-            "ent_usucreacion":"admin",
-            "ent_personanatural":true,
-            "ext_id":this.var_type,
-            "fdp_id":this.form_c.c_pago,
-            "fpd_diasvencimiento":Number(this.form_c.plazo),
-            "ent_estadocontribuyente":this.form_c.c_activo,
-            "ent_condicioncontribuyente":this.form_c.c_habido,
-            "pro_id":""
-          })
-          .then((resp) => {
-            console.log(resp.data);
-            this.succes=resp.data.status;
-            if (this.succes) {
-              this.open_succes("Operación realizada satisfactoriamente");
-              return true;
-              
-            }
-            else {
-              this.open_fail("Hubo un error con el servidor al ejecutar la operación");
-              return false;
-            }
-          })
+      axios
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/nuevo', 
+      { 
+        "emp_id":parseInt(this.form_c.rs),
+        "Ubi_codigo":"",
+        "ent_nombre":this.form_c.nombre,
+        "dti_id":this.form_c.tipo_doc,
+        "ent_nrodocumento":this.form_c.nro_doc,
+        "ent_apellidopaterno":"",
+        "ent_apellidomaterno":"",
+        "ent_activo":true,
+        "zon_id":0,
+        "ent_direccion":this.form_c.direccion,
+        "ent_telefono":this.form_c.telefono,
+        "ent_celular":"",
+        "ent_paginaweb":"",
+        "ent_correo":this.form_c.correo,
+        "ent_contacto":"",
+        "ent_sexo":"",
+        "ent_usucreacion":"admin",
+        "ent_personanatural":true,
+        "ext_id":this.var_type,
+        "fdp_id":this.form_c.c_pago,
+        "fpd_diasvencimiento":Number(this.form_c.plazo),
+        "ent_estadocontribuyente":this.form_c.c_activo,
+        "ent_condicioncontribuyente":this.form_c.c_habido,
+        "pro_id":""
+      })
+      .then((resp) => {
+        console.log(resp.data);
+        this.succes=resp.data.status;
+        if (this.succes) {
+          this.open_succes("Operación realizada satisfactoriamente");
+          return true;
+          
+        }
+        else {
+          this.open_fail("Hubo un error con el servidor al ejecutar la operación");
           return false;
-          //}
-       // else {
-        //  console.log('Error en campos', fields);
-        //  return;
-        //}
-        
-      //})
+        }
+      })
+      return false;
     },  
 
     close_create() {

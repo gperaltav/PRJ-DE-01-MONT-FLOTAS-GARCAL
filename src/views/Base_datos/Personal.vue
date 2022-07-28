@@ -851,9 +851,9 @@ export default {
 </div>
 
 
-
 <modal ref="mo_create_per" no-close-on-backdrop title="Agregar Trabajador" width="500px" @ok="create_usr" :ok-loading="loadingC" @cancel="closecrear" cancel-title="Atras" centered>
-<el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" >
+
+  <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" >
 
     <el-form-item  label="Razón soc. asoc." prop="rs">
       <el-select style="width:250px" v-model="form_c.rs" @change="rs_changer" placeholder="Seleccionar">
