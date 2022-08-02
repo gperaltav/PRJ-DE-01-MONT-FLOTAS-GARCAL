@@ -13,10 +13,13 @@ export default {
   components: {
     modal
   },
+  computed: {
+    rs_disable() {
+      return this.form_b.rs=='';
+    }
+  },
   data(){
     return {
-      var_type:'prv',
-      editpointer:0,
       succes: false,
       operarios_id:[2,4],
       datap: [],
@@ -28,6 +31,7 @@ export default {
       opt_cli:[],
 
       opt_td:[],
+      opt_ed:[],
       opt_fp:[],
       opt_prod:[],
 
@@ -47,63 +51,10 @@ export default {
       form_b : reactive({
         rs: '',
         tipo_gui: '',
+        estado_gui:'',
         codigo: '',
         fech_inicio: null,
         fech_fin:null
-      }),
-
-      form_c : reactive({
-        rs: '',
-        prv_id:'',
-        prv_nom:'',
-        tipo_doc:'',
-        serie_doc:'',
-        nro_doc:'',
-        fecha_em:'',
-        fecha_via:'',
-        via_id:'',
-        cantidad_n:'',
-        cantidad_un:'',
-        cantidad_p_uni:'',
-        subtotal:0,
-        impuesto:0,
-        total:0,
-        tipo_pago:'',
-        igv:18
-      }),
-
-      form_e : reactive({
-        rs: '',
-        prv_id:'',
-        prv_nom:'',
-        tipo_doc:'',
-        serie_doc:'',
-        nro_doc:'',
-        fecha_em:'',
-        fecha_via:'',
-        via_id:'',
-        cantidad_n:'',
-        cantidad_un:'',
-        cantidad_p_uni:'',
-        subtotal:0,
-        impuesto:0,
-        total:0,
-        tipo_pago:'',
-        igv:18
-      }),
-
-      form_p : reactive({
-        rs: '',
-        cli_id:'',
-        cli_nom:'',
-        tipo_doc:'',
-        serie_doc:'',
-        nro_doc:'',
-        tipo_cobro:'',
-        fecha_cobro:'',
-        nro_referencia:'',
-        monto:"",
-        moneda:'',
       }),
 
     }
@@ -143,14 +94,18 @@ export default {
     search_rs_ch() {
       this.emp_cont=this.form_b.rs;
       this.form_b.tipo_gui="";
+      this.form_b.estado_gui="";
 
       //cargar listas
       this.get_tipos_doc();
+      this.get_estados_doc();
 
     },
     search_rs_clear() {
       this.form_b.tipo_gui="";
+      this.form_b.estado_gui="";
       this.opt_td = [];
+      this.opt_ed=[];
     },
 
     clear_c() {
@@ -425,6 +380,15 @@ export default {
       })
     },
 
+    get_estados_doc() {
+      axios
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprasestados/'+String(this.emp_cont))
+      .then((resp) => {
+        console.log(resp);
+        this.opt_ed = resp.data;
+      })
+    },
+
     load_data_edit() {
       this.form_e.rs=this.data_edit[0].emp_id;
       this.emp_cont=this.form_e.rs;
@@ -497,13 +461,13 @@ export default {
 
       console.log(aa+mm+dd);
       axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventacab', {
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescompras', {
         "emp_id": "",
-        "cvt_codigo":"",
-        "cvc_serienumero":"",
-        "cve_codigo":"",
-        "cvc_fechaemisioninicio": fech,
-        "cvc_fechaemisionfin": fech
+        "cct_codigo":"",
+        "ccc_serienumero":"",
+        "cce_codigo":"",
+        "ccc_fechaemisioninicio": null,
+        "ccc_fechaemisionfin": null
       })
       .then((resp) => {
         this.datap = resp.data;
@@ -512,19 +476,16 @@ export default {
     },
 
     api_get_filt(){
-      console.log(this.form_b.rs);
       axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventacab', 
-      {
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescompras', {
         "emp_id": Number(this.form_b.rs),
-        "cvt_codigo":this.form_b.tipo_gui,
-        "cvc_serienumero":"",
-        "cve_codigo":this.form_b.codigo,
-        "cvc_fechaemisioninicio": this.form_b.fech_inicio,
-        "cvc_fechaemisionfin": this.form_b.fech_fin
+        "cct_codigo":this.form_b.tipo_gui,
+        "ccc_serienumero":this.form_b.codigo,
+        "cce_codigo":this.form_b.estado_gui,
+        "ccc_fechaemisioninicio": this.form_b.fech_inicio,
+        "ccc_fechaemisionfin": this.form_b.fech_fin
       })
       .then((resp) => {
-        console.log(resp);
         this.datap = resp.data;
         console.log(this.datap);
       })
@@ -763,12 +724,23 @@ export default {
       </el-form-item>
 
       <el-form-item label="Tipo de guia">
-        <el-select v-model="form_b.tipo_gui" placeholder="Seleccionar" clearable>
+        <el-select v-model="form_b.tipo_gui" placeholder="Seleccionar" :disabled=rs_disable clearable>
           <el-option
             v-for="item in opt_td"
             :key="item.cct_codigo"
             :label="item.cct_descripcion"
             :value="item.cct_codigo"
+          > </el-option>
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="Estado">
+        <el-select v-model="form_b.estado_gui" placeholder="Seleccionar" :disabled=rs_disable clearable>
+          <el-option
+            v-for="item in opt_ed"
+            :key="item.cce_codigo"
+            :label="item.cce_descripcion"
+            :value="item.cce_codigo"
           > </el-option>
         </el-select>
       </el-form-item>
@@ -810,9 +782,6 @@ export default {
         <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
       </el-row>
       <el-row class="mb-4">
-        <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
-      </el-row>
-      <el-row class="mb-4">
         <el-button color="#95d475" :icon=" Download" @click="get_descarga" disabled>A Excel</el-button>
       </el-row>
       </div>
@@ -824,480 +793,17 @@ export default {
   <div class="table-container">
     <el-table :data="datap" border header-row-style="color:black;"  max-height="75vh">
       <el-table-column prop="emp_razonsocial" label="Razon soc. aso." width="140" align="center" />
-      <el-table-column prop="cvt_descripcion" label="Tipo de doc."  width="120" align="center" />
-      <el-table-column prop="cvc_serienumero" label="Serie-numero" width="140" sortable/>  
-      <el-table-column prop="cvc_fechaemision" label="Fecha emision" width="130" align="center"/>  
-      <el-table-column prop="ent_nombre" label="Nombre cliente" width="160"/>
-      <el-table-column prop="cvc_subtotal" label="Subtotal" />
-      <el-table-column prop="cvc_impuesto" label="Impuesto" />
-      <el-table-column prop="cvc_total" label="Total" /> 
-      <el-table-column prop="cvc_comprobantereferencia" label="Referencia" />
-      <el-table-column fixed="right" label="" width="45" align="center">
-        <template #default="scope">
-          <el-button  type="text"  @click="button_handle_pago(scope.row.cvc_id)" size="small"><el-icon :size="17"><CreditCard /></el-icon></el-button>
-        </template>
-      </el-table-column>
-      <el-table-column fixed="right" label="" width="45" align="center">
-        <template #default="scope">
-          <el-button  type="text"  @click="button_handle(scope.row.cvc_id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
-        </template>
-      </el-table-column>
+      <el-table-column prop="ent_nombre" label="Proveedor"  width="200"  />
+      <el-table-column prop="ccc_serienumero" label="Serie-Numero" />
+      <el-table-column prop="cct_descripcion" label="Tipo de doc." width="120" align="center"/>  
+      <el-table-column prop="ccc_fechaemision" label="Fecha emision" width="130" align="center"/>  
+      <el-table-column prop="cce_descripcion" label="Estado" width="140" align="center"/>
+      <el-table-column prop="ccc_subtotal" label="Subtotal" />
+      <el-table-column prop="ccc_impuesto" label="Impuesto" />
+      <el-table-column prop="ccc_total" label="Total" /> 
+      
     </el-table>
   </div>
-
-
-<modal ref="mo_create" no-close-on-backdrop title="Agregar Comprobante" width="900px" @ok="create_usr" @cancel="closecrear" cancel-title="Atras" centered>
-  <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="200px" >
-    <el-form-item  label="Razón social asociada">
-      <el-select v-model="form_c.rs" @change="rs_changer" @clear="clear_c" placeholder="Seleccionar" style="width:600px" clearable>
-        <el-option
-            v-for="item in opt_rs"
-            :key="item.emp_id"
-            :label="item.emp_razonsocial"
-            :value="item.emp_id"
-        > </el-option>
-      </el-select>
-    </el-form-item>
-
-  <el-form-item  label="Cliente">
-    <el-row style="width:600px"> 
-    <el-col :span="8">
-    <el-select
-      v-model="form_c.prv_id"
-      filterable
-      :remote-method="get_clientes"
-      @change="select_clientes"
-      @clear="clear_clientes"
-      placeholder="Inserte ID de cliente"
-      remote
-      clearable
-    >
-      <template #prefix>
-        <el-icon><Search /></el-icon>
-      </template>
-
-      <el-option
-      v-for="item in opt_cli"
-      :key="item.ent_id"
-      :label="item.ent_nrodocumento"
-      :value="item.ent_id"
-      />
-    </el-select>
-    </el-col>
-    <el-col :span="16"><el-input disabled v-model="form_c.prv_nom" placeholder="Nombre de cliente" /></el-col>
-    </el-row>
-  </el-form-item>
-
-  
-  <el-form-item label="Fecha de viaje">
-      <el-row style="width:600px">
-      <el-col :span="12">
-      <el-date-picker
-          type="date"
-          v-model="form_c.fecha_via"
-          format="YYYY-MM-DD"
-          value-format="YYYY-MM-DD"
-          placeholder="Seleccione fecha"
-          style="width: 300px"
-          @change="fech_changer"
-      />
-      </el-col>
-      
-      <el-col :span="12">
-      <el-select v-model="form_c.via_id" placeholder="Seleccione una opcion" style="width:300px" clearable>
-          <el-option
-          v-for="item in opt_via"
-          :key="item.via_id"
-          :label="item.via_descripcion"
-          :value="item.via_id"
-          > </el-option>
-      </el-select> 
-      </el-col>
-      </el-row>
-  </el-form-item>
-
-  <el-row style="width:800px; margin-bottom: 18px"> 
-    <el-col :span="6">
-    <el-select v-model="form_c.tipo_doc" style="width:150px; margin-left:50px" placeholder="Tipo de doc."  clearable>
-    <el-option
-      v-for="item in opt_td"
-      :key="item.cct_codigo"
-      :label="item.cct_descripcion"
-      :value="item.cct_codigo"
-    > </el-option>
-    </el-select>
-    </el-col>
-
-    <el-col :span="18">     
-      <el-row > 
-      <el-col :span="12" >
-        <el-input v-model="form_c.serie_doc" placeholder="nro de serie" />
-      </el-col>
-      <el-col :span="12">
-        <el-input v-model="form_c.nro_doc" placeholder="nro de documento" />
-      </el-col>
-      </el-row>
-    </el-col>
-
-  </el-row>
-
-  <el-form-item  label="Fecha de emisión">
-      <el-date-picker
-      type="date"
-      v-model="form_c.fecha_em"
-      format="YYYY-MM-DD"
-      value-format="YYYY-MM-DD"
-      placeholder="Seleccione fecha"
-      style="width: 300px"
-      />
-  </el-form-item>
-
-  <el-form-item style="margin-left: auto;margin-right: auto" label="Valor venta">
-      <div style="width:300px">
-      <el-input v-model="form_c.subtotal" placeholder="Inserte una cantidad">
-          <template #append>
-          <el-button @click="calcular1()" ><img style="fill:#797979" width="15" height="15" src = "../../components/calculadora.svg"/> </el-button>
-          </template>
-          <template #prepend>S/</template>
-      </el-input>
-      </div>
-  </el-form-item>
-
-  <el-form-item style="margin-left: auto;margin-right: auto" label="Impuesto">
-      <div style="width:240px">
-      <el-input v-model="form_c.impuesto" placeholder="Inserte una cantidad">
-          <template #prepend>S/</template>
-      </el-input>
-      </div>
-      <el-input style="width:60px" v-model="form_c.igv">
-      <template #suffix>%</template>
-      </el-input>
-  </el-form-item>
-
-  <el-form-item style="margin-left: auto;margin-right: auto" label="Total">
-      <div style="width:300px">
-      <el-input v-model="form_c.total" placeholder="Inserte una cantidad">
-          <template #append>
-          <el-button  @click="calcular2()"><img style="fill:#797979" width="15" height="15" src = "../../components/calculadora.svg"/> </el-button>
-          </template>
-          <template #prepend>S/</template>
-      </el-input>
-      </div>
-  </el-form-item>
-
-  <el-form-item style="margin-left: auto;margin-right: auto" label="Tipo de cobro">
-      <el-select v-model="form_c.tipo_pago" placeholder="Seleccione una opcion" style="width:300px" clearable>
-      <el-option
-          v-for="item in opt_fp"
-          :key="item.fdc_codigo"
-          :label="item.fdc_descripcion"
-          :value="item.fdc_codigo"
-      > </el-option>
-      </el-select>
-  </el-form-item>
-  </el-form>
-</modal>
-
-
-
-<modal ref="mo_editar_per" no-close-on-backdrop title="Editar datos de Comprobante" width="900px" @ok="editar_usr" cancel-title="Cancelar" @cancel="closeedit"  centered>
-  <el-form v-loading="wait" ref="form_cref" :rules="rules" :model="form" label-width="200px" >
-
-    <el-form-item  label="Razón social asociada">
-      <el-select v-model="form_e.rs" @change="rs_changer" @clear="clear_c" placeholder="Seleccionar" style="width:600px" clearable>
-        <el-option
-            v-for="item in opt_rs"
-            :key="item.emp_id"
-            :label="item.emp_razonsocial"
-            :value="item.emp_id"
-        > </el-option>
-      </el-select>
-    </el-form-item>
-
-    <el-form-item  label="Cliente">
-      <el-row style="width:600px"> 
-      <el-col :span="8">
-      <el-select
-        v-model="form_e.prv_id"
-        filterable
-        :remote-method="get_clientes"
-        @change="select_clientes"
-        @clear="clear_clientes"
-        placeholder="Inserte ID de cliente"
-        remote
-        clearable
-      >
-        <template #prefix>
-          <el-icon><Search /></el-icon>
-        </template>
-
-        <el-option
-        v-for="item in opt_cli"
-        :key="item.ent_id"
-        :label="item.ent_nrodocumento"
-        :value="item.ent_id"
-        />
-      </el-select>
-      </el-col>
-      <el-col :span="16"><el-input disabled v-model="form_e.prv_nom" placeholder="Nombre de cliente" /></el-col>
-      </el-row>
-    </el-form-item>
-
-    <el-row style="width:800px; margin-bottom: 18px"> 
-      <el-col :span="6">
-      <el-select v-model="form_e.tipo_doc" style="width:150px; margin-left:50px" placeholder="Tipo de doc."  clearable>
-      <el-option
-        v-for="item in opt_td"
-        :key="item.cct_codigo"
-        :label="item.cct_descripcion"
-        :value="item.cct_codigo"
-      > </el-option>
-      </el-select>
-      </el-col>
-
-      <el-col :span="18">     
-        <el-row > 
-        <el-col :span="12" >
-          <el-input v-model="form_e.serie_doc" placeholder="nro de serie" />
-        </el-col>
-        <el-col :span="12">
-          <el-input v-model="form_e.nro_doc" placeholder="nro de documento" />
-        </el-col>
-        </el-row>
-      </el-col>
-
-    </el-row>
-
-    <el-form-item  label="Fecha de emisión">
-        <el-date-picker
-        type="date"
-        v-model="form_e.fecha_em"
-        format="YYYY-MM-DD"
-        value-format="YYYY-MM-DD"
-        placeholder="Seleccione fecha"
-        style="width: 300px"
-        />
-    </el-form-item>
-
-    <el-form-item label="Fecha de viaje">
-        <el-row style="width:600px">
-        <el-col :span="12">
-        <el-date-picker
-            type="date"
-            v-model="form_e.fecha_via"
-            format="YYYY-MM-DD"
-            value-format="YYYY-MM-DD"
-            placeholder="Seleccione fecha"
-            style="width: 300px"
-            @change="fech_changer2"
-        />
-        </el-col>
-        
-        <el-col :span="12">
-        <el-select v-model="form_e.via_id" placeholder="Seleccione una opcion" style="width:300px" clearable>
-            <el-option
-            v-for="item in opt_via"
-            :key="item.via_id"
-            :label="item.via_descripcion"
-            :value="item.via_id"
-            > </el-option>
-        </el-select> 
-        </el-col>
-        </el-row>
-    </el-form-item>
-
-    <el-form-item style="margin-left: auto;margin-right: auto" label="Valor venta">
-        <div style="width:300px">
-        <el-input v-model="form_e.subtotal" placeholder="Inserte una cantidad">
-            <template #append>
-            <el-button @click="calcular1()" ><img style="fill:#797979" width="15" height="15" src = "../../components/calculadora.svg"/> </el-button>
-            </template>
-            <template #prepend>S/</template>
-        </el-input>
-        </div>
-    </el-form-item>
-
-    <el-form-item style="margin-left: auto;margin-right: auto" label="Impuesto">
-        <div style="width:240px">
-        <el-input v-model="form_e.impuesto" placeholder="Inserte una cantidad">
-            <template #prepend>S/</template>
-        </el-input>
-        </div>
-        <el-input style="width:60px" v-model="form_e.igv">
-        <template #suffix>%</template>
-        </el-input>
-    </el-form-item>
-
-    <el-form-item style="margin-left: auto;margin-right: auto" label="Total">
-        <div style="width:300px">
-        <el-input v-model="form_e.total" placeholder="Inserte una cantidad">
-            <template #append>
-            <el-button  @click="calcular2()"><img style="fill:#797979" width="15" height="15" src = "../../components/calculadora.svg"/> </el-button>
-            </template>
-            <template #prepend>S/</template>
-        </el-input>
-        </div>
-    </el-form-item>
-
-    <el-form-item style="margin-left: auto;margin-right: auto" label="Tipo de pago">
-        <el-select v-model="form_e.tipo_pago" placeholder="Seleccione una opcion" style="width:300px" clearable>
-        <el-option
-          v-for="item in opt_fp"
-          :key="item.fdc_codigo"
-          :label="item.fdc_descripcion"
-          :value="item.fdc_codigo"
-        > </el-option>
-        </el-select>
-    </el-form-item>
-
-    <el-row style="text-align=center" >
-      <el-button style="margin-left: auto;margin-right: auto" color="#E21747" :icon="CloseBold" @click="open_confirmar('Realmente desea eliminar este comprobante?')">Eliminar</el-button>
-    </el-row>
-
-  </el-form>
-</modal>
-
-<modal ref="mo_create_pago" no-close-on-backdrop title="Agregar Cobranza" width="900px" @ok="create_cobranza"  cancel-title="Atras" centered>
-  <el-form v-loading="wait2" ref="form_cref" :rules="rules" :model="form_c" label-width="200px" >
-
-  <el-form-item  label="Razón social asociada">
-    <el-select v-model="form_p.rs" @change="rs_changer" @clear="rs_changer" placeholder="Seleccionar" style="width:600px" disabled>
-      <el-option
-        v-for="item in opt_rs"
-        :key="item.emp_id"
-        :label="item.emp_razonsocial"
-        :value="item.emp_id"
-      > </el-option>
-    </el-select>
-  </el-form-item>
-
-  <el-form-item  label="Cliente">
-    <el-row style="width:600px"> 
-    <el-col :span="8">
-    <el-select
-      v-model="form_p.cli_id"
-      filterable
-      :remote-method="get_clientes"
-      @change="select_clientes3"
-      @clear="clear_clientes"
-      placeholder="Inserte ID de cliente"
-      remote
-      disabled
-    >
-      <template #prefix>
-        <el-icon><Search /></el-icon>
-      </template>
-
-      <el-option
-      v-for="item in opt_cli"
-      :key="item.ent_id"
-      :label="item.ent_nrodocumento"
-      :value="item.ent_id"
-      disabled
-      />
-    </el-select>
-    </el-col>
-      <el-col :span="16">
-        <el-input disabled v-model="form_p.cli_nom" placeholder="Nombre de cliente" />
-      </el-col>
-    </el-row>
-  </el-form-item>
-
-  <el-row style="width:800px; margin-bottom: 18px"> 
-    <el-col :span="6">
-      <el-select v-model="form_p.tipo_doc" style="width:150px; margin-left:50px" placeholder="Tipo de doc."  disabled>
-        <el-option
-          v-for="item in opt_td"
-          :key="item.cct_codigo"
-          :label="item.cct_descripcion"
-          :value="item.cct_codigo"
-        > </el-option>
-      </el-select>
-    </el-col>
-
-    <el-col :span="18">     
-      <el-row > 
-        <el-col :span="12" >
-          <el-input v-model="form_p.serie_doc" placeholder="nro de serie" disabled/>
-        </el-col>
-        <el-col :span="12">
-          <el-input v-model="form_p.nro_doc" placeholder="nro de documento" disabled/>
-        </el-col>
-      </el-row>
-    </el-col>
-
-  </el-row>
-
-  <el-form-item style="margin-left: auto;margin-right: auto" label="Tipo de cobro">
-    <el-select v-model="form_p.tipo_cobro" placeholder="Seleccione una opcion" style="width:300px" clearable>
-      <el-option
-          v-for="item in opt_fp"
-          :key="item.fdc_codigo"
-          :label="item.fdc_descripcion"
-          :value="item.fdc_codigo"
-      > </el-option>
-    </el-select>
-  </el-form-item>
-
-  <el-form-item  label="Fecha de cobro">
-    <el-date-picker
-    type="date"
-    v-model="form_p.fecha_cobro"
-    format="YYYY-MM-DD"
-    value-format="YYYY-MM-DD"
-    placeholder="Seleccione fecha"
-    style="width: 300px"
-    />
-  </el-form-item>
-
-  <el-form-item style="margin-left: auto;margin-right: auto" label="Nro. de referencia">
-    <div style="width:300px">
-      <el-input v-model="form_p.nro_referencia" placeholder="Inserte nro. de referencia"/>
-    </div>
-  </el-form-item>
-
-  <el-form-item  label="Monto">
-    <el-row style="width:600px">
-      <el-col :span="12">
-        <el-input v-model="form_p.monto" placeholder="Cantidad" /> 
-      </el-col>
-      <el-col :span="6"> 
-        <el-select v-model="form_p.moneda" placeholder="Moneda" style="width:150px" clearable>
-          <el-option label="Soles (S/)" value="SOL" />
-          <el-option label="Dólares Americanos ($)" value="DOL" />
-        </el-select> 
-      </el-col>
-    </el-row>
-  </el-form-item>
-  
-  </el-form>
-</modal>
-
-
-<modal ref="mo_advertencia_eliim" title="Confirmar" centered @ok="send_delete" @cancel="close_confirmar" ok-title="Si" cancel-title="Cancelar" >
-  {{alert_mo}}
-</modal>
-
-<modal ref="mo_realizado" success title="Operacion completada" centered @ok="close_succes_all" @cancel="close_succes" ok-title="Cerrar" cancel-title="Atras" >
-  {{alert_mo}}
-</modal>
-
-<modal ref="mo_realizado_ed" hide-cancel success title="Operacion completada" centered @ok="close_succes_ed" cancel-title="Atras" >
-  {{alert_mo}}
-</modal>
-
-<modal ref="mo_error"  hide-cancel error title="Error al ejecutar operación" centered @ok="close_fail">
-  {{alert_mo}}
-  <br/> {{alert_cause}}
-</modal>
-
-<modal ref="mo_sunat" no-close-on-backdrop title="Consultar RUC" width="700px" cancel-title="Cancelar" centered>
- <div> 
-    <object type="text/html" data="https://e-consultaruc.sunat.gob.pe/cl-ti-itmrconsruc/jcrS00Alias?accion=consPorRazonSoc&razSoc=MTS" width="700px" height="400px" style="overflow:auto;">
-    </object>
- </div>
-
-</modal>
 
 </template>
 

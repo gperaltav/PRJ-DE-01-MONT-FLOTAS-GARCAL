@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
-import { Notebook, OfficeBuilding,DocumentChecked,Operation,TrendCharts,Money,Tickets,Expand} from '@element-plus/icons-vue'
+import { Notebook, OfficeBuilding,DocumentChecked,Operation,TrendCharts,Money,Tickets,Expand,Setting} from '@element-plus/icons-vue'
 
 const isCollapse = ref(false)
 const handleOpen = (key: string, keyPath: string[]) => {
@@ -21,6 +21,7 @@ const handleClose = (key: string, keyPath: string[]) => {
     data(){
       return {
         ancho:200,
+        titlebar:'Inicio'
       }
     },
 
@@ -50,6 +51,9 @@ const handleClose = (key: string, keyPath: string[]) => {
           this.ancho=200;
         }
         this.isCollapse=!this.isCollapse;
+      },
+      change_title(tt) {
+        this.titlebar=tt;
       }
     },
     computed: {
@@ -76,11 +80,24 @@ const handleClose = (key: string, keyPath: string[]) => {
       <el-col :span="8" style="text-align=center">
         <div class="sitebar">
         <el-tag style="color:white;" color="#0c59cf">
-          ERP
+          {{titlebar}}
         </el-tag>
       </div>
       </el-col>
-      <el-col :span="8" style="text-align=center">
+      <el-col :span="8" style="text-align=right">
+        <div class="toolbar" style="margin-left:auto">
+          <el-dropdown>
+            <el-icon style="margin-right: 8px; margin-top: 1px; color:white"
+              ><setting
+            /></el-icon>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item>Salir</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+          <h6 style="margin:0">{{this.$store.state.username}}</h6>
+        </div>
       </el-col>
     </el-header>
 
@@ -94,7 +111,7 @@ const handleClose = (key: string, keyPath: string[]) => {
           @open="handleOpen"
           @close="handleClose"
           >
-            <el-menu-item index="/">
+            <el-menu-item @click='change_title("Inicio")' index="/">
               <el-icon><office-building /></el-icon>
               <template #title>Inicio</template>
             </el-menu-item>
@@ -103,20 +120,20 @@ const handleClose = (key: string, keyPath: string[]) => {
                 <el-icon><notebook /></el-icon>
                 <span>Base de datos</span>
               </template>
-              <el-menu-item index="clientes">Clientes</el-menu-item>
-              <el-menu-item index="personal">Personal</el-menu-item>
-              <el-menu-item index="vehiculos">Vehiculos</el-menu-item>
-              <el-menu-item index="proveedores">Proveedores</el-menu-item>
+              <el-menu-item @click='change_title("Base de datos > Clientes")' index="clientes">Clientes</el-menu-item>
+              <el-menu-item @click='change_title("Base de datos > Personal")' index="personal">Personal</el-menu-item>
+              <el-menu-item @click='change_title("Base de datos > Vehiculos")' index="vehiculos">Vehiculos</el-menu-item>
+              <el-menu-item @click='change_title("Base de datos > Proveedores")' index="proveedores">Proveedores</el-menu-item>
             </el-sub-menu>
             <el-sub-menu index="2">
               <template #title>
                 <el-icon><document-checked /></el-icon>
                 <span>Documentos</span>
               </template>
-              <el-menu-item index="doc_vehiculos">Vehiculos</el-menu-item>
-              <el-menu-item index="doc_personal">Personal</el-menu-item>
+              <el-menu-item @click='change_title("Documentos > Vehiculos")' index="doc_vehiculos">Vehiculos</el-menu-item>
+              <el-menu-item @click='change_title("Documentos > Personal")' index="doc_personal">Personal</el-menu-item>
             </el-sub-menu>
-            <el-menu-item index="planificacion">
+            <el-menu-item @click='change_title("Planificación")' index="planificacion">
               <el-icon><trend-charts /></el-icon>
               <template #title>Planifiación</template>
             </el-menu-item>
@@ -125,22 +142,22 @@ const handleClose = (key: string, keyPath: string[]) => {
                 <el-icon><operation /></el-icon>
                 <span>Operaciones</span>
               </template>
-              <el-menu-item index="operaciones_combustible">Combustible</el-menu-item>
-              <el-menu-item index="operaciones_viaticos">Viáticos</el-menu-item>
-              <el-menu-item index="operaciones_rendicion_cuentas">Rendicion de cuentas</el-menu-item>
-              <el-menu-item index="operaciones_compras">Compras</el-menu-item>
-              <el-menu-item index="operaciones_compras_vista">Vista de compras</el-menu-item>
-              <el-menu-item index="operaciones_personal">Personal</el-menu-item>
-              <el-menu-item index="operaciones_pago">Pago</el-menu-item>
+              <el-menu-item @click='change_title("Operaciones > Combustible")' index="operaciones_combustible">Combustible</el-menu-item>
+              <el-menu-item @click='change_title("Operaciones > Viáticos")' index="operaciones_viaticos">Viáticos</el-menu-item>
+              <el-menu-item @click='change_title("Operaciones > Rendición de cuentas")' index="operaciones_rendicion_cuentas">Rendicion de cuentas</el-menu-item>
+              <el-menu-item @click='change_title("Operaciones > Compras")' index="operaciones_compras">Compras</el-menu-item>
+              <el-menu-item @click='change_title("Operaciones > Vista de compras")' index="operaciones_compras_vista">Vista de compras</el-menu-item>
+              <el-menu-item @click='change_title("Operaciones > Personal")' index="operaciones_personal">Personal</el-menu-item>
+              <el-menu-item @click='change_title("Operaciones > Pagos")' index="operaciones_pago">Pagos</el-menu-item>
             </el-sub-menu>
             <el-sub-menu index="5">
               <template #title>
                 <el-icon><Tickets /></el-icon>
                 <span>Facturación</span>
               </template>
-              <el-menu-item index="facturacion_guias">Guias</el-menu-item>
-              <el-menu-item index="facturacion_comprobantes">Comprobantes</el-menu-item>
-              <el-menu-item index="facturacion_cobranza">Cobranza</el-menu-item>
+              <el-menu-item @click='change_title("Facturación > Guías")' index="facturacion_guias">Guias</el-menu-item>
+              <el-menu-item @click='change_title("Facturación > Comprobantes")' index="facturacion_comprobantes">Comprobantes</el-menu-item>
+              <el-menu-item @click='change_title("Facturación > Cobranzas")' index="facturacion_cobranza">Cobranzas</el-menu-item>
             </el-sub-menu>
             <el-menu-item index="disposicion_dinero" disabled>
               <el-icon><Money /></el-icon>

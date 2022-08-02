@@ -36,8 +36,8 @@ import axios from 'axios'
         axios
         .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/usuarios/comprobar', 
           { 
-            "usu_codigo":this.input.username,
-            "usu_clave": this.input.password
+            "usu_codigo": String(this.input.username),
+            "usu_clave": String(this.input.password)
           })
           .then((resp) => {
             console.log(resp);  
@@ -45,6 +45,9 @@ import axios from 'axios'
             if(logg) {
               console.log("Logeado");
               this.$store.dispatch('authenticate');
+              this.$store.commit('set_user', {
+                username: resp.data[0].usu_codigo
+              });
             }
             else {
               console.log("No Logeado");
@@ -77,10 +80,10 @@ import axios from 'axios'
           <div class="logsection">
           <p> Iniciar sesión </p>
           <div class="form">
-            <form class="login-form">
+            <form @submit.prevent class="login-form">
               <input type="text" v-model="input.username" placeholder="Nombre de usuario"/>
               <input type="password" v-model="input.password" placeholder="Contraseña"/>
-              <button v-on:click="login()">Entrar</button>
+              <button v-on:click="login_api()">Entrar</button>
             </form>
           </div>
           </div>

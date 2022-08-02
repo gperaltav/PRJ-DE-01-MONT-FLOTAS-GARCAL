@@ -579,8 +579,8 @@ export default {
   <div class="table-container">
     <el-table :cell-class-name="cellStyle2" :data="datap" border header-row-style="color:black;" height="100%"  >
       <el-table-column fixed align="center" prop="emp_razonsocial" label="Razon soc. aso. " width="140" />
-      <el-table-column fixed prop="tri_nombre" label="Nombre " width="140" />
-      <el-table-column prop="tri_nrolicencia" label="Licencia "  />
+      <el-table-column fixed prop="tri_nombre" label="Nombre "  />
+      <el-table-column prop="tri_nrolicencia" label="Licencia " width="120" />
       
       <el-table-column label="Licencia A3" width="150">
         <template #default="scope">

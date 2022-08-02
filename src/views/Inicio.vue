@@ -47,7 +47,10 @@ export default {
       }),
       form_b : reactive({
         nombre: '',
+        codigo: '',
         nro_doc:'',
+        telefono:'',
+        direccion:''
       }),
       form_edit : reactive({
         nombre: '',
@@ -278,6 +281,21 @@ export default {
           console.log(resp);
           this.users = resp.data;
         })
+    },
+    api_get_filt (){
+      //llamada a API
+      axios
+        .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/usuarios',{
+          usu_codigo:this.form_b.codigo,
+          usu_nombres:this.form_b.nombre,
+          usu_nrodocumento:this.form_b.nro_doc,
+          usu_telefono:this.form_b.telefono,
+          usu_direccion:this.form_b.direccion,
+        })
+        .then((resp) => {
+          console.log(resp);
+          this.users = resp.data;
+        })
     }
     
   },
@@ -299,6 +317,12 @@ export default {
         </el-form-item>
         <el-form-item label="Nro. de documento">
           <el-input v-model="form_b.nro_doc" />
+        </el-form-item>
+        <el-form-item label="Nro. de telefono">
+          <el-input v-model="form_b.telefono" />
+        </el-form-item>
+        <el-form-item label="Codigo">
+          <el-input v-model="form_b.codigo" />
         </el-form-item>
       </el-col>
 

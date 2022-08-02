@@ -759,8 +759,8 @@ export default {
 
     <div >
       <el-container style="border-style: solid; border-color:grey">
-        <el-header style="background-color:grey; height:40px">
-          Detalle
+        <el-header style="background-color:grey; height:40px; color:white">
+          Detalle:
         </el-header>
         <el-main>
           <div class="table-container">

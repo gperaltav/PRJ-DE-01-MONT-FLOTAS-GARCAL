@@ -8,7 +8,8 @@ const store = createStore({
         Account: {
           username: "admin",
           password: "123",
-        }
+        },
+        username: '',
       }
     },
     mutations: {
@@ -17,6 +18,9 @@ const store = createStore({
       },
       deauthenticate(state) {
         state.authenticated=false;
+      },
+      set_user (state, payload) {
+        state.username = payload.username;
       }
     },
     actions: {
@@ -25,4 +29,5 @@ const store = createStore({
       }
     }
   })
+
 export default store

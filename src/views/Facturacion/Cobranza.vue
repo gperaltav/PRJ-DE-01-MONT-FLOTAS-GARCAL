@@ -622,7 +622,6 @@ export default {
       this.wait = true;
       this.load_edit(number);
       
-      
       setTimeout(() => {
         this.load_data_edit();
         this.emp_cont=this.form_e.rs;
@@ -725,7 +724,7 @@ export default {
     </el-col>
     </el-row>
 
-    </el-form>
+  </el-form>
 
   <div class="table-container">
     <el-table :data="datap" border header-row-style="color:black;" >
