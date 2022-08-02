@@ -1,4 +1,8 @@
-<script>
+<script  setup>
+import axios from 'axios'
+</script>
+
+<script >
   export default {
     name: 'Login',
 
@@ -19,17 +23,39 @@
             this.$store.dispatch('authenticate');
           }
           else {
-          alert ("Contraseña incorrecta, intente nuevamente");  
-          console.log("Usuario o contraseña incorrectos");
+            alert ("Contraseña incorrecta, intente nuevamente");  
+            console.log("Usuario o contraseña incorrectos");
           }
         } else {
           alert ("Campos vacios");  
           console.log("Se debe ingresar una contraseña");
         }
       },
-      renderize () {
-        
-      }
+      login_api() {
+        console.log("WAt")
+        axios
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/usuarios/comprobar', 
+          { 
+            "usu_codigo":this.input.username,
+            "usu_clave": this.input.password
+          })
+          .then((resp) => {
+            console.log(resp);  
+            var logg=resp.data[0].usu_existe;
+            if(logg) {
+              console.log("Logeado");
+              this.$store.dispatch('authenticate');
+            }
+            else {
+              console.log("No Logeado");
+              console.log("Usuario o contraseña incorrectos");
+            }
+          })
+          .catch((e)=> {
+            console.log(e);
+            console.log("Error interno al in8iciar sesión");
+          })
+      },
     }
   }
   

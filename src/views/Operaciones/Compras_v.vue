@@ -5,60 +5,6 @@ import { EditPen, Filter, Plus, Download, CloseBold,Search,CreditCard} from '@el
 
 import type { FormInstance, FormRules } from 'element-plus'
 
-const checknombre = (rule: any, value: any, callback: any) => {
-  if (!value) {
-    return callback(new Error('Por favor inserte un nombre'))
-  }
-  setTimeout(() => {
-    if (!/^[a-zA-Z\u00C0-\u00D6\u00D9-\u00F6\u00F9-\u00FF ]+$/.test(value)) {
-      callback(new Error('Sólo se permiten letras y espacios'));
-    }
-    else {
-      callback()
-    }
-  }, 500)
-}
-const checknumeros = (rule: any, value: any, callback: any) => {
-  if (!value) {
-    return callback();
-  }
-  setTimeout(() => {
-    if (!/^[0-9\u0000]+$/.test(value)) {
-      callback(new Error('Sólo se permiten letras y espacios'));
-    }
-    else {
-      callback()
-    }
-  }, 500)
-}
-
-const form_cref = ref<FormInstance>();
-
-const rules = reactive({
-  rs:[{ 
-      type: 'number',
-      required: true,
-      message: 'Por favor seleccione una opción',
-      trigger: 'change',
-    },
-  ],
-  nro_doc: [{ 
-      required: true,
-      message: 'Por favor inserte un nro de documento',
-      trigger: 'blur',
-    },
-  ],
-
-  nombre: [
-    {required: true, validator: checknombre, trigger: 'blur' },
-  ],
-  
-  telefono: [
-    {required: true, message: 'Inserte un numero de telefono'},
-    {validator: checknumeros, trigger: 'blur' },
-  ],
-})
-
 </script>
 
 <script lang="ts">

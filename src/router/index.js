@@ -86,6 +86,12 @@ const router = createRouter({
       
     },
     {
+      path: '/operaciones_compras_vista',
+      name: 'Vista de compras',
+      component: () => import('../views/Operaciones/Compras_v.vue'),
+      
+    },
+    {
       path: '/facturacion_guias',
       name: 'Guias',
       component: () => import('../views/Facturacion/Guias.vue'),

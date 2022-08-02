@@ -25,14 +25,14 @@ const handleClose = (key: string, keyPath: string[]) => {
     },
 
     components: {
-        Login,
+      Login,
     },
     mounted() {
-        console.log(this.$store.state.authenticated);
-        if(this.isMobile()) {
-          this.ancho=64;
-          this.isCollapse=true;
-        }
+      console.log(this.$store.state.authenticated);
+      if(this.isMobile()) {
+        this.ancho=64;
+        this.isCollapse=true;
+      }
     },
     methods: {
       isMobile() {
@@ -129,6 +129,7 @@ const handleClose = (key: string, keyPath: string[]) => {
               <el-menu-item index="operaciones_viaticos">Viáticos</el-menu-item>
               <el-menu-item index="operaciones_rendicion_cuentas">Rendicion de cuentas</el-menu-item>
               <el-menu-item index="operaciones_compras">Compras</el-menu-item>
+              <el-menu-item index="operaciones_compras_vista">Vista de compras</el-menu-item>
               <el-menu-item index="operaciones_personal">Personal</el-menu-item>
               <el-menu-item index="operaciones_pago">Pago</el-menu-item>
             </el-sub-menu>
