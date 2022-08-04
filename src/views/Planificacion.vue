@@ -888,7 +888,7 @@ export default {
         "vfl_codigo":this.form_c.flete,
         "tri_id":this.form_c.oper_id,
         "pro_id":Number(this.form_c.producto_tipo),
-        "via_usucreacion":"admin",
+        "via_usucreacion":this.$store.state.username,
         "via_cantidad":Number(this.form_c.cantidad_flete)
       })
       .then((resp) => {

@@ -32,7 +32,6 @@ import axios from 'axios'
         }
       },
       login_api() {
-        console.log("WAt")
         axios
         .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/usuarios/comprobar', 
           { 

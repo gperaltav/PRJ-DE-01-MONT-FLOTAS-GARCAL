@@ -389,32 +389,6 @@ export default {
       })
     },
 
-    load_data_edit() {
-      this.form_e.rs=this.data_edit[0].emp_id;
-      this.emp_cont=this.form_e.rs;
-      //carga de listas
-      this.get_formas_pago();
-      this.get_tipos_doc();
-
-      this.form_e.prv_id=this.data_edit[0].ent_id;
-      this.get_clientes("");
-      this.select_clientes2(this.form_e.prv_id);
-
-      this.form_e.tipo_doc=this.data_edit[0].cvt_codigo;
-      this.form_e.serie_doc=this.data_edit[0].cvc_serie;
-      this.form_e.nro_doc=this.data_edit[0].cvc_numero;
-      this.form_e.fecha_em=this.data_edit[0].cvc_fechaemision;
-      this.form_e.via_id=this.data_edit[0].via_id;
-      this.form_e.subtotal=this.data_edit[0].cvc_subtotal;
-      this.form_e.impuesto=this.data_edit[0].cvc_impuesto;
-      this.form_e.total=this.data_edit[0].cvc_total;
-
-      this.form_e.fecha_via=this.data_edit[0].cvc_observaciones;
-      this.get_viajes2();
-
-      this.form_e.tipo_pago=this.data_edit[0].cvc_observacionesopcional;
-    },
-
     load_data_pago() {
       this.form_p.rs=this.data_edit[0].emp_id;
       this.emp_cont=this.form_p.rs;

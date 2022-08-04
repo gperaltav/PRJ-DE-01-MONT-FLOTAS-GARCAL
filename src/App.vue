@@ -84,8 +84,8 @@ const handleClose = (key: string, keyPath: string[]) => {
         </el-tag>
       </div>
       </el-col>
-      <el-col :span="8" style="text-align=right">
-        <div class="toolbar" style="margin-left:auto">
+      <el-col :span="8" style="text-align:right">
+        <div class="userarea">
           <el-dropdown>
             <el-icon style="margin-right: 8px; margin-top: 1px; color:white"
               ><setting
@@ -212,6 +212,17 @@ const handleClose = (key: string, keyPath: string[]) => {
   align-items: center;
   justify-content: center;
 }
+
+.layout-container .el-header .userarea{
+  display: inline-flex;
+  justify-content: center;
+  margin-left:auto;
+  margin-right: 40px;
+  margin-bottom: 10px;
+  text-align: right; 
+  font-size: 18px;
+}
+
 .layout-container .el-form {
   padding-top: 15px;
   background-color: white;

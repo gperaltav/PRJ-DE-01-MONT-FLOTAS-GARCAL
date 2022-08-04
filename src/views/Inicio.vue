@@ -174,7 +174,7 @@ export default {
           "usu_nrodocumento": this.form_c.nro_doc,
           "usu_telefono": this.form_c.nro_tel,
           "usu_direccion": this.form_c.direccion,
-          "usu_usucreacion": "admin"
+          "usu_usucreacion": this.$store.state.username
         })
         .then((resp) => {
           console.log(resp.data);
@@ -208,7 +208,7 @@ export default {
           "usu_nrodocumento": this.form_e.nro_doc,
           "usu_telefono": this.form_e.nro_tel,
           "usu_direccion": this.form_e.direccion,
-          "usu_usucreacion": "admin"
+          "usu_usucreacion": this.$store.state.username
         })
         .then((resp) => {
           console.log(resp.data);
