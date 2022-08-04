@@ -62,6 +62,9 @@ const handleClose = (key: string, keyPath: string[]) => {
     computed: {
       state() {
         return this.$store.state.authenticated
+      },
+      username() {
+        return this.$store.state.username
       }
     },      
   }
@@ -99,7 +102,7 @@ const handleClose = (key: string, keyPath: string[]) => {
               </el-dropdown-menu>
             </template>
           </el-dropdown>
-          <h6 style="margin:0">{{this.$store.state.username}}</h6>
+          <h6 style="margin:0">{{username}}</h6>
         </div>
       </el-col>
     </el-header>
