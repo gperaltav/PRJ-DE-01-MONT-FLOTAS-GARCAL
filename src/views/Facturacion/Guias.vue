@@ -662,6 +662,7 @@ export default {
 
 <template>
   
+<div class="main-container">
   <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
     <el-row>
     <el-col :span="21">
@@ -747,6 +748,7 @@ export default {
       </el-table-column>
     </el-table>
   </div>
+</div>
 
 
 <modal ref="mo_create_per" no-close-on-backdrop title="Agregar Guia" width="900px" @ok="crear_guia" @cancel="closecrear" cancel-title="Atras" centered>

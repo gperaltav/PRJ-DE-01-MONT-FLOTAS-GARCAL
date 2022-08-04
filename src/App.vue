@@ -54,6 +54,9 @@ const handleClose = (key: string, keyPath: string[]) => {
       },
       change_title(tt) {
         this.titlebar=tt;
+      },
+      log_out() {
+        this.$store.dispatch('deauthenticate');
       }
     },
     computed: {
@@ -92,7 +95,7 @@ const handleClose = (key: string, keyPath: string[]) => {
             /></el-icon>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item>Salir</el-dropdown-item>
+                <el-dropdown-item @click="log_out" >Salir</el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
@@ -144,11 +147,12 @@ const handleClose = (key: string, keyPath: string[]) => {
               </template>
               <el-menu-item @click='change_title("Operaciones > Combustible")' index="operaciones_combustible">Combustible</el-menu-item>
               <el-menu-item @click='change_title("Operaciones > Viáticos")' index="operaciones_viaticos">Viáticos</el-menu-item>
+              <el-menu-item @click='change_title("Operaciones > Personal")' index="operaciones_personal">Personal</el-menu-item>
               <el-menu-item @click='change_title("Operaciones > Rendición de cuentas")' index="operaciones_rendicion_cuentas">Rendicion de cuentas</el-menu-item>
               <el-menu-item @click='change_title("Operaciones > Compras")' index="operaciones_compras">Compras</el-menu-item>
               <el-menu-item @click='change_title("Operaciones > Vista de compras")' index="operaciones_compras_vista">Vista de compras</el-menu-item>
-              <el-menu-item @click='change_title("Operaciones > Personal")' index="operaciones_personal">Personal</el-menu-item>
               <el-menu-item @click='change_title("Operaciones > Pagos")' index="operaciones_pago">Pagos</el-menu-item>
+              <el-menu-item @click='change_title("Operaciones > Vista de pagos")' index="operaciones_pagos_vista">Vista de pagos</el-menu-item>
             </el-sub-menu>
             <el-sub-menu index="5">
               <template #title>

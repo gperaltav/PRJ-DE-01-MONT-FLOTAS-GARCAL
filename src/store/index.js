@@ -25,7 +25,13 @@ const store = createStore({
     },
     actions: {
       authenticate (context) {
-        context.commit('authenticate')
+        context.commit('authenticate');
+      },
+      deauthenticate (context) {
+        context.commit('deauthenticate');
+        context.commit('set_user', {
+          username: ""
+        });
       }
     }
   })

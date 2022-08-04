@@ -452,7 +452,7 @@ export default {
     api_get_filt(){
       axios
       .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescompras', {
-        "emp_id": Number(this.form_b.rs),
+        "emp_id": this.form_b.rs,
         "cct_codigo":this.form_b.tipo_gui,
         "ccc_serienumero":this.form_b.codigo,
         "cce_codigo":this.form_b.estado_gui,
@@ -501,127 +501,6 @@ export default {
       })
     },
     
-    create_usr(){
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventacab/nuevo', 
-      { 
-        "emp_id":Number(this.form_c.rs),
-        "ent_id": Number(this.form_c.prv_id),
-        "cvc_serie": this.form_c.serie_doc,
-        "cvc_numero": this.form_c.nro_doc,
-        "cvc_fechaemision": this.form_c.fecha_em,
-        "cvc_fechavencimiento": null,
-        "cvc_subtotal": this.form_c.subtotal,
-        "cvc_impuesto": this.form_c.impuesto,
-        "cvc_total": this.form_c.total,
-        "cvt_codigo": this.form_c.tipo_doc,
-        "cve_codigo": "EMI",
-        "mon_codigo": "SOL",
-        "cve_tipocambio":18,
-        "cvc_idreferencia": null,
-        "cvc_observaciones":this.form_c.fecha_via,
-        "cvc_observacionesopcional": this.form_c.tipo_pago,
-        "gui_idremitente": "",
-        "gui_idtransportisa": "",
-        "via_id":this.form_c.via_id,
-        "usu_codigo":"admin",
-        "cvc_usucreacion":"admin"
-      })
-      .then((resp) => {
-        console.log(resp.data);
-        this.succes=resp.data.status;
-        if (this.succes) {
-          this.open_succes("Operación realizada satisfactoriamente");
-          return true;
-        }
-        else {
-          this.open_fail("Hubo un error con el servidor al ejecutar la operación");
-          return false;
-        }
-      })
-      return false;
-      
-    },  
-
-    create_cobranza() {
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventascobros/nuevo', 
-      { 
-        "emp_id": Number(this.form_p.rs),
-        "cvc_id": Number(this.editpointer),
-        "fdc_codigo": this.form_p.tipo_cobro,
-        "vec_monto":Number(this.form_p.monto),
-        "vec_nroreferencia":this.form_p.nro_referencia,
-        "vec_fechacancelacion":this.form_p.fecha_cobro,
-        "vec_descripcion":"",
-        "vec_tipocambio":18,
-        "mon_codigo":this.form_p.moneda,
-        "vec_usucreacion":"admin"
-      })
-      .then((resp) => {
-        console.log(resp.data);
-        this.succes=resp.data.status;
-        if (this.succes) {
-          this.open_succes("Operación realizada satisfactoriamente");
-          this.clear_p();
-          this.$refs.mo_create_pago.hide();
-          return true;
-        }
-        else {
-          this.open_fail("Hubo un error con el servidor al ejecutar la operación");
-          return false;
-        }
-      })
-      return false;
-
-    },  
-
-    close_create() {
-      this.$refs.form_create_ref.resetFields();
-      this.$refs.mo_create.hide(); 
-    },
-
-    editar_usr(){
-      //llamada a API
-      axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventacab/actualizar', 
-        { 
-          "cvc_id":Number(this.editpointer),
-          "emp_id":Number(this.form_e.rs),
-          "ent_id": Number(this.form_e.prv_id),
-          "cvc_serie": this.form_e.serie_doc,
-          "cvc_numero": this.form_e.nro_doc,
-          "cvc_fechaemision": this.form_e.fecha_em,
-          "cvc_fechavencimiento": null,
-          "cvc_subtotal": this.form_e.subtotal,
-          "cvc_impuesto": this.form_e.impuesto,
-          "cvc_total": this.form_e.total,
-          "cvt_codigo": this.form_e.tipo_doc,
-          "cve_codigo": "EMI",
-          "mon_codigo": "SOL",
-          "cve_tipocambio":18,
-          "cvc_idreferencia": null,
-          "cvc_observaciones":this.form_e.fecha_via,
-          "cvc_observacionesopcional": this.form_e.tipo_pago,
-          "gui_idremitente": "",
-          "gui_idtransportisa": "",
-          "via_id":this.form_e.via_id,
-          "usu_codigo":"admin",
-          "cvc_usucreacion":"admin"
-        })
-        .then((resp) => {
-          console.log(resp.data.status);
-          this.succes=resp.data.status;
-          if (this.succes) {
-            this.open_succes_ed("Comprobante modificado satisfactoriamente");
-          }
-          else {
-            this.open_fail("Hubo un error al comunicarse con el servidor");
-          }
-          console.log(resp);
-        })
-        return false;
-    },
     roundUp(num, precision) {
       precision = Math.pow(10, precision)
       return Math.ceil(num * precision) / precision
@@ -682,7 +561,8 @@ export default {
 
 
 <template>
-  
+
+<div class="main-container">
   <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
     <el-row>
     <el-col :span="21">
@@ -720,13 +600,13 @@ export default {
       </el-form-item>
 
       <el-form-item label="Codigo">
-        <el-input placeholder="serie-numero" v-model="form_b.nombre" clearable />
+        <el-input placeholder="serie-numero" v-model="form_b.codigo" clearable />
       </el-form-item>
 
       <el-form-item label="Fecha de emisión">
         <el-col :span="11">
           <el-date-picker
-            v-model="form_b.fecha_i"
+            v-model="form_b.fech_inicio"
             format="YYYY-MM-DD"
             value-format="YYYY-MM-DD"
             type="date"
@@ -739,7 +619,7 @@ export default {
         </el-col>
         <el-col :span="11">
           <el-date-picker
-            v-model="form_b.fecha_f"
+            v-model="form_b.fech_fin"
             format="YYYY-MM-DD"
             value-format="YYYY-MM-DD"
             type="date"
@@ -765,7 +645,7 @@ export default {
     </el-form>
 
   <div class="table-container">
-    <el-table :data="datap" border header-row-style="color:black;"  max-height="75vh">
+    <el-table :data="datap" border header-row-style="color:black" height="100%">
       <el-table-column prop="emp_razonsocial" label="Razon soc. aso." width="140" align="center" />
       <el-table-column prop="ent_nombre" label="Proveedor"  width="200"  />
       <el-table-column prop="ccc_serienumero" label="Serie-Numero" />
@@ -775,9 +655,9 @@ export default {
       <el-table-column prop="ccc_subtotal" label="Subtotal" />
       <el-table-column prop="ccc_impuesto" label="Impuesto" />
       <el-table-column prop="ccc_total" label="Total" /> 
-      
     </el-table>
   </div>
+</div>
 
 </template>
 

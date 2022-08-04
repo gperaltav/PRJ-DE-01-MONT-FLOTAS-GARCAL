@@ -802,6 +802,7 @@ export default {
 
 <template>
   
+<div class="main-container">
   <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
     <el-row>
     <el-col :span="21">
@@ -876,7 +877,7 @@ export default {
     </el-form>
 
   <div class="table-container">
-    <el-table :data="datap" border header-row-style="color:black;"  max-height="75vh">
+    <el-table :data="datap" border header-row-style="color:black" height="98%">
       <el-table-column prop="emp_razonsocial" label="Razon soc. aso." width="140" align="center" />
       <el-table-column prop="cvt_descripcion" label="Tipo de doc."  width="120" align="center" />
       <el-table-column prop="cvc_serienumero" label="Serie-numero" width="140" sortable/>  
@@ -898,6 +899,7 @@ export default {
       </el-table-column>
     </el-table>
   </div>
+</div>
 
 
 <modal ref="mo_create" no-close-on-backdrop title="Agregar Comprobante" width="900px" @ok="create_usr" @cancel="closecrear" cancel-title="Atras" centered>

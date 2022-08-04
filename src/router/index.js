@@ -74,6 +74,11 @@ const router = createRouter({
       
     },
     {
+      path: '/operaciones_pagos_vista',
+      name: 'Vista de pagos',
+      component: () => import('../views/Operaciones/Pago_v.vue'),
+    },
+    {
       path: '/operaciones_rendicion_cuentas',
       name: 'Rendición de cuentas ',
       component: () => import('../views/Operaciones/Rendicion_cuentas.vue'),
@@ -83,13 +88,11 @@ const router = createRouter({
       path: '/operaciones_compras',
       name: 'Agregar compra',
       component: () => import('../views/Operaciones/Compras.vue'),
-      
     },
     {
       path: '/operaciones_compras_vista',
       name: 'Vista de compras',
       component: () => import('../views/Operaciones/Compras_v.vue'),
-      
     },
     {
       path: '/facturacion_guias',
