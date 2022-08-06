@@ -593,7 +593,7 @@ export default {
     </el-form>
 
   <div class="table-container">
-    <el-table :data="datap" border header-row-style="color:black;" height="100%">
+    <el-table :data="datap" border header-row-style="color:black;" height="98%">
       <el-table-column prop="emp_razonsocial" label="Razon soc. aso." width="140" align="center"/>
       <el-table-column prop="ent_nombre" label="Nombre" width="450" sortable />
       <el-table-column prop="dti_id" label="Tipo de doc." width="120" align="center"/>

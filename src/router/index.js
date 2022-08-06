@@ -32,6 +32,12 @@ const router = createRouter({
       component: () => import('../views/Base_datos/Vehiculos.vue'),
     },
     {
+      path: '/ubigeos',
+      name: 'Ubigeos',
+      component: () => import('../views/Base_datos/Ubigeos.vue'),
+
+    },
+    {
       path: '/doc_personal',
       name: 'PermisosPersonal',
       component: () => import('../views/Documentos/Personal.vue'),
