@@ -106,6 +106,11 @@ const router = createRouter({
       component: () => import('../views/Facturacion/Guias.vue'),
       
     },
+    {
+      path: '/facturacion_configuracion',
+      name: 'Configuración guia',
+      component: () => import('../views/Facturacion/Configuracion.vue'),
+    },
 
     {
       path: '/facturacion_comprobantes',
@@ -129,8 +134,8 @@ const router = createRouter({
     },
 
     {
-      path: '/mantenimiento_configuracion',
-      name: 'Configuración guia',
+      path: '/mantenimiento_plan',
+      name: 'Plan de mantenimiento',
       component: () => import('../views/Mantenimiento/Configuracion.vue'),
     },
 

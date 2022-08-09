@@ -164,6 +164,7 @@ const handleClose = (key: string, keyPath: string[]) => {
                 <span>Facturación</span>
               </template>
               <el-menu-item @click='change_title("Facturación > Guías")' index="facturacion_guias">Guias</el-menu-item>
+              <el-menu-item @click='change_title("Facturación > Configuración")' index="facturacion_configuracion">Configuración</el-menu-item>
               <el-menu-item @click='change_title("Facturación > Comprobantes")' index="facturacion_comprobantes">Comprobantes</el-menu-item>
               <el-menu-item @click='change_title("Facturación > Cobranzas")' index="facturacion_cobranza">Cobranzas</el-menu-item>
             </el-sub-menu>
