@@ -128,6 +128,12 @@ const router = createRouter({
       
     },
 
+    {
+      path: '/mantenimiento_configuracion',
+      name: 'Configuración guia',
+      component: () => import('../views/Mantenimiento/Configuracion.vue'),
+    },
+
   ]
 })
 

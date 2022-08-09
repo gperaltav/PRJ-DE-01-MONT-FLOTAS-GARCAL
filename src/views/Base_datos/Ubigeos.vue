@@ -62,6 +62,7 @@ export default {
     },
     close_succes() {
       this.$refs.mo_realizado.hide();
+      this.$refs.mo_create_per.hide();
       this.api_get_all();
     },
 
@@ -261,7 +262,6 @@ export default {
 
   </el-form>
 </modal>
-
 
 <modal ref="mo_realizado" success title="Operacion completada" centered @ok="close_succes_all" @cancel="close_succes" ok-title="Cerrar" cancel-title="Atras" >
   {{alert_mo}}

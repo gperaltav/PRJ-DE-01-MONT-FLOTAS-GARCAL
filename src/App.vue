@@ -171,6 +171,13 @@ const handleClose = (key: string, keyPath: string[]) => {
               <el-icon><Money /></el-icon>
               <template #title>Disposicion de dinero</template>
             </el-menu-item>
+            <el-sub-menu index="7">
+              <template #title>
+                <el-icon><img width="15" height="15" src= "./components/mantenimiento.svg"/></el-icon>
+                <span>Mantenimiento</span>
+              </template>
+              <el-menu-item @click='change_title("Mantenimiento > Configuración")' index="mantenimiento_configuracion">Configuración</el-menu-item>
+            </el-sub-menu>
           </el-menu>
         </el-scrollbar>
       </el-aside>
