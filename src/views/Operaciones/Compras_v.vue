@@ -74,7 +74,7 @@ export default {
       })
     },
     get_descarga() {
-       axios
+      axios
       .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdepago/'+String(this.emp_cont))
         .then((resp) => {
           console.log(resp);  

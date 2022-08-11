@@ -454,28 +454,6 @@ export default {
     },
     
     crear_guia(){
-
-      console.log(
-        {      
-            "emp_id": Number(this.form_c.rs),
-            "gui_fechaemision": this.form_c.gt_fecha_em,
-            "gti_codigo": "GTR",
-            "gui_serie":this.form_c.gt_serie,
-            "gui_numero": this.form_c.gt_numero,
-            "via_id": Number(this.form_c.id_via),
-            "gui_entdestinatario":"",
-            "veh_id": Number(this.form_c.veh_tracto),
-            "veh_idacople":"",
-            "pro_id":Number(this.form_c.gt_pro_id),
-            "gui_estado":"",
-            "gui_peso":Number(this.form_c.peso),
-            "ubi_codigoorigen":this.form_c.ubi_origen,
-            "ubi_codigodestino":this.form_c.ubi_destino,
-            "gui_observacion":"",
-            "gui_usucreacion":"admin"
-          }
-      );
-
       axios
       .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/guias/nuevo',
       {      

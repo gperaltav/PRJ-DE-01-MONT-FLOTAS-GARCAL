@@ -110,7 +110,7 @@ const handleClose = (key: string, keyPath: string[]) => {
     <el-container style=" height: calc( 100vh - 100px ); ">
       <el-aside :width="ancho">
         <el-scrollbar>
-          <el-menu :default-openeds="['1', '2','4','5']" 
+          <el-menu :default-openeds="['1', '2','4','5','7']" 
           router=true 
           :collapse="isCollapse" 
           class="el-menu-v"
