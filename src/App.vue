@@ -177,7 +177,8 @@ const handleClose = (key: string, keyPath: string[]) => {
                 <el-icon><img width="15" height="15" src= "./components/mantenimiento.svg"/></el-icon>
                 <span>Mantenimiento</span>
               </template>
-              <el-menu-item @click='change_title("Mantenimiento > Configuración")' index="mantenimiento_configuracion">Configuración</el-menu-item>
+              <el-menu-item @click='change_title("Mantenimiento > Mantenimientos vista")' index="mantenimiento_vista">Vista mantenimiento</el-menu-item>
+              <el-menu-item @click='change_title("Mantenimiento > Plan de mantenimiento")' index="mantenimiento_plan">Plan de mantenimiento</el-menu-item>
             </el-sub-menu>
           </el-menu>
         </el-scrollbar>

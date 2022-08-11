@@ -134,9 +134,14 @@ const router = createRouter({
     },
 
     {
+      path: '/mantenimiento_vista',
+      name: 'Vista de mantenimientos',
+      component: () => import('../views/Mantenimiento/Mantenimientos.vue'),
+    },
+    {
       path: '/mantenimiento_plan',
       name: 'Plan de mantenimiento',
-      component: () => import('../views/Mantenimiento/Configuracion.vue'),
+      component: () => import('../views/Mantenimiento/Plan_mantenimientos.vue'),
     },
 
   ]

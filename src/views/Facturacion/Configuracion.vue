@@ -177,6 +177,7 @@ export default {
       this.$refs.mo_create_per.hide();
       this.search_rs_clear();
     },
+    
     load_rs() {
       axios
       .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas')
@@ -185,30 +186,7 @@ export default {
           this.opt_rs = resp.data;
         })
     },
-    load_mar() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api//vehiculosmarcas/'+String(this.emp_cont))
-        .then((resp) => {
-          console.log(resp);
-          this.opt_mar = resp.data;
-        })
-    },
-    load_mod() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api//vehiculosmodelos/'+String(this.emp_cont))
-        .then((resp) => {
-          console.log(resp);
-          this.opt_mod = resp.data;
-        })
-    },
-    load_cla() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api//vehiculosclases/'+String(this.emp_cont))
-        .then((resp) => {
-          console.log(resp);
-          this.opt_cla = resp.data;
-        })
-    },
+
     load_ti() {
       axios
       .get('http://51.222.25.71:8080/garcal-erp-apiv1/api//vehiculostipos/'+String(this.emp_cont))
@@ -218,26 +196,7 @@ export default {
         })
     },
     
-    load_fpago() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdecobro/'+String(this.emp_cont))
-        .then((resp) => {
-          console.log(resp);  
-          this.opt_fpago = resp.data;
-        })
-    },
-    load_tdoc() {
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/documentos', 
-        { 
-          "emp_id":String(this.emp_cont),
-          "dti_referencia_uso":""
-        })
-        .then((resp) => {
-          console.log(resp);  
-          this.opt_tdoc = resp.data;
-        })
-    },
+
     load_edit(id,rss) {
       axios
       .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/"+String(id),
@@ -499,25 +458,11 @@ export default {
             </el-select>
           </el-form-item>
 
-        <el-form-item label="Nro. de documento">
-          <el-input v-model="form_b.nro_doc" clearable />
-        </el-form-item>
-
-        <el-form-item label="Nombre">
+        <el-form-item label="Nro. de placa">
           <el-input v-model="form_b.nombre" clearable />
         </el-form-item>
 
-        <el-form-item label="Forma de pago preferido">
-          <el-select v-model="form_b.f_pago" placeholder="Seleccionar" clearable>
-              <el-option
-                v-for="item in opt_fpago"
-                :key="item.fdp_id"
-                :label="item.fdp_descripcion"
-                :value="item.fdp_id"
-              > </el-option>
-            </el-select>
-
-        </el-form-item>
+       
 
       </el-col>
 
@@ -543,10 +488,11 @@ export default {
   <div class="table-container">
     <el-table :data="datap" border header-row-style="color:black;" height="98%">
       <el-table-column prop="emp_razonsocial" label="Razon soc. aso." width="140" align="center"/>
-      <el-table-column prop="ent_nombre" label="Nombre" width="450" sortable />
-      <el-table-column prop="dti_id" label="Tipo de doc." width="120" align="center"/>
-      <el-table-column prop="ent_nrodocumento" label="Nro. de documento" />  
-      <el-table-column prop="fdp_descri" label="Condicion de pago" />  
+      <el-table-column prop="gco_activo" label="Activo?" width="120" align="center"/>
+      <el-table-column prop="gti_codigo" label="Tipo de guia" width="130" />
+      
+      <el-table-column prop="gco_numeromax" label="Nro. máximo" />  
+      <el-table-column prop="gco_numeromin" label="Nro. mínimo" />  
       <el-table-column fixed="right" label="" width="45" align="center">
         <template #default="scope">
           <el-button  type="text"  @click="button_handle(scope.row.ent_id,scope.row.emp_id)" ><el-icon :size="17"><EditPen /></el-icon></el-button>
