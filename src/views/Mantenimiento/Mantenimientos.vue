@@ -72,8 +72,8 @@ export default {
       this.$refs.mo_realizado.open(); 
     },
     open_succes_ed(msg) {
-      this.alert_mo=msg;
-      this.$refs.mo_realizado_ed.open();
+      this.alert_mo=msg; 
+      this.$refs.mo_realizado_ed.open(); 
     },
     open_confirmar(msg) {
       this.alert_mo=msg;
@@ -550,19 +550,19 @@ export default {
     <el-form-item  label="Razón soc. asoc." >
       <el-select disabled style="width:300px" v-model="form_e.rs" @change="rs_changer" placeholder="Seleccionar">
         <el-option
-          v-for="item in opt_rs"
-          :key="item.emp_id"
-          :label="item.emp_razonsocial"
-          :value="item.emp_id"
-        > </el-option>
-      </el-select>
-    </el-form-item>
+          v-for="item in opt_rs" 
+          :key="item.emp_id" 
+          :label="item.emp_razonsocial" 
+          :value="item.emp_id" 
+        > </el-option> 
+      </el-select> 
+    </el-form-item> 
 
-    <el-form-item label="Serie">
-      <el-input style="width:300px" v-model="form_e.serie" />
-    </el-form-item>
+    <el-form-item label="Serie"> 
+      <el-input style="width:300px" v-model="form_e.serie" /> 
+    </el-form-item> 
 
-    <el-form-item  label="Vehiculo ">
+    <el-form-item  label="Vehiculo "> 
       <el-select
         v-model="form_e.veh_id"
         filterable
