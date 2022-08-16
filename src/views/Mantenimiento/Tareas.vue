@@ -161,9 +161,9 @@ export default {
 
 <template>
   
-  <div style="width:900px; margin-left:4.3vw ">
+  <div style="width:900px; margin-left: auto;margin-right: auto;padding-right:200px">
 
-    <el-row style="text-align=center; margin-left:85px">
+    <el-row style="text-align=center;">
       <h1 style="margin-left: auto;margin-right: auto">Nueva tarea</h1>
     </el-row>
 
