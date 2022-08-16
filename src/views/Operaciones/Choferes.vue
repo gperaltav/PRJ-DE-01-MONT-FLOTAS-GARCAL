@@ -481,9 +481,9 @@ export default {
 
 <template>
 
-  <div style="width:900px; margin-left:4.3vw ">
+  <div style="width:900px; margin-left:auto;margin-right:auto;padding-right:200px">
 
-    <el-row style="text-align=center; margin-left:85px">
+    <el-row style="text-align=center;">
       <h1 style="margin-left: auto;margin-right: auto">Pagos personal</h1>
     </el-row>
 
@@ -607,7 +607,7 @@ export default {
       </div>
     </el-form-item>
 
-    <el-row style="text-align=center; margin-left:100px" >
+    <el-row style="text-align=center; " >
       <el-button  @click="transaccion_insertar" style="margin-left: auto;margin-right: auto" color="#0844a4" >Guardar</el-button>
     </el-row>
       

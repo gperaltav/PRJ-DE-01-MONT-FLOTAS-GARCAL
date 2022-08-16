@@ -179,6 +179,7 @@ const handleClose = (key: string, keyPath: string[]) => {
               </template>
               <el-menu-item @click='change_title("Mantenimiento > Mantenimientos vista")' index="mantenimiento_vista">Vista mantenimiento</el-menu-item>
               <el-menu-item @click='change_title("Mantenimiento > Plan de mantenimiento")' index="mantenimiento_plan">Plan de mantenimiento</el-menu-item>
+              <el-menu-item @click='change_title("Mantenimiento > Tareas")' index="mantenimiento_tareas">Tareas</el-menu-item>
             </el-sub-menu>
           </el-menu>
         </el-scrollbar>

@@ -143,6 +143,11 @@ const router = createRouter({
       name: 'Plan de mantenimiento',
       component: () => import('../views/Mantenimiento/Plan_mantenimientos.vue'),
     },
+    {
+      path: '/mantenimiento_tareas',
+      name: 'Tareas',
+      component: () => import('../views/Mantenimiento/Tareas.vue'),
+    },
 
   ]
 })
