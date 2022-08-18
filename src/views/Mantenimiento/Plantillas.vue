@@ -55,8 +55,8 @@ export default {
 
       form_c : reactive({
         rs: '',
-        veh_id: '',
-        plan_id:'',
+        vma_id: '',
+        nombre:'',
 
         tarea_tmp:'',
       }),
@@ -327,16 +327,13 @@ export default {
     
     create_usr(){
       axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/guiasconfiguracion/nuevo', 
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/preventivoplantilla/nuevo', 
       { 
-        "emp_id": Number(this.form_c.rs),
-        "gti_codigo":this.form_c.gti,
-        "gco_serie": this.form_c.serie,
-        "veh_id": this.form_c.veh_id,
-        "gco_activo": this.form_c.estado,
-        "gco_numeromin": this.form_c.n_min,
-        "gco_numeromax": this.form_c.n_max,
-        "gco_usucreacion": this.$store.state.username
+        "emp_id": this.form_c.rs,
+        "vma_id": this.form_c.vma_id,
+        "ppa_descripcion": this.form_c.nombre,
+        "ppa_usucreacion": this.$store.state.username,
+        "tareas": this.tareas
       })
       .then((resp) => {
         console.log(resp.data);
@@ -447,45 +444,49 @@ export default {
     <el-row>
       <el-col :span="21">
         <el-form-item label="Razón social">
-            <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
-              <el-option
-                v-for="item in opt_rs"
-                :key="item.emp_id"
-                :label="item.emp_razonsocial"
-                :value="item.emp_id"
-              > </el-option>
-            </el-select>
-          </el-form-item>
+          <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
+            <el-option
+              v-for="item in opt_rs"
+              :key="item.emp_id"
+              :label="item.emp_razonsocial"
+              :value="item.emp_id"
+            > </el-option>
+          </el-select>
+        </el-form-item>
 
-        <el-form-item label="Nro. de placa">
-          <el-input v-model="form_b.placa" clearable />
+        <el-form-item label="Marca">
+          <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
+            <el-option
+              v-for="item in opt_rs"
+              :key="item.emp_id"
+              :label="item.emp_razonsocial"
+              :value="item.emp_id"
+            > </el-option>
+          </el-select>
         </el-form-item>
       </el-col>
 
       <el-col :span="3">
-        
         <div class="button-container">
-        <el-row class="mb-4">
+        <el-row>
           <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
         </el-row>
-        <el-row class="mb-4">
+        <el-row>
           <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
         </el-row>
-        <el-row class="mb-4">
-          <el-button color="#95d475" :icon=" Download" disabled>A Excel</el-button>
-        </el-row>
         </div>
-      
       </el-col>
     </el-row>
 
   </el-form>
 
-  <div class="table-container" style="width:600px;margin-left: auto;margin-right: auto;padding-right:220px">
+  <div class="table-container" style="width:700px;margin-left: auto;margin-right: auto;padding-right:220px">
     <el-table :data="datap" border header-row-style="color:black;"  height="98%">
       <el-table-column prop="emp_razonsocial" label="Razon soc. aso." width="150" align="center"/>
-      <el-table-column prop="veh_placa" label="Placa"  />
-      <el-table-column prop="tar_cantidad" label="Nro. de tareas" width="180" align="center"/>
+      
+      <el-table-column prop="tar_descripcion" label="Descripción de tarea" width="180" align="center"/>
+      <el-table-column prop="ppa_km" label="Kilometraje"  />
+      <el-table-column prop="ppa_avisokm" label="Aviso kilomentraje"  />
       <el-table-column fixed="right" label="" width="45" align="center">
         <template #default="scope">
           <el-button  type="text"  @click="button_handle(scope.row.gco_id)" ><el-icon :size="17"><EditPen /></el-icon></el-button>
@@ -496,11 +497,11 @@ export default {
 </div>
 
 
-<modal ref="mo_create_per" no-close-on-backdrop title="Agregar plan de mantenimiento" width="600px" @ok="create_usr()" @cancel="closecrear" cancel-title="Atras" centered>
+<modal ref="mo_create_per" no-close-on-backdrop title="Agregar plantilla de mantenimiento" width="600px" @ok="create_usr()" @cancel="closecrear" cancel-title="Atras" centered>
   
   <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" >
 
-    <el-form-item  label="Razón soc. asoc." prop="rs">
+    <el-form-item  label="Razón soc. asoc.">
       <el-select style="width:300px" v-model="form_c.rs" @change="rs_changer" placeholder="Seleccionar">
         <el-option
           v-for="item in opt_rs"
@@ -509,14 +510,14 @@ export default {
           :value="item.emp_id"
         > </el-option>
       </el-select>
-    </el-form-item>
+    </el-form-item> 
 
-    <el-form-item  label="Vehiculo ">
+    <el-form-item  label="Marca asoc. ">
       <el-select
-        v-model="form_c.veh_id"
+        v-model="form_c.vma_id"
         filterable
         :remote-method="get_vehiculos"
-        placeholder="Inserte ID de vehiculo"
+        placeholder="Inserte nombre de marca"
         remote
         clearable
         :disabled=rs_disable
@@ -534,27 +535,8 @@ export default {
       </el-select>
     </el-form-item>
 
-    <el-form-item  label="Plantilla ">
-      <el-select
-        v-model="form_c.plan_id"
-        filterable
-        :remote-method="get_vehiculos"
-        placeholder="Inserte nombre de plantilla"
-        remote
-        clearable
-        :disabled=rs_disable
-        style="width:300px"
-      >
-        <template #prefix>
-          <el-icon><Search /></el-icon>
-        </template>
-        <el-option
-          v-for="item in opt_veh"
-          :key="item.veh_id"
-          :label="item.veh_placa"
-          :value="item.veh_id"
-        />
-      </el-select>
+    <el-form-item  label="Nombre">
+      <el-input v-model="form_c.nombre" style="width:300px"/>
     </el-form-item>
     
     <div class="table-container" style="width:500px;margin-left: auto;margin-right: auto">

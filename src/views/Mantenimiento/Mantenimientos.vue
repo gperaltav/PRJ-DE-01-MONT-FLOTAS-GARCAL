@@ -264,7 +264,7 @@ export default {
 
     api_get_all(){
      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/guiasconfiguracion', 
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/guiasconfiguracionc', 
       {
         "veh_placa":""
       })
@@ -471,76 +471,109 @@ export default {
       <el-table-column prop="" label="Fecha de emisión" /> 
       <el-table-column prop="" label="Placa" /> 
       <el-table-column prop="" label="Total de gastos" /> 
-      <el-table-column fixed="right" label="" width="45" align="center">
-        <template #default="scope">
-          <el-button  type="text"  @click="button_handle(scope.row.gco_id)" ><el-icon :size="17"><EditPen /></el-icon></el-button>
-        </template>
-    </el-table-column>
+
     </el-table>
   </div>
 </div>
 
 
-<modal ref="mo_create_per" no-close-on-backdrop title="Agregar guia de configuración" width="500px" @ok="create_usr()" @cancel="closecrear" cancel-title="Atras" centered>
-  <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" >
+<modal ref="mo_create_per" no-close-on-backdrop title="Agregar guia de configuración" width="700px" @ok="create_usr()" @cancel="closecrear" cancel-title="Atras" centered>
+  <el-form ref="form_cref" :rules="rules" :model="form_c" label-width="130px" >
 
-    <el-form-item  label="Razón soc. asoc." prop="rs">
-      <el-select style="width:300px" v-model="form_c.rs" @change="rs_changer" placeholder="Seleccionar">
-        <el-option
-          v-for="item in opt_rs"
-          :key="item.emp_id"
-          :label="item.emp_razonsocial"
-          :value="item.emp_id"
-        > </el-option>
-      </el-select>
-    </el-form-item>
+    <el-row style="margin-right:20px">
+    <el-col :span="12">
+      <el-form-item  label="Razón soc. asoc." prop="rs">
+        <el-select style="width:300px" v-model="form_c.rs" @change="rs_changer" placeholder="Seleccionar">
+          <el-option
+            v-for="item in opt_rs"
+            :key="item.emp_id"
+            :label="item.emp_razonsocial"
+            :value="item.emp_id"
+          > </el-option>
+        </el-select>
+      </el-form-item>
+    </el-col>
+    <el-col :span="12">
+      <el-form-item label="Serie">
+        <el-input style="width:300px" v-model="form_c.serie" />
+      </el-form-item>
+    </el-col>
+    </el-row>
 
-    <el-form-item label="Serie">
-      <el-input style="width:300px" v-model="form_c.serie" />
-    </el-form-item>
+    <el-row style="margin-right:20px">
+    <el-col :span="12">
+      <el-form-item label="Fecha">
+        <el-input style="width:300px" v-model="form_c.serie" />
+      </el-form-item>
+    </el-col>
+    <el-col :span="12">
+      <el-form-item label="Kilometraje">
+        <el-input style="width:300px" v-model="form_c.serie" />
+      </el-form-item>
+    </el-col>
+    </el-row>
 
-    <el-form-item  label="Vehiculo ">
-      <el-select
-        v-model="form_c.veh_id"
-        filterable
-        :remote-method="get_vehiculos"
-        placeholder="Inserte ID de vehiculo"
-        remote
-        clearable
-        :disabled=rs_disable
-        style="width:300px"
-      >
-        <template #prefix>
-          <el-icon><Search /></el-icon>
-        </template>
-        <el-option
-          v-for="item in opt_veh"
-          :key="item.veh_id"
-          :label="item.veh_placa"
-          :value="item.veh_id"
-        />
-      </el-select>
-    </el-form-item>
-    
-    <el-form-item label="Tipo de guía">
-      <el-select style="width:300px" v-model="form_c.gti">
-        <el-option label="GUIA REMITENTE" value="GEM" />
-        <el-option label="GUIA DE TRANSPORTISTA" value="GTR" />
-      </el-select>
-    </el-form-item>
+    <el-row>
+      <el-container style="border-style: solid; border-color:grey">
+        <el-header style="padding-top:5px;background-color:grey; height:30px; color:white">
+          Preventivos:
+        </el-header>
+        <el-main>
+          <div >
+          <el-table :data="datav" border header-row-style="color:black;" >
+              <el-table-column prop='det_rs' label="Tarea"  align="center" />
+              <el-table-column prop='det_td' label="Estado"  align="center" />
+              <el-table-column prop='det_cod' label="Observación"  align="center" />
+              
+              <el-table-column fixed="right" label="" width="45" align="center">
+                <template #default="scope">
+                  <el-button  type="text"  @click="open_edit_det(scope.row.id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+        </el-main>
+      </el-container>
+    </el-row>
 
-    <el-form-item label="Nro. Minimo">
-      <el-input style="width:300px" v-model="form_c.n_min" />
-    </el-form-item>
+    <el-row>
+      <el-container style="border-style: solid; border-color:grey">
+        <el-header style="padding-top:5px; background-color:grey; height:30px; color:white">
+          Correctivo:
+        </el-header>
+        <el-main>
 
-    <el-form-item label="Nro. Máximo">
-      <el-input style="width:300px" v-model="form_c.n_max" />
-    </el-form-item>
+        <el-col justify="center">
+          <el-form-item  label="Tarea" >
+            <el-select style="width:300px" v-model="form_c.rs" @change="rs_changer" placeholder="Seleccionar">
+              <el-option
+                v-for="item in opt_rs"
+                :key="item.emp_id"
+                :label="item.emp_razonsocial"
+                :value="item.emp_id"
+              > </el-option>
+            </el-select>
+            <el-button color="#008db1" :icon="Plus"  @click="open_crear" style="margin-left: auto;margin-right: auto">Agregar</el-button>
+          </el-form-item>
+          
+        </el-col>
 
-    <div style="text-align:center">
-      <el-checkbox v-model="form_c.estado" label="Guia activa" />
-    </div>
+        <div >
+          <el-table :data="datav" border header-row-style="color:black;" >
+            <el-table-column prop='det_rs' label="Tarea"  align="center" />
+            <el-table-column prop='det_td' label="Comprobante adj."  align="center" />
+            <el-table-column prop='det_cod' label="Observación"  align="center" />
+            <el-table-column fixed="right" label="" width="45" align="center">
+              <template #default="scope">
+                <el-button  type="text"  @click="open_edit_det(scope.row.id)" size="small"><el-icon :size="17"><EditPen /></el-icon></el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
 
+        </el-main>
+      </el-container>
+    </el-row>
   </el-form>
 </modal>
 

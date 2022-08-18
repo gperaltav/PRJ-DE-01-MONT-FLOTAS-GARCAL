@@ -32,9 +32,12 @@ export default {
       datap: [],
       tareas:[],
 
+      tareas_ins:[],
+
       opt_rs: [],
       opt_veh:[],
       opt_tar:[],
+      opt_pla:[],
 
       data_edit: [],
       data_edit2: [],
@@ -57,18 +60,14 @@ export default {
         rs: '',
         veh_id: '',
         plan_id:'',
-
         tarea_tmp:'',
       }),
 
       form_e : reactive({
         rs: '',
         veh_id: '',
-        gti:'',
-        serie:'',
-        n_min:'',
-        n_max:'',
-        estado:false,
+        plan_id:'',
+        tarea_tmp:'',
       }),
     }
   },
@@ -225,16 +224,16 @@ export default {
       })
     },
 
-    get_plantillas(query) {
+    get_plantillas() {
       axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/controldocumentosvehiculos', 
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/preventivoplantilla/agrupado', 
       {
-        "emp_id": this.form_c.rs,
-        "via_fechaviaje":query
+        "emp_id":this.form_c.rs,
+        "veh_id":this.form_c.veh_id
       })
       .then((resp) => {
         console.log(resp);
-        this.opt_veh = resp.data;
+        this.opt_pla = resp.data;
       })
     },
 
@@ -260,6 +259,15 @@ export default {
       link.download = name;
       link.href = uri;
       link.click();
+    },
+
+    select_plantilla() {
+      axios
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/preventivoplantilla/'+String(this.form_c.plan_id))
+      .then((resp) => {
+        console.log(resp);
+        this.tareas = resp.data;
+      })
     },
 
     search_tareas(key) {
@@ -324,33 +332,45 @@ export default {
           this.datap = resp.data;
         })
     },
+
+    create_tarea(req) {
+      return axios
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/programacionmantenimiento/nuevo',req)
+    },
     
     create_usr(){
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/guiasconfiguracion/nuevo', 
-      { 
-        "emp_id": Number(this.form_c.rs),
-        "gti_codigo":this.form_c.gti,
-        "gco_serie": this.form_c.serie,
-        "veh_id": this.form_c.veh_id,
-        "gco_activo": this.form_c.estado,
-        "gco_numeromin": this.form_c.n_min,
-        "gco_numeromax": this.form_c.n_max,
-        "gco_usucreacion": this.$store.state.username
-      })
-      .then((resp) => {
-        console.log(resp.data);
-        this.succes=resp.data.status;
-        if (this.succes) {
+      var requests=[];
+
+      for (let index = 0; index < this.tareas_ins.length; index++) {
+        requests.push(this.create_tarea(this.tareas_ins[index]));
+      }
+
+      console.log(requests);
+      Promise.all(requests)
+      .then((results) => {
+        console.log(results);
+        var succesful=true;
+        for (let index = 0; index < results.length; index++) {
+          if(results[index].status===false) {
+            succesful=false;
+          }
+        }
+        if (succesful) {
+          console.log("caso 1");
           this.open_succes("Operación realizada satisfactoriamente");
           return true;
         }
         else {
+          console.log("caso 2");
           this.open_fail("Hubo un error con el servidor al ejecutar la operación");
           return false;
         }
       })
-      return false;
+      .catch((e) => {
+        console.log("caso 3");
+        this.open_fail("Hubo un error con el servidor al ejecutar la operación, error:"+String(e));
+        return false;
+      });
     },  
 
     close_create() {
@@ -363,9 +383,19 @@ export default {
         console.log(tmp);
         if (this.opt_tar[tmp].tar_codigo == this.nueva_tarea) {
           this.tareas.push({
-            "tarea_des":this.opt_tar[tmp].tar_descripcion,
-            "aviso_km":this.nt_aviso_km,
-            "km":this.nt_km
+            "tar_descripcion":this.opt_tar[tmp].tar_descripcion,
+            "ppa_avisokm":this.nt_aviso_km,
+            "ppa_km":this.nt_km
+          });
+          this.tareas_ins.push({
+            "emp_id": this.form_c.rs,
+            "tar_id": this.opt_tar[tmp].tar_id,
+            "veh_id": this.form_c.veh_id,
+            "pma_avisokm": this.nt_aviso_km,
+            "pma_km": this.nt_km,
+            "pma_fechamantenimiento": null,
+            "pma_ultimokm": 2,
+            "pma_usucreacion": this.$store.state.username
           });
           return;
         }
@@ -447,35 +477,29 @@ export default {
     <el-row>
       <el-col :span="21">
         <el-form-item label="Razón social">
-            <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
-              <el-option
-                v-for="item in opt_rs"
-                :key="item.emp_id"
-                :label="item.emp_razonsocial"
-                :value="item.emp_id"
-              > </el-option>
-            </el-select>
-          </el-form-item>
-
+          <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
+            <el-option
+              v-for="item in opt_rs"
+              :key="item.emp_id"
+              :label="item.emp_razonsocial"
+              :value="item.emp_id"
+            > </el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="Nro. de placa">
           <el-input v-model="form_b.placa" clearable />
         </el-form-item>
       </el-col>
 
       <el-col :span="3">
-        
         <div class="button-container">
-        <el-row class="mb-4">
-          <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
-        </el-row>
-        <el-row class="mb-4">
-          <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
-        </el-row>
-        <el-row class="mb-4">
-          <el-button color="#95d475" :icon=" Download" disabled>A Excel</el-button>
-        </el-row>
+          <el-row>
+            <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
+          </el-row>
+          <el-row>
+            <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
+          </el-row>
         </div>
-      
       </el-col>
     </el-row>
 
@@ -520,6 +544,7 @@ export default {
         remote
         clearable
         :disabled=rs_disable
+        @change="get_plantillas"
         style="width:300px"
       >
         <template #prefix>
@@ -537,31 +562,30 @@ export default {
     <el-form-item  label="Plantilla ">
       <el-select
         v-model="form_c.plan_id"
-        filterable
-        :remote-method="get_vehiculos"
-        placeholder="Inserte nombre de plantilla"
-        remote
+        placeholder="Seleccione una plantilla"
         clearable
-        :disabled=rs_disable
+        :disabled=veh_disable
         style="width:300px"
+        @change="select_plantilla"
       >
         <template #prefix>
           <el-icon><Search /></el-icon>
         </template>
         <el-option
-          v-for="item in opt_veh"
-          :key="item.veh_id"
-          :label="item.veh_placa"
-          :value="item.veh_id"
+          v-for="item in opt_pla"
+          :key="item.ppa_id"
+          :label="item.ppa_descripcion"
+          :value="item.ppa_id"
+          
         />
       </el-select>
     </el-form-item>
     
     <div class="table-container" style="width:500px;margin-left: auto;margin-right: auto">
       <el-table :data="tareas" border header-row-style="color:black;"  height="98%" size="small">
-        <el-table-column prop="tarea_des" label="Tarea" width="250" />
-        <el-table-column prop="aviso_km" label="Aviso km." align="center" />
-        <el-table-column prop="km" label="Km."  align="center"/>
+        <el-table-column prop="tar_descripcion" label="Tarea" width="250" />
+        <el-table-column prop="ppa_avisokm" label="Aviso km." align="center" />
+        <el-table-column prop="ppa_km" label="Km."  align="center"/>
         <el-table-column fixed="right" label="" width="45" align="center">
           <template #default="scope">
             <el-button  type="text"  @click="eliminar_tarea_act(scope.$index)" ><el-icon :size="17"><Delete /></el-icon></el-button>
@@ -618,8 +642,8 @@ export default {
 <modal ref="mo_editar_per" no-close-on-backdrop title="Editar datos de plan de mantenimiento" width="500px" @ok="editar_usr" cancel-title="Cancelar" @cancel="closeedit"  centered>
   <el-form v-loading="wait" ref="form_edit_ref" :model="form_e" label-width="150px" >
 
-    <el-form-item  label="Razón soc. asoc." >
-      <el-select disabled style="width:300px" v-model="form_e.rs" @change="rs_changer" placeholder="Seleccionar">
+    <el-form-item  label="Razón soc. asoc." prop="rs">
+      <el-select style="width:300px" v-model="form_c.rs" @change="rs_changer" placeholder="Seleccionar">
         <el-option
           v-for="item in opt_rs"
           :key="item.emp_id"
@@ -629,19 +653,16 @@ export default {
       </el-select>
     </el-form-item>
 
-    <el-form-item label="Serie">
-      <el-input style="width:300px" v-model="form_e.serie" />
-    </el-form-item>
-
     <el-form-item  label="Vehiculo ">
       <el-select
-        v-model="form_e.veh_id"
+        v-model="form_c.veh_id"
         filterable
         :remote-method="get_vehiculos"
         placeholder="Inserte ID de vehiculo"
         remote
         clearable
-        disabled
+        :disabled=rs_disable
+        @change="get_plantillas"
         style="width:300px"
       >
         <template #prefix>
@@ -655,25 +676,83 @@ export default {
         />
       </el-select>
     </el-form-item>
-    
-    <el-form-item label="Tipo de guía">
-      <el-select style="width:300px" v-model="form_e.gti">
-        <el-option label="GUIA REMITENTE" value="GEM" />
-        <el-option label="GUIA DE TRANSPORTISTA" value="GTR" />
+
+    <el-form-item  label="Plantilla ">
+      <el-select
+        v-model="form_c.plan_id"
+        placeholder="Seleccione una plantilla"
+        clearable
+        :disabled=veh_disable
+        style="width:300px"
+        @change="select_plantilla"
+      >
+        <template #prefix>
+          <el-icon><Search /></el-icon>
+        </template>
+        <el-option
+          v-for="item in opt_pla"
+          :key="item.ppa_id"
+          :label="item.ppa_descripcion"
+          :value="item.ppa_id"
+          
+        />
       </el-select>
     </el-form-item>
-
-    <el-form-item label="Nro. Minimo">
-      <el-input style="width:300px" v-model="form_e.n_min" />
-    </el-form-item>
-
-    <el-form-item label="Nro. Máximo">
-      <el-input style="width:300px" v-model="form_e.n_max" />
-    </el-form-item>
-
-    <div style="text-align:center">
-      <el-checkbox v-model="form_e.estado" label="Guia activa" />
+    
+    <div class="table-container" style="width:500px;margin-left: auto;margin-right: auto">
+      <el-table :data="tareas" border header-row-style="color:black;"  height="98%" size="small">
+        <el-table-column prop="tar_descripcion" label="Tarea" width="250" />
+        <el-table-column prop="ppa_avisokm" label="Aviso km." align="center" />
+        <el-table-column prop="ppa_km" label="Km."  align="center"/>
+        <el-table-column fixed="right" label="" width="45" align="center">
+          <template #default="scope">
+            <el-button  type="text"  @click="eliminar_tarea_act(scope.$index)" ><el-icon :size="17"><Delete /></el-icon></el-button>
+          </template>
+        </el-table-column>
+      </el-table>
     </div>
+
+
+    <el-row justify="center">
+
+      <el-select
+        v-model="nueva_tarea"
+        filterable
+        :remote-method="search_tareas"
+        placeholder="Tarea"
+        remote
+        clearable
+        :disabled=veh_disable
+        style="width:150px;padding-right:5px"
+      >
+        <template #prefix>
+          <el-icon><Search /></el-icon>
+        </template>
+        <el-option
+          v-for="item in opt_tar"
+          :key="item.tar_codigo"
+          :label="item.tar_descripcion"
+          :value="item.tar_codigo"
+        />
+      </el-select>
+      <el-input
+        v-model="nt_aviso_km"
+        placeholder="Aviso km"
+        clearable
+        :disabled=veh_disable
+        style="width:90px;padding-right:5px"
+      />
+      <el-input
+        v-model="nt_km"
+        placeholder="Km"
+        clearable
+        :disabled=veh_disable
+        style="width:90px;padding-right:10px"
+      />
+      <el-button color="#0844a4" :icon="Plus" :disabled='tarea_vacia' @click="insertar_tarea_act">
+        Agregar
+      </el-button>
+    </el-row>
 
   </el-form>
 </modal>

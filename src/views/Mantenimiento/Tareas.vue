@@ -194,7 +194,7 @@ export default {
       </div>
     </el-form-item>
 
-    <el-row style="text-align=center; margin-left:100px" >
+    <el-row style="text-align=center; " >
       <el-button  @click="transaccion_insertar" style="margin-left: auto;margin-right: auto" color="#0844a4" >Guardar</el-button>
     </el-row>
       
