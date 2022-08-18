@@ -340,7 +340,7 @@ export default {
   </el-form>
 
   <div class="table-container">
-    <el-table :data="users" border header-row-style="color:black;" height="100%" >
+    <el-table :data="users" border header-row-style="color:black;" height="98%" >
       <el-table-column prop="usu_codigo" label="Codigo" width="120" />
       <el-table-column prop="usu_nombres" label="Nombre" width="240" />
       <el-table-column prop="usu_nrodocumento" label="Nro. de doc." />
