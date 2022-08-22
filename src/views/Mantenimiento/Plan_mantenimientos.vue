@@ -372,6 +372,33 @@ export default {
         return false;
       });
     },  
+    create_pl2(){
+      axios
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/programacionmantenimiento/nuevo', 
+        {
+          "emp_id": this.form_c.rs,
+          "veh_id": this.form_c.veh_id,
+          "detalle":this.tareas_ins,
+          "pma_fechamantenimiento": null,
+          "pma_ultimokm": 2,
+          "pma_usucreacion": this.$store.state.username
+
+        })
+        .then((resp) => {
+          console.log(resp.data);
+          this.succes=resp.data.status;
+          if (this.succes) {
+            this.open_succes("Plan creado correctamente");
+            this.err_code = true;
+          }
+          else {
+            this.open_fail("Hubo un error con el servidor al ejecutar la operación","Código de error: "+resp.data.message);
+          }
+        })
+        .catch((e)=>{
+          this.open_fail("Hubo un error con el servidor al ejecutar la operación. Detalles de error: "+String(e));
+        })
+    },  
 
     close_create() {
       this.$refs.form_create_ref.resetFields();
@@ -388,14 +415,9 @@ export default {
             "ppa_km":this.nt_km
           });
           this.tareas_ins.push({
-            "emp_id": this.form_c.rs,
             "tar_id": this.opt_tar[tmp].tar_id,
-            "veh_id": this.form_c.veh_id,
-            "pma_avisokm": this.nt_aviso_km,
-            "pma_km": this.nt_km,
-            "pma_fechamantenimiento": null,
-            "pma_ultimokm": 2,
-            "pma_usucreacion": this.$store.state.username
+            "ppa_avisokm":this.nt_aviso_km,
+            "ppa_km":this.nt_km
           });
           return;
         }
@@ -520,7 +542,7 @@ export default {
 </div>
 
 
-<modal ref="mo_create_per" no-close-on-backdrop title="Agregar plan de mantenimiento" width="600px" @ok="create_usr()" @cancel="closecrear" cancel-title="Atras" centered>
+<modal ref="mo_create_per" no-close-on-backdrop title="Agregar plan de mantenimiento" width="600px" @ok="create_pl2" @cancel="closecrear" cancel-title="Atras" centered>
   
   <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" >
 
