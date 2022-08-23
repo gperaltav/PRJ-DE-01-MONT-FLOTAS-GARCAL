@@ -38,6 +38,7 @@ export default {
       opt_veh:[],
       opt_tar:[],
       opt_pla:[],
+      opt_mar:[],
 
       data_edit: [],
       data_edit2: [],
@@ -226,6 +227,19 @@ export default {
       })
     },
 
+    buscar_marcas(query) {
+      axios
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/preventivoplantilla/marca', 
+      {
+        "emp_id":this.form_c.rs,
+        "vma_nombre":query
+      })
+      .then((resp) => {
+        console.log(resp);
+        this.opt_mar = resp.data;
+      })
+    },
+
     get_plantillas() {
       axios
       .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/preventivoplantilla/agrupado', 
@@ -300,10 +314,10 @@ export default {
 
     api_get_all(){
       axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/programacionmantenimiento', 
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/preventivoplantilla', 
       {
         "emp_id":"",
-        "veh_placa":""
+        "vma_id":""
       })
       .then((resp) => {
         console.log(resp);
@@ -490,8 +504,8 @@ export default {
   <div class="table-container" style="width:600px;margin-left: auto;margin-right: auto;padding-right:220px">
     <el-table :data="datap" border header-row-style="color:black;"  height="98%">
       <el-table-column prop="emp_razonsocial" label="Razon soc. aso." width="150" align="center"/>
-      <el-table-column prop="" label="Nombre" />
-      <el-table-column prop="" label="Marca asoc."  />
+      <el-table-column prop="ppa_descripcion" label="Nombre" />
+      <el-table-column prop="vma_nombre" label="Marca asoc."  />
       
       <el-table-column fixed="right" label="" width="45" align="center">
         <template #default="scope">
@@ -522,7 +536,7 @@ export default {
       <el-select
         v-model="form_c.vma_id"
         filterable
-        :remote-method="get_vehiculos"
+        :remote-method="buscar_marcas"
         placeholder="Inserte nombre de marca"
         remote
         clearable
@@ -533,10 +547,10 @@ export default {
           <el-icon><Search /></el-icon>
         </template>
         <el-option
-          v-for="item in opt_veh"
-          :key="item.veh_id"
-          :label="item.veh_placa"
-          :value="item.veh_id"
+          v-for="item in opt_mar"
+          :key="item.vma_id"
+          :label="item.vma_nombre"
+          :value="item.vma_id"
         />
       </el-select>
     </el-form-item>

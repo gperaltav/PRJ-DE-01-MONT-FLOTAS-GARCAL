@@ -20,3 +20,18 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.table-container .el-scrollbar__thumb {
+  background:#343434;
+}
+
+.table-container .el-scrollbar__bar.is-horizontal {
+  bottom: 2px;
+  height: 10px;
+  opacity: 70%;
+}
+.table-container .el-scrollbar__bar.is-vertical {
+  right: 2px;
+  width: 10px;
+  opacity: 50%;
+}
+

@@ -154,6 +154,12 @@ const router = createRouter({
       component: () => import('../views/Mantenimiento/Plantillas.vue'),
     },
 
+    {
+      path: '/test',
+      name: 'Testing area',
+      component: () => import('../views/Mantenimiento/Test.vue'),
+    },
+
   ]
 })
 
