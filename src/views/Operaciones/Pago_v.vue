@@ -280,7 +280,7 @@ export default {
       <el-table-column prop="cce_descripcion" label="Estado" width="120" align="center"/>
       <el-table-column prop="fdp_descripcion" label="Forma de pago" width="130" align="center" />
       <el-table-column prop="ccc_total" label="Total" /> 
-      <el-table-column prop="ccp_nroreferencia" label="Nro. de referencia" />
+      <el-table-column prop="ccp_nroreferencia" label="Nro. de referencia" width="150" />
     </el-table>
   </div>
 </div>
