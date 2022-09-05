@@ -32,10 +32,14 @@ const router = createRouter({
       component: () => import('../views/Base_datos/Vehiculos.vue'),
     },
     {
+      path: '/productos',
+      name: 'Productos',
+      component: () => import('../views/Base_datos/Productos.vue'),
+    },
+    {
       path: '/ubigeos',
       name: 'Ubigeos',
       component: () => import('../views/Base_datos/Ubigeos.vue'),
-
     },
     {
       path: '/doc_personal',
