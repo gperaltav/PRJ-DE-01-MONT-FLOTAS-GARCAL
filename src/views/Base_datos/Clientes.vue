@@ -603,7 +603,7 @@ export default {
         <template #default="scope">
           <el-button  type="text"  @click="button_handle(scope.row.ent_id,scope.row.emp_id)" ><el-icon :size="17"><EditPen /></el-icon></el-button>
         </template>
-    </el-table-column>
+      </el-table-column>
     </el-table>
   </div>
 </div>

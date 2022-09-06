@@ -33,6 +33,7 @@ export default {
       tareas:[],
 
       tareas_ins:[],
+      tareas_edit:[],
 
       opt_rs: [],
       opt_veh:[],
@@ -76,6 +77,7 @@ export default {
   },
 
   methods: {
+
     //controladores de modal
     open_succes(msg) {
       this.alert_mo=msg;
@@ -337,7 +339,7 @@ export default {
           console.log(resp.data);
           this.succes=resp.data.status;
           if (this.succes) {
-            this.open_succes("Plan creado correctamente");
+            this.open_succes("Plantilla creada correctamente");
             this.err_code = true;
           }
           else {
@@ -377,38 +379,44 @@ export default {
       this.tareas.splice(index, 1);
     },
 
+    editar_ready() {
+      this.tareas_edit=[];
+      for (let index = 0; index < this.data_edit[0].detalle.length; index++) {
+        this.tareas_edit.push({
+          "tar_id": this.data_edit[0].detalle[index].tar_id,
+          "ppa_avisokm":this.data_edit[0].detalle[index].ppa_avisokm,
+          "ppa_km":this.data_edit[0].detalle[index].ppa_km
+        });
+      } 
+    },
 
-    editar_usr(){
+    editar_pl(){
       //llamada a API
+      this.editar_ready();
       axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/guiasconfiguracion/actualizar', 
-        { 
-          "gco_id": Number(this.editpointer),
-          "emp_id": Number(this.form_e.rs),
-          "gti_codigo":this.form_e.gti,
-          "gco_serie": this.form_e.serie,
-          "veh_id": this.form_e.veh_id,
-          "gco_activo": this.form_e.estado,
-          "gco_numeromin": this.form_e.n_min,
-          "gco_numeromax": this.form_e.n_max,
-          "gco_usucreacion": this.$store.state.username
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/preventivoplantilla/actualizar', 
+        {
+          "ppa_id": this.editpointer,
+          "emp_id": this.form_e.rs,
+          "vma_id": this.data_edit[0].detalle[0].vma_id,
+          "ppa_descripcion":this.form_e.nombre,
+          "detalle":this.tareas_edit,
+          "ppa_usucreacion": this.$store.state.username
+
         })
         .then((resp) => {
-          console.log(resp.data.status);
+          console.log(resp.data);
           this.succes=resp.data.status;
           if (this.succes) {
-            this.open_succes_ed("Configuracion configurada satisfactoriamente");
+            this.open_succes("Plantilla editada correctamente");
           }
           else {
-            this.open_fail("Hubo un error al comunicarse con el servidor");
+            this.open_fail("Hubo un error con el servidor al ejecutar la operación");
           }
-          console.log(resp);
         })
-        .catch((e)=> {
-          this.open_fail("Hubo un error al comunicarse con el servidor, erro:"+String(e));
-          return false;
+        .catch((e)=>{
+          this.open_fail("Hubo un error con el servidor al ejecutar la operación. Detalles de error: "+String(e));
         })
-        return false;
     },
 
     load_data_edit() {
@@ -416,7 +424,6 @@ export default {
       this.form_e.rs=this.data_edit[0].emp_id;
       this.emp_cont=this.form_e.rs;
       //carga de listas
-
 
       this.form_e.nombre=this.data_edit[0].ppa_descripcion;
       this.form_e.vma_id=this.data_edit[0].vma_nombre;
@@ -615,7 +622,7 @@ export default {
   </el-form>
 </modal>
 
-<modal ref="mo_editar_per" no-close-on-backdrop title="Editar datos de plan de mantenimiento" width="600px" @ok="editar_usr" cancel-title="Cancelar" @cancel="closeedit"  centered>
+<modal ref="mo_editar_per" no-close-on-backdrop title="Editar datos de plantilla" width="600px" @ok="editar_pl" cancel-title="Cancelar" @cancel="closeedit"  centered>
   <el-form v-loading="wait" ref="form_edit_ref" :model="form_e" label-width="150px" >
 
     <el-form-item  label="Razón soc. asoc." prop="rs">

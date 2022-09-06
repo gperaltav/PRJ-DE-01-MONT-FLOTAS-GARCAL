@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { reactive,ref } from 'vue'
 import axios from 'axios'
-import { EditPen, Filter, Plus, Download, CloseBold,Search,CreditCard} from '@element-plus/icons-vue'
+import { EditPen, Filter, Plus, Download, CloseBold,Search,CreditCard ,Delete} from '@element-plus/icons-vue'
 
 import type { FormInstance, FormRules } from 'element-plus'
 
@@ -28,15 +28,24 @@ export default {
 
       alert_mo:'',
       emp_cont:'1',
+      pointer:'',
 
       form_b : reactive({
         nombre: '',
+        descripcion: '',
+        codigo: ''
       }),
 
       form_c : reactive({
-        nombre: '',
-        nombre_c: '',
-        codigo:''
+        rs: '',
+        codigo: '',
+        descripcion:''
+      }),
+
+      form_e : reactive({
+        rs: '',
+        codigo: '',
+        descripcion:''
         
       }),
     }
@@ -66,6 +75,12 @@ export default {
       this.api_get_all();
     },
 
+    close_succes_all() {
+      this.$refs.mo_realizado.hide();
+      this.$refs.mo_create_per.hide();
+      this.api_get_all();
+    },
+
     open_fail(msg) {
       this.alert_mo=msg;
       this.$refs.mo_error.open(); 
@@ -84,6 +99,14 @@ export default {
       this.search_rs_clear();
     },
 
+    open_confirmar(msg) {
+      this.alert_mo=msg;
+      this.$refs.mo_advertencia.open(); 
+    },
+    close_confirmar() {
+      this.$refs.mo_advertencia.hide();
+    },
+
     search_rs_ch() {
       this.emp_cont=this.form_b.rs;
       this.form_b.tipo_gui="";
@@ -92,8 +115,6 @@ export default {
       //cargar listas
       this.get_tipos_doc();
       this.get_formas_cobro();
-      
-
     },
     search_rs_clear() {
       this.form_b.tipo_gui="";
@@ -142,9 +163,11 @@ export default {
     api_get_all(){
       //llamada a API
       axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/ubigeo',
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/productos',
       {
-        "ubi_nombre":"arequipa"
+        "emp_id": 0,
+        "pro_descripcion":"",
+        "pro_codigo":""
       })
       .then((resp) => {
         this.datap = resp.data;
@@ -154,26 +177,60 @@ export default {
 
     api_get_filt(){
       axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/ubigeo', {
-        "ubi_nombre":this.form_b.nombre
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/productos',
+      {
+        "emp_id": this.form_b.rs,
+        "pro_descripcion":this.form_b.descripcion,
+        "pro_codigo":this.form_b.codigo
       })
       .then((resp) => {
         this.datap = resp.data;
         console.log(this.datap);
       })
     },
+
+    send_delete(number) {
+      this.editpointer=number;
+      this.alert_mo="Realmente desea eliminar este producto?";
+      this.$refs.mo_advertencia.open();
+    },
+
+    send_delete_master() {
+      this.$refs.mo_advertencia.hide();
+      axios
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/productos/borrar/'+String(this.editpointer))
+      .then((resp) => {
+        console.log(resp.data);
+        this.succes=resp.data.status;
+
+        if (this.succes) {
+          this.open_succes("Producto eliminado correctamente");
+          return true;
+        }
+        else {
+          this.open_fail("Hubo un error con el servidor al ejecutar la operación");
+          return false;
+        }
+      })
+      .catch((e) => {
+        this.open_fail("Hubo un error con el servidor al ejecutar la operación, c+odigo de error:"+String(e));
+        return false;
+      })
+    },
+
     api_nuevo(){
       axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/ubigeo/nuevo', {
-        "ubi_codigo":this.form_c.codigo,
-        "ubi_nombre": this.form_c.nombre,
-        "ubi_departamento":"",
-        "ubi_provincia":"",
-        "ubi_distrito":"",
-        "ubi_nombrecompleto":this.form_c.nombre_c,
-        "ubi_departamentonombre":"",
-        "ubi_provincianombre":"",
-        "ubi_usucreacion":this.$store.state.username
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/productos/nuevo', {
+        "emp_id": this.form_c.rs,
+        "pro_codigo":this.form_c.codigo,
+        "pro_descripcion":this.form_c.descripcion,
+        "uni_codigomenor":"UNI",
+        "mod_codigo":"SOL",
+        "pro_preciominimo":0,
+        "pro_precioventa":0,
+        "pro_preciocompra":0,
+        "pro_codsunat":"",
+        "pro_usucreacion":this.$store.state.username
       })
       .then((resp) => {
         console.log(resp.data);
@@ -226,11 +283,11 @@ export default {
       </el-form-item>
 
       <el-form-item label="Descripción">
-        <el-input  v-model="form_b.nombre" clearable />
+        <el-input  v-model="form_b.descripcion" clearable />
       </el-form-item>
 
        <el-form-item label="Cód. de producto">
-        <el-input  v-model="form_b.nombre" clearable />
+        <el-input  v-model="form_b.codigo" clearable />
       </el-form-item>
 
 
@@ -252,9 +309,14 @@ export default {
 
   <div class="table-container">
     <el-table :data="datap" border header-row-style="color:black" height="98%">
-      <el-table-column prop="" label="Razón social" width="130" align="center" />
-      <el-table-column prop="" label="Descripción" />
-      <el-table-column prop="" label="Código"/>
+      <el-table-column prop="emp_razonsocial" label="Razón social" width="170" align="center" />
+      <el-table-column prop="pro_descripcion" label="Descripción" />
+      <el-table-column prop="pro_codsunat" label="Código"/>
+      <el-table-column fixed="right" label="" width="45" align="center">
+        <template #default="scope">
+          <el-button  type="text"  @click="send_delete(scope.row.pro_id)" ><el-icon :size="17"><Delete /></el-icon></el-button>
+        </template>
+      </el-table-column>
     </el-table>
   </div>
 </div>
@@ -275,18 +337,18 @@ export default {
     </el-form-item>
     
     <el-form-item label="Código de producto">
-      <el-input v-model="form_c.nombre" />
+      <el-input style="width:300px" v-model="form_c.codigo" />
     </el-form-item>
 
-    <el-form-item label="Descripción de producto">
-      <el-input v-model="form_c.nombre_c" />
-    </el-form-item>
-
-    <el-form-item label="Código asignado">
-      <el-input v-model="form_c.codigo" />
+    <el-form-item label="Descripción">
+      <el-input style="width:300px" v-model="form_c.descripcion" />
     </el-form-item>
 
   </el-form>
+</modal>
+
+<modal ref="mo_advertencia" title="Confirmar" centered @ok="send_delete_master" @cancel="close_confirmar" ok-title="Si" cancel-title="Cancelar" >
+  {{alert_mo}}
 </modal>
 
 <modal ref="mo_realizado" success title="Operacion completada" centered @ok="close_succes_all" @cancel="close_succes" ok-title="Cerrar" cancel-title="Atras" >
@@ -295,8 +357,9 @@ export default {
 
 <modal ref="mo_error"  hide-cancel error title="Error al ejecutar operación" centered @ok="close_fail">
   {{alert_mo}}
-  <br/> {{alert_cause}}
 </modal>
+
+
 
 </template>
 
