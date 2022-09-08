@@ -161,7 +161,8 @@ const router = createRouter({
     {
       path: '/test',
       name: 'Testing area',
-      component: () => import('../views/Mantenimiento/Test.vue'),
+      // component: () => import('../views/Mantenimiento/Test.vue'),
+      component: () => import('../views/login_beta.vue'),
     },
 
   ]

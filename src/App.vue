@@ -15,6 +15,7 @@ const handleClose = (key: string, keyPath: string[]) => {
 
 <script lang="ts">
   import Login from "./views/Login.vue"
+  import Loginb from "./views/login_beta.vue"
   export default {
     name: 'App',
 
@@ -27,6 +28,7 @@ const handleClose = (key: string, keyPath: string[]) => {
 
     components: {
       Login,
+      Loginb
     },
     mounted() {
       console.log(this.$store.state.authenticated);

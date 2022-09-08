@@ -1,28 +1,34 @@
-# router-test
+# Detalles generales
+- Nombre de aplicación: ERP Garcal
+- Lenguaje principal: JavaScript
+- Librerias usadas:
+  - Vite js
+  - Sketch.js
+  - Axios 
 
-This template should help get you started developing with Vue 3 in Vite.
+# Detalles técnicos
 
-## Recommended IDE Setup
+Configuración del sistema para desarrollo
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+## Configuracion de IDE
 
-## Customize configuration
+[VSCode](https://code.visualstudio.com/) + Vetur (Extensión de VSCode)
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+## Instalacion de dependencias
 
-## Project Setup
+En la carpeta contenedora (src) o con vscode ejecutar el comando
 
 ```sh
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+### Modo de desarrollo
 
 ```sh
 npm run dev
 ```
 
-### Compile and Minify for Production
+### Compilar para produccion y despliegue
 
 ```sh
 npm run build
