@@ -18,11 +18,14 @@ export default {
     rs_disable() {
       return this.form_c.rs=='';
     },
+    b_rs_disable() {
+      return this.form_b.rs=='';
+    },
     veh_disable() {
       return this.form_c.veh_id=='';
     },
     tarea_vacia() {
-      return this.nueva_tarea=='';
+      return this.nueva_tarea=='' || this.nt_km=='' || this.nt_aviso_km=='' ;
     }
   },
   data(){
@@ -67,7 +70,6 @@ export default {
       form_e : reactive({
         rs: '',
         veh_id: '',
-        plan_id:'',
         tarea_tmp:'',
       }),
     }
@@ -139,8 +141,8 @@ export default {
 
     //eventos
 
-    rs_changer() {
-      this.emp_cont=this.form_c.rs;
+    rs_changer(val) {
+      this.emp_cont=val;
     },
 
     clear_c() {
@@ -257,7 +259,8 @@ export default {
     search_tareas(key) {
       axios
         .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/tareas',{
-          "tar_descripcion": key
+          "tar_descripcion": key,
+          "emp_id": this.emp_cont
         })
         .then((resp) => {
           console.log(resp.data);
@@ -757,6 +760,9 @@ export default {
       <el-button color="#0844a4" :icon="Plus" :disabled='tarea_vacia' @click="insertar_tarea_act">
         Agregar
       </el-button>
+    </el-row>
+    <el-row style="text-align=center" >
+      <el-button style="margin-top:30px;margin-left: auto;margin-right: auto" color="#E21747" :icon="CloseBold" @click="open_confirmar('Realmente desea eliminar esta plantilla?')">Eliminar</el-button>
     </el-row>
 
   </el-form>

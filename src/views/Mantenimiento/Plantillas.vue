@@ -18,11 +18,14 @@ export default {
     rs_disable() {
       return this.form_c.rs=='';
     },
+    b_rs_disable() {
+      return this.form_b.rs=='';
+    },
     veh_disable() {
       return this.form_c.veh_id=='';
     },
     tarea_vacia() {
-      return this.nueva_tarea=='';
+      return this.nueva_tarea=='' || this.nt_km=='' || this.nt_aviso_km=='' ;
     }
   },
   data(){
@@ -55,7 +58,7 @@ export default {
 
       form_b : reactive({
         rs: '',
-        placa:'',
+        vma_id:'',
       }),
 
       form_c : reactive({
@@ -133,6 +136,8 @@ export default {
       this.search_rs_clear();
     },
     opencrear() {
+      this.clear_cr();
+      this.clear_tar();
       this.load_rs();
       this.$refs.mo_create_per.open();
     },
@@ -141,10 +146,50 @@ export default {
       this.search_rs_clear();
     },
 
+    search_rs_clear() {
+      this.form_b.rs='';
+      this.form_b.vma_id='';
+    },
+
+    clear_tar() {
+      this.tareas=[];
+      this.nueva_tarea='';
+      this.nt_aviso_km='';
+      this.nt_km='';
+    },
+
+    clear_cr() {
+      this.opt_tar=[];
+      this.opt_mar=[];
+
+      this.form_c.rs= '';
+      this.form_c.vma_id= '';
+      this.form_c.nombre='';
+
+      this.form_c.tarea_tmp='';
+
+    },
+
+    clear_ed() {
+      this.opt_tar=[];
+
+      this.form_e.rs= '';
+      this.form_e.vma_id= '';
+      this.form_e.nombre='';
+
+      this.form_e.tarea_tmp='';
+
+    },
+
     //eventos
 
-    rs_changer() {
-      this.emp_cont=this.form_c.rs;
+    rs_changer(val) {
+      this.emp_cont=val;
+    },
+
+    search_rs_ch(val) {
+      this.form_b.vma_id='';
+      this.emp_cont=val
     },
 
     clear_c() {
@@ -190,11 +235,11 @@ export default {
       this.$refs.mo_advertencia_eliim.hide();
       this.err_code=false;
       axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/borrar/',
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/preventivoplantilla/borrar',
         {
-          "ent_id":String(this.editpointer),
-          "emp_id":String(this.form_e.rs),
-          "ext_id":this.var_type
+          "emp_id":this.data_edit[0].emp_id,
+          "vma_id":this.data_edit[0].vma_id,
+          "ppa_descripcion":this.data_edit[0].ppa_descripcion
         })
         .then((resp) => {
           console.log(resp.data);
@@ -233,7 +278,7 @@ export default {
       axios
       .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculosmarcas', 
       {
-        "emp_id":this.form_c.rs,
+        "emp_id":this.emp_cont,
         "vma_nombre":query
       })
       .then((resp) => {
@@ -265,7 +310,8 @@ export default {
     search_tareas(key) {
       axios
         .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/tareas',{
-          "tar_descripcion": key
+          "tar_descripcion": key,
+          "emp_id": this.emp_cont
         })
         .then((resp) => {
           console.log(resp.data);
@@ -375,6 +421,25 @@ export default {
       }
     },
 
+    insertar_tarea_act2 () {
+      for (let tmp in this.opt_tar)  {
+        console.log(tmp);
+        if (this.opt_tar[tmp].tar_codigo == this.nueva_tarea) {
+          this.tareas.push({
+            "tar_descripcion":this.opt_tar[tmp].tar_descripcion,
+            "ppa_avisokm":this.nt_aviso_km,
+            "ppa_km":this.nt_km
+          });
+          this.tareas_edit.push({
+            "tar_id": this.opt_tar[tmp].tar_id,
+            "ppa_avisokm":this.nt_aviso_km,
+            "ppa_km":this.nt_km
+          });
+          return;
+        }
+      }
+    },
+
     eliminar_tarea_act(index) {
       this.tareas.splice(index, 1);
     },
@@ -392,10 +457,8 @@ export default {
 
     editar_pl(){
       //llamada a API
-      this.editar_ready();
-      axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/preventivoplantilla/actualizar', 
-        {
+      
+      console.log({
           "ppa_id": this.editpointer,
           "emp_id": this.form_e.rs,
           "vma_id": this.data_edit[0].detalle[0].vma_id,
@@ -403,6 +466,16 @@ export default {
           "detalle":this.tareas_edit,
           "ppa_usucreacion": this.$store.state.username
 
+        });
+      axios
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/preventivoplantilla/actualizar', 
+        {
+          "ppa_id": this.editpointer,
+          "emp_id": this.form_e.rs,
+          "vma_id": this.data_edit[0].vma_id,
+          "ppa_descripcion":this.form_e.nombre,
+          "detalle":this.tareas_edit,
+          "ppa_usucreacion": this.$store.state.username
         })
         .then((resp) => {
           console.log(resp.data);
@@ -428,22 +501,27 @@ export default {
       this.form_e.nombre=this.data_edit[0].ppa_descripcion;
       this.form_e.vma_id=this.data_edit[0].vma_nombre;
       this.tareas=this.data_edit[0].detalle;
+      this.editar_ready();
     },
 
 
-    button_handle(number){
+    button_handle(number,number2,number3){
+      this.clear_ed();
+      this.clear_tar();
       console.log(number);
       this.editpointer=number;
       this.$refs.mo_editar_per.open();
       this.wait = true;
       axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/preventivoplantilla/det',{
-        "ppa_id":number
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/preventivoplantilla/det_otro',
+      {       
+       "emp_razonsocial": number,
+       "vma_id": number2,
+       "ppa_descripcion": number3
       })
         .then((resp) => {
           this.data_edit = resp.data;
           this.load_data_edit();
-          this.emp_cont=this.form_e.rs;
           this.wait = false;
         })
         .catch((e)=> {
@@ -480,14 +558,26 @@ export default {
           </el-select>
         </el-form-item>
 
-        <el-form-item label="Marca">
-          <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
+        <el-form-item  label="Marca asoc. ">
+          <el-select
+            v-model="form_b.vma_id"
+            filterable
+            :remote-method="buscar_marcas"
+            placeholder="Inserte nombre de marca"
+            remote
+            clearable
+            :disabled=b_rs_disable
+            style="width:300px"
+          >
+            <template #prefix>
+              <el-icon><Search /></el-icon>
+            </template>
             <el-option
-              v-for="item in opt_rs"
-              :key="item.emp_id"
-              :label="item.emp_razonsocial"
-              :value="item.emp_id"
-            > </el-option>
+              v-for="item in opt_mar"
+              :key="item.vma_id"
+              :label="item.vma_nombre"
+              :value="item.vma_id"
+            />
           </el-select>
         </el-form-item>
       </el-col>
@@ -507,14 +597,14 @@ export default {
   </el-form>
 
   <div class="table-container" style="width:600px;margin-left: auto;margin-right: auto;padding-right:220px">
-    <el-table :data="datap" border header-row-style="color:black;"  height="98%">
+    <el-table :data="datap" border header-row-style="color:black;" height="98%" :default-sort="{ prop: 'emp_razonsocial', order: 'ascending' }">
       <el-table-column prop="emp_razonsocial" label="Razon soc. aso." width="150" align="center"/>
       <el-table-column prop="ppa_descripcion" label="Nombre" />
       <el-table-column prop="vma_nombre" label="Marca asoc."  />
       
       <el-table-column fixed="right" label="" width="45" align="center">
         <template #default="scope">
-          <el-button  type="text"  @click="button_handle(scope.row.ppa_id)" ><el-icon :size="17"><EditPen /></el-icon></el-button>
+          <el-button  type="text"  @click="button_handle(scope.row.emp_razonsocial,scope.row.vma_id,scope.row.ppa_descripcion)" ><el-icon :size="17"><EditPen /></el-icon></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -693,11 +783,13 @@ export default {
         :disabled=veh_disable
         style="width:90px;padding-right:10px"
       />
-      <el-button color="#0844a4" :icon="Plus" :disabled='tarea_vacia' @click="insertar_tarea_act">
+      <el-button color="#0844a4" :icon="Plus" :disabled='tarea_vacia' @click="insertar_tarea_act2">
         Agregar
       </el-button>
     </el-row>
-
+    <el-row style="text-align=center" >
+      <el-button style="margin-top:30px;margin-left: auto;margin-right: auto" color="#E21747" :icon="CloseBold" @click="open_confirmar('Realmente desea eliminar esta plantilla?')">Eliminar</el-button>
+    </el-row>
   </el-form>
 </modal>
 

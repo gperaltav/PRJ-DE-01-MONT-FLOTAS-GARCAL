@@ -139,8 +139,8 @@ import '../assets/sketch.min.js'
                 max: (i + 1) * 90
               },
               height: {
-                min: 250 - (i * 40),
-                max: 350 - (i * 40)
+                min: 250 - (i * 30),
+                max: 350 - (i * 30)
               },
               speed: (i + 1) * .003,
               color: 'hsl( 206, ' + (((i + 1) * 1) + 10) + '%, ' + (50 + (i * 13)) + '% )'
@@ -358,7 +358,6 @@ import '../assets/sketch.min.js'
   max-width: 300px;
   margin: 0 auto;
 }
-
 
 #sketch-area {
   background: url(https://jackrugile.com/images/misc/skyline-texture.png);
