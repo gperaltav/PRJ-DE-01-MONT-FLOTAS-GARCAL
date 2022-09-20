@@ -31,6 +31,7 @@ export default {
   data(){
     return {
       editpointer:0,
+      editpointer2:0,
       succes: false,
       datap: [],
       tareas:[],
@@ -72,6 +73,12 @@ export default {
         veh_id: '',
         tarea_tmp:'',
       }),
+
+      form_et : reactive({
+        nom: '',
+        km: '',
+        avisokm:'',
+      }),
     }
   },
 
@@ -101,15 +108,27 @@ export default {
       this.clear_c();
       this.$refs.mo_create_per.hide();
       this.$refs.mo_editar_per.hide();
+      
       this.api_get_all();
       this.search_rs_clear();
     },
+
     close_succes_ed() {
       this.$refs.mo_realizado_ed.hide(); 
       this.$refs.mo_editar_per.hide();
       this.api_get_all();
       this.search_rs_clear();
     },
+
+    open_succes_ed2(msg) {
+      this.alert_mo=msg;
+      this.$refs.mo_realizado_ed2.open();
+    },
+    close_succes_ed2() {
+      this.$refs.mo_realizado_ed2.hide();
+      this.$refs.mo_edit_tar.hide();
+    },
+
     open_fail(msg) {
       this.alert_mo=msg;
       this.$refs.mo_error.open(); 
@@ -137,6 +156,12 @@ export default {
     closecrear() {
       this.$refs.mo_create_per.hide();
       this.search_rs_clear();
+    },
+    closeedittar() {
+      this.$refs.mo_edit_tar.hide();
+      this.form_et.nom="";
+      this.form_et.km="";
+      this.form_et.avisokm="";
     },
 
     //eventos
@@ -216,10 +241,10 @@ export default {
 
     get_vehiculos(query) {
       axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/controldocumentosvehiculos', 
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos/placa', 
       {
-        "emp_id": this.form_c.rs,
-        "via_fechaviaje":query
+        "emp_id": this.emp_cont,
+        "veh_placa":query
       })
       .then((resp) => {
         console.log(resp);
@@ -395,20 +420,52 @@ export default {
     insertar_tarea_act () {
       for (let tmp in this.opt_tar)  {
         console.log(tmp);
-        if (this.opt_tar[tmp].tar_codigo == this.nueva_tarea) {
+        if (this.opt_tar[tmp].tar_id == this.nueva_tarea) {
           this.tareas.push({
             "tar_descripcion":this.opt_tar[tmp].tar_descripcion,
-            "ppa_avisokm":this.nt_aviso_km,
-            "ppa_km":this.nt_km
+            "pma_avisokm":this.nt_aviso_km,
+            "pma_km":this.nt_km
           });
           this.tareas_ins.push({
             "tar_id": this.opt_tar[tmp].tar_id,
-            "ppa_avisokm":this.nt_aviso_km,
-            "ppa_km":this.nt_km
+            "pma_avisokm":this.nt_aviso_km,
+            "pma_km":this.nt_km
           });
           return;
         }
       }
+    },
+
+    insertar_tarea_act_fn () {      
+      axios
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/programacionmantenimiento/nuevo', 
+        {
+          "emp_id": this.form_e.rs,
+          "veh_id": this.editpointer,
+          "detalle":{
+            "tar_id": this.nueva_tarea,
+            "pma_avisokm":Number(this.nt_aviso_km),
+            "pma_km":Number(this.nt_km)
+          },
+          "pma_fechamantenimiento": null,
+          "pma_ultimokm": 0,
+          "pma_usucreacion": this.$store.state.username
+
+        })
+        .then((resp) => {
+          console.log(resp.data);
+          this.succes=resp.data.status;
+          if (this.succes) {
+            this.open_succes_ed2("Tarea creada correctamente");
+            this.button_handle(this.editpointer);
+          }
+          else {
+            this.open_fail("Hubo un error con el servidor al ejecutar la operación","Código de error: "+resp.data.message);
+          }
+        })
+        .catch((e)=>{
+          this.open_fail("Hubo un error con el servidor al ejecutar la operación. Detalles de error: "+String(e));
+        })
     },
 
     eliminar_tarea_act(index) {
@@ -418,14 +475,48 @@ export default {
 
     editar_ready() {
       this.tareas_edit=[];
-      for (let index = 0; index < this.data_edit[0].detalle.length; index++) {
-        
+      for (let index = 0; index < this.data_edit[0].detalle.length; index++) {   
         this.tareas_edit.push({
           "tar_id": this.data_edit[0].detalle[index].tar_id,
-          "ppa_avisokm":this.data_edit[0].detalle[index].nt_aviso_km,
-          "ppa_km":this.data_edit[0].detalle[index].nt_km
+          "pma_avisokm":this.data_edit[0].detalle[index].nt_aviso_km,
+          "pma_km":this.data_edit[0].detalle[index].nt_km
         });
       } 
+    },
+
+    get_tar(id) {
+      for (let index = 0; index < this.data_edit[0].detalle.length; index++) {   
+        if(this.data_edit[0].detalle[index].pma_id==id) {
+          this.form_et.nom=this.data_edit[0].detalle[index].tar_descripcion;
+          this.form_et.km=this.data_edit[0].detalle[index].pma_km;
+          this.form_et.avisokm=this.data_edit[0].detalle[index].pma_avisokm;
+        }
+      } 
+    },
+
+    edit_tar() {
+      axios
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/programacionmantenimiento/actualizar', 
+        {
+          "pma_id": this.editpointer2,
+          "pma_avisokm": this.form_et.avisokm,
+          "pma_km": this.form_et.km,
+          "pma_usucreacion":this.$store.state.username
+        })
+        .then((resp) => {
+          console.log(resp.data);
+          this.succes=resp.data.status;
+          if (this.succes) {
+            this.open_succes_ed2("Tarea editada correctamente");
+            this.button_handle(this.editpointer);
+          }
+          else {
+            this.open_fail("Hubo un error con el servidor al ejecutar la operación");
+          }
+        })
+        .catch((e)=>{
+          this.open_fail("Hubo un error con el servidor al ejecutar la operación. Detalles de error: "+String(e));
+        })
     },
 
     editar_pl(){
@@ -473,9 +564,9 @@ export default {
       this.$refs.mo_editar_per.open();
       this.wait = true;
       axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/programacionmantenimiento/det',
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/programacionmantenimiento/buscar',
       {
-        "pma_id":number
+        "veh_id":number
       })
         .then((resp) => {
           this.data_edit = resp.data;
@@ -487,6 +578,13 @@ export default {
           this.open_fail("Hubo un error con el servidor al cargar los datos, error: "+String(e));
           this.$refs.mo_editar_per.hide();
         })
+    },
+
+    button_handle2(number){
+      console.log(number);
+      this.editpointer2=number;
+      this.$refs.mo_edit_tar.open();
+      this.get_tar(number);
     }
   },
 
@@ -542,7 +640,7 @@ export default {
       <el-table-column prop="tar_cantidad" label="Nro. de tareas" width="180" align="center"/>
       <el-table-column fixed="right" label="" width="45" align="center">
         <template #default="scope">
-          <el-button  type="text"  @click="button_handle(scope.row.pma_id)" ><el-icon :size="17"><EditPen /></el-icon></el-button>
+          <el-button  type="text"  @click="button_handle(scope.row.veh_id)" ><el-icon :size="17"><EditPen /></el-icon></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -565,7 +663,7 @@ export default {
       </el-select>
     </el-form-item>
 
-    <el-form-item  label="Vehiculo ">
+    <el-form-item  label="Vehiculo">
       <el-select
         v-model="form_c.veh_id"
         filterable
@@ -582,7 +680,7 @@ export default {
         </template>
         <el-option
           v-for="item in opt_veh"
-          :key="item.veh_id"
+          :key="item.veh_placa"
           :label="item.veh_placa"
           :value="item.veh_id"
         />
@@ -614,8 +712,8 @@ export default {
     <div class="table-container" style="width:500px;margin-left: auto;margin-right: auto">
       <el-table :data="tareas" border header-row-style="color:black;"  height="98%" size="small">
         <el-table-column prop="tar_descripcion" label="Tarea" width="250" />
-        <el-table-column prop="ppa_avisokm" label="Aviso km." align="center" />
-        <el-table-column prop="ppa_km" label="Km."  align="center"/>
+        <el-table-column prop="pma_avisokm" label="Aviso km." align="center" />
+        <el-table-column prop="pma_km" label="Km."  align="center"/>
         <el-table-column fixed="right" label="" width="45" align="center">
           <template #default="scope">
             <el-button  type="text"  @click="eliminar_tarea_act(scope.$index)" ><el-icon :size="17"><Delete /></el-icon></el-button>
@@ -642,9 +740,9 @@ export default {
         </template>
         <el-option
           v-for="item in opt_tar"
-          :key="item.tar_codigo"
+          :key="item.tar_id"
           :label="item.tar_descripcion"
-          :value="item.tar_codigo"
+          :value="item.tar_id"
         />
       </el-select>
       <el-input
@@ -714,7 +812,7 @@ export default {
         <el-table-column prop="pma_km" label="Km."  align="center"/>
         <el-table-column fixed="right" label="" width="45" align="center">
           <template #default="scope">
-            <el-button  type="text"  @click="eliminar_tarea_act(scope.$index)" ><el-icon :size="17"><Delete /></el-icon></el-button>
+            <el-button  type="text"  @click="button_handle2(scope.row.pma_id)" ><el-icon :size="17"><EditPen /></el-icon></el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -730,7 +828,7 @@ export default {
         placeholder="Tarea"
         remote
         clearable
-        :disabled=veh_disable
+
         style="width:150px;padding-right:5px"
       >
         <template #prefix>
@@ -738,32 +836,47 @@ export default {
         </template>
         <el-option
           v-for="item in opt_tar"
-          :key="item.tar_codigo"
+          :key="item.tar_id"
           :label="item.tar_descripcion"
-          :value="item.tar_codigo"
+          :value="item.tar_id"
         />
       </el-select>
       <el-input
         v-model="nt_aviso_km"
         placeholder="Aviso km"
         clearable
-        :disabled=veh_disable
         style="width:90px;padding-right:5px"
       />
       <el-input
         v-model="nt_km"
         placeholder="Km"
         clearable
-        :disabled=veh_disable
         style="width:90px;padding-right:10px"
       />
-      <el-button color="#0844a4" :icon="Plus" :disabled='tarea_vacia' @click="insertar_tarea_act">
+      <el-button color="#0844a4" :icon="Plus" :disabled='tarea_vacia' @click="insertar_tarea_act_fn">
         Agregar
       </el-button>
     </el-row>
-    <el-row style="text-align=center" >
-      <el-button style="margin-top:30px;margin-left: auto;margin-right: auto" color="#E21747" :icon="CloseBold" @click="open_confirmar('Realmente desea eliminar esta plantilla?')">Eliminar</el-button>
-    </el-row>
+
+  </el-form>
+</modal>
+
+<modal ref="mo_edit_tar" no-close-on-backdrop title="Editar tarea" width="500px" @ok="edit_tar" @cancel="closeedittar" cancel-title="Atras" centered>
+  <el-form  @submit.prevent ref="form_cref" :rules="rules" :model="form_c" label-width="150px" >
+    
+    <el-form-item label="Nombre de ubigeo">
+      <el-input disabled v-model="form_et.nom" />
+    </el-form-item>
+
+    <el-form-item label="Aviso km.">
+      <el-input v-model="form_et.avisokm" />
+    </el-form-item>
+
+    <el-form-item label="Km.">
+      <el-input v-model="form_et.km" />
+    </el-form-item>
+
+    
 
   </el-form>
 </modal>
@@ -777,6 +890,10 @@ export default {
 </modal>
 
 <modal ref="mo_realizado_ed" hide-cancel success title="Operacion completada" centered @ok="close_succes_ed" cancel-title="Atras" >
+  {{alert_mo}}
+</modal>
+
+<modal ref="mo_realizado_ed2" hide-cancel success title="Operacion completada" centered @ok="close_succes_ed2" cancel-title="Atras" >
   {{alert_mo}}
 </modal>
 
