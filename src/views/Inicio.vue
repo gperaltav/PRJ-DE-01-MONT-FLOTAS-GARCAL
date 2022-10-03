@@ -26,6 +26,7 @@ export default {
 
       data_tra1:[],
       data_tra2:[],
+      data_t2:[],
 
       wait:false,
 
@@ -302,6 +303,15 @@ export default {
         })
     },
 
+    get_fig2() {
+      axios
+        .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/controldocumentosvehiculos/graficos')
+        .then((resp) => {
+          console.log(resp);
+          this.data_t2 = resp.data;
+        })
+    },
+
     get_plot() {
       this.data_tra1=[];
       this.data_tra2=[];
@@ -339,8 +349,8 @@ export default {
                   y: 0.5
                 }
               ],
-              height: 300,
-              width: 300,
+              height: 350,
+              width: 350,
               showlegend: false,
               grid: {rows: 1, columns: 1}
             };
@@ -363,6 +373,7 @@ export default {
   mounted () {
      this.api_get_all();
      this.get_plot();
+     this.get_fig2();
   },
 }
 </script>
@@ -370,9 +381,49 @@ export default {
 
 <template>
 
-  <div id="graph1">
-    
-  </div>
+<el-row>
+  <el-col :span="8">
+    <div id="graph1"> 
+    </div>
+  </el-col>
+  <el-col :span="8" style="margin-top:30px">
+    <span style="margin-button:30px">Documentos a vencer:</span>
+    <el-table size="small" :data="data_t2" style="width: 100%" height="250">
+      <el-table-column prop="emp_razonsocial" label="Empresa"  />
+      <el-table-column prop="veh_placa" label="Placa" />
+      <el-table-column prop="vtd_nombre" label="Tipo doc." />
+      <el-table-column prop="vxd_fechavencimiento" label="Venc."/>
+       <el-table-column prop="vcl_nombre" label="Clase"  />
+    </el-table>
+  </el-col>
+  <el-col :span="8">
+
+  </el-col>
+</el-row>
+
+<el-row>
+  <el-col :span="8">
+
+  </el-col>
+  <el-col :span="8">
+
+  </el-col>
+  <el-col :span="8">
+
+  </el-col>
+</el-row>
+
+<el-row>
+  <el-col :span="8">
+
+  </el-col>
+  <el-col :span="8">
+
+  </el-col>
+  <el-col :span="8">
+
+  </el-col>
+</el-row>
 
 </template>
 
