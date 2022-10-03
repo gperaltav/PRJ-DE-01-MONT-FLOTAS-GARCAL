@@ -49,9 +49,9 @@ export default {
 
       form_b : reactive({
         rs: '',
-        nro_doc: '',
-        nombre: '',
-        f_pago: '',
+        codigo: '',
+        estado: '',
+        fecha_inicio: '',
       }),
 
       form_c : reactive({
@@ -59,7 +59,7 @@ export default {
         veh_id: '',
         fecha:null,
         estado:false,
-        kilometraje:'',
+        km:'',
       }),
 
       form_e : reactive({
@@ -298,26 +298,25 @@ export default {
     },
 
     api_get_filt(){
-      console.log(this.form_b.rs);
       axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad', 
-        {
-          "emp_id": String(this.form_b.rs),
-          "ext_id":this.var_type,
-          "ent_nombre":this.form_b.nombre, 
-          "ent_nrodocumento":this.form_b.nro_doc,
-          "fdp_id":this.form_b.f_pago,
-          "pro_descripcion":""
-        })
-        .then((resp) => {
-          console.log(resp);
-          this.datap = resp.data;
-        })
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/mantenimientoscab', 
+      {
+        "emp_id":0,
+        "man_numero":0,
+        "man_estado":"",
+        "man_fecha_inicio":"2022-01-01",
+        "man_fecha_fin":"2022-09-09"
+      })
+      .then((resp) => {
+        console.log(resp);
+        this.datap = resp.data;
+        console.log(this.datap);
+      })
     },
 
     seleccionar_veh(id) {
       axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/programacionmantenimiento/buscar',
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/programacionmantenimiento/obtener',
       {
         "veh_id":id
       })
@@ -367,7 +366,7 @@ export default {
         "usu_codigo": this.$store.state.username,
         "man_usucreacion": this.$store.state.username,
         "man_numero":0,
-        "man_kilometraje":this.form_c.Kilometraje,
+        "man_kilometraje":this.form_c.km,
         "detalle":this.tareas_ins
       });
       
@@ -380,7 +379,7 @@ export default {
         "usu_codigo": this.$store.state.username,
         "man_usucreacion": this.$store.state.username,
         "man_numero":0,
-        "man_kilometraje":this.form_c.Kilometraje,
+        "man_kilometraje":this.form_c.km,
         "detalle":this.tareas_ins
       })
       .then((resp) => {
@@ -545,7 +544,7 @@ export default {
     <el-table :data="datap" border header-row-style="color:black;" height="98%">
       <el-table-column prop="emp_razonsocial" label="Razon soc. aso." width="140" align="center"/>
       <el-table-column prop="man_numero" label="Número" />
-      <el-table-column prop="man_fecha" label="Fecha de emisión" align="center"/> 
+      <el-table-column prop="man_fecha" label="Fecha de mantenimiento" align="center"/> 
       <el-table-column prop="veh_placa" label="Placa" /> 
       <el-table-column prop="man_total" label="Total de gastos" /> 
 
@@ -554,68 +553,67 @@ export default {
 </div>
 
 
-<modal ref="mo_create_per" no-close-on-backdrop title="Agregar guia de configuración" width="700px" @ok="create_usr()" @cancel="closecrear" cancel-title="Atras" centered>
+<modal ref="mo_create_per" no-close-on-backdrop title="Agregar guia de mantenimiento" width="700px" @ok="create_usr()" @cancel="closecrear" cancel-title="Atras" centered>
   <el-form ref="form_cref" :rules="rules" :model="form_c" label-width="130px" >
 
     <el-row style="margin-right:20px">
-    <el-col :span="12">
-      <el-form-item  label="Razón soc. asoc." prop="rs">
-        <el-select style="width:300px" v-model="form_c.rs" @change="rs_changer" placeholder="Seleccionar">
-          <el-option
-            v-for="item in opt_rs"
-            :key="item.emp_id"
-            :label="item.emp_razonsocial"
-            :value="item.emp_id"
-          > </el-option>
-        </el-select>
-      </el-form-item>
-    </el-col>
-    <el-col :span="12">
-      <el-form-item  label="Vehiculo ">
-        <el-select
-          v-model="form_c.veh_id"
-          filterable
-          :remote-method="get_vehiculos"
-          placeholder="Inserte ID de vehiculo"
-          remote
-          clearable
-          :disabled=rs_disable
-          @change="seleccionar_veh"
-          style="width:300px"
-        >
-          <template #prefix>
-            <el-icon><Search /></el-icon>
-          </template>
-          <el-option
-            v-for="item in opt_veh"
-            :key="item.veh_id"
-            :label="item.veh_placa"
-            :value="item.veh_id"
-          />
-        </el-select>
-      </el-form-item>
-    </el-col>
+      <el-col :span="12">
+        <el-form-item  label="Razón soc. asoc." prop="rs">
+          <el-select style="width:300px" v-model="form_c.rs" @change="rs_changer" placeholder="Seleccionar">
+            <el-option
+              v-for="item in opt_rs"
+              :key="item.emp_id"
+              :label="item.emp_razonsocial"
+              :value="item.emp_id"
+            > </el-option>
+          </el-select>
+        </el-form-item>
+      </el-col>
+      <el-col :span="12">
+        <el-form-item  label="Vehiculo ">
+          <el-select
+            v-model="form_c.veh_id"
+            filterable
+            :remote-method="get_vehiculos"
+            placeholder="Inserte ID de vehiculo"
+            remote
+            clearable
+            :disabled=rs_disable
+            @change="seleccionar_veh"
+            style="width:300px"
+          >
+            <template #prefix>
+              <el-icon><Search /></el-icon>
+            </template>
+            <el-option
+              v-for="item in opt_veh"
+              :key="item.veh_id"
+              :label="item.veh_placa"
+              :value="item.veh_id"
+            />
+          </el-select>
+        </el-form-item>
+      </el-col>
     </el-row>
 
     <el-row style="margin-right:20px">
-    <el-col :span="12">
-    <el-form-item  label="Fecha de mant.">
-    
-      <el-date-picker
-        v-model="form_c.fecha"
-        format="YYYY-MM-DD"
-        value-format="YYYY-MM-DD"
-        type="date"
-        placeholder="Seleccione fecha"
-        style="width: 100%"
-      />
-    </el-form-item>
-    </el-col>
-    <el-col :span="12">
-    <el-form-item  label="Kilometraje ">
-      <el-input v-model="form_c.kilometraje" clearable />
-    </el-form-item>
-    </el-col>
+      <el-col :span="12">
+        <el-form-item  label="Fecha de mant.">
+          <el-date-picker
+            v-model="form_c.fecha"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
+            type="date"
+            placeholder="Seleccione fecha"
+            style="width: 100%"
+          />
+        </el-form-item>
+      </el-col>
+      <el-col :span="12">
+        <el-form-item  label="Kilometraje ">
+          <el-input v-model="form_c.km" clearable />
+        </el-form-item>
+      </el-col>
     </el-row>
 
     <el-row>
@@ -627,7 +625,7 @@ export default {
           <div >
           <el-table :data="tareas1" border header-row-style="color:black;" >
               <el-table-column prop='tar_descripcion' label="Tarea"  align="center" />
-              <el-table-column prop='' label="Estado"  align="center" />
+              <el-table-column prop='pma_estado' label="Estado"  align="center" />
               <el-table-column prop='pma_ultimokm' label="Ultimo km."  align="center" />
             </el-table>
           </div>
@@ -642,46 +640,47 @@ export default {
         </el-header>
         <el-main>
 
-        <el-col justify="center">
-          <el-form-item  label="Tarea" >
-            <el-select
-              v-model="nueva_tarea"
-              filterable
-              :remote-method="search_tareas"
-              placeholder="Inserte tarea"
-              remote
-              clearable
-
-              style="width:150px;padding-right:5px"
-            >
-              <template #prefix>
-                <el-icon><Search /></el-icon>
-              </template>
-              <el-option
-                v-for="item in opt_tar"
-                :key="item.tar_id"
-                :label="item.tar_descripcion"
-                :value="item.tar_id"
+        <el-row justify="center">
+          <el-col :span="18">
+            <el-form-item  label="Tarea" >
+              <el-select
+                v-model="nueva_tarea"
+                filterable
+                :remote-method="search_tareas"
+                placeholder="Inserte tarea"
+                remote
+                clearable
+                style="width:150px;padding-right:5px"
+              >
+                <template #prefix>
+                  <el-icon><Search /></el-icon>
+                </template>
+                <el-option
+                  v-for="item in opt_tar"
+                  :key="item.tar_id"
+                  :label="item.tar_descripcion"
+                  :value="item.tar_id"
+                />
+              </el-select>
+              <el-input 
+                v-model="descripcion" 
+                placeholder="Descripción"
+                clearable 
+                style="width:150px;padding-right:5px"
               />
-            </el-select>
-
-            <el-input 
-              v-model="descripcion" 
-              placeholder="Descripción"
-              clearable 
-              style="width:150px;padding-right:5px"
-            />
-
             <el-input 
               v-model="observacion" 
               placeholder="Observación"
               clearable 
-              style="width:150px;padding-right:5px"
+              style="width:300px;padding-right:5px"
             />
-            <el-button color="#008db1" :icon="Plus"  @click="insertar_tarea_act" style="margin-left: auto;margin-right: auto">Agregar</el-button>
-          </el-form-item>
-          
-        </el-col>
+            </el-form-item>
+          </el-col>
+          <el-col  :span="6">
+            <el-button color="#008db1" :icon="Plus"  @click="insertar_tarea_act" >Agregar</el-button>
+          </el-col>
+
+        </el-row>
 
         <div >
           <el-table :data="tareas2" border header-row-style="color:black;" >

@@ -4,6 +4,7 @@ import axios from 'axios'
 import { EditPen, Filter, Plus, Download} from '@element-plus/icons-vue'
 
 import { ref } from 'vue'
+import '../assets/plotly.min.js'
 
 </script>
 
@@ -22,6 +23,9 @@ export default {
       alert_mo:'',
 
       data_edit:[],
+
+      data_tra1:[],
+      data_tra2:[],
 
       wait:false,
 
@@ -185,12 +189,12 @@ export default {
             
           }
           else {
-            this.open_fail("Hubo un error con el servidor al ejecutar la operación");
+            console.log("Hubo un error con el servidor al ejecutar la operación");
             return false;
           }
         })
         .catch((e) => {
-          this.open_fail("Hubo un error interno al ejecutar la operacion. Log:"+String(e));
+          console.log("Hubo un error interno al ejecutar la operacion. Log:"+String(e));
           return false;
         });
     },
@@ -217,11 +221,11 @@ export default {
             this.open_succes_e("Usuario modificado satisfactoriamente");
           }
           else {
-            this.open_fail("Hubo un error al comunicarse con el servidor");
+            console.log("Hubo un error al comunicarse con el servidor");
           }
         })
         .catch((e) => {
-          this.open_fail("Hubo un error interno al ejecutar la operacion. Log:"+String(e));
+          console.log("Hubo un error interno al ejecutar la operacion. Log:"+String(e));
           return false;
         });
     },
@@ -248,11 +252,11 @@ export default {
             this.open_succes_e("Usuario eliminado satisfactoriamente");
           }
           else {
-            this.open_fail("Hubo un error al comunicarse con el servidor");
+            console.log("Hubo un error al comunicarse con el servidor");
           }
         })
         .catch((e) => {
-          this.open_fail("Hubo un error interno al ejecutar la operacion. Log:"+String(e));
+          console.log("Hubo un error interno al ejecutar la operacion. Log:"+String(e));
           return false;
         });
 
@@ -296,11 +300,69 @@ export default {
           console.log(resp);
           this.users = resp.data;
         })
+    },
+
+    get_plot() {
+      this.data_tra1=[];
+      this.data_tra2=[];
+      axios
+        .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/trabajadores/graficos')
+        .then((resp) => {
+          console.log(resp.data);
+          this.succes=resp.data.status;
+          if (resp.data) {
+            for (const key in resp.data) {
+              this.data_tra1.push(resp.data[key].emp_razonsocial);
+              this.data_tra2.push(1);
+            }
+            console.log(this.data_tra1);
+            var data = [{
+              values: this.data_tra2,
+              labels: this.data_tra1,
+              domain: {column: 0},
+              name: 'Trabajadores',
+              hoverinfo: 'label+percent+name',
+              hole: .4,
+              type: 'pie'
+            }];
+
+            var layout = {
+              title: 'Personal activo',
+              annotations: [
+                {
+                  font: {
+                    size: 15
+                  },
+                  showarrow: false,
+                  text: '',
+                  x: 0.17,
+                  y: 0.5
+                }
+              ],
+              height: 300,
+              width: 300,
+              showlegend: false,
+              grid: {rows: 1, columns: 1}
+            };
+
+            Plotly.newPlot('graph1', data, layout);
+          }
+          else {
+            console.log("Hubo un error al comunicarse con el servidor");
+          }
+        })
+        .catch((e) => {
+          console.log("Hubo un error interno al ejecutar la operacion. Log:"+String(e));
+          return false;
+        });
+
+    
     }
     
   },
   mounted () {
      this.api_get_all();
+     this.get_plot();
   },
 }
 </script>
@@ -308,154 +370,9 @@ export default {
 
 <template>
 
-<div class="main-container">
-  <el-form :inline="true" model="formInline" label-width="auto" :size="small" >
-    <el-row>
-      <el-col :span="21">
-        <el-form-item label="Nombre">
-          <el-input v-model="form_b.nombre" />
-        </el-form-item>
-        <el-form-item label="Nro. de documento">
-          <el-input v-model="form_b.nro_doc" />
-        </el-form-item>
-        <el-form-item label="Nro. de telefono">
-          <el-input v-model="form_b.telefono" />
-        </el-form-item>
-        <el-form-item label="Codigo">
-          <el-input v-model="form_b.codigo" />
-        </el-form-item>
-      </el-col>
-
-      <el-col :span="3">
-          <div class="button-container">
-            <el-row class="mb-4">
-              <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
-            </el-row>
-            <el-row class="mb-4">
-              <el-button color="#008db1" :icon="Plus"  @click="open_create">Crear</el-button>
-            </el-row>
-          </div>  
-      </el-col>
-    </el-row>
-  </el-form>
-
-  <div class="table-container">
-    <el-table :data="users" border header-row-style="color:black;" height="98%" >
-      <el-table-column prop="usu_codigo" label="Codigo" width="120" />
-      <el-table-column prop="usu_nombres" label="Nombre" width="240" />
-      <el-table-column prop="usu_nrodocumento" label="Nro. de doc." />
-      <el-table-column prop="usu_telefono" label="Telefono" />
-      <el-table-column prop="usu_direccion" label="Direccion" />
-      <el-table-column fixed="right" label="" width="45">
-        <template #default="scope">
-          <el-button type="text"  @click="button_handle(scope.row.usu_codigo)"><el-icon :size="17"><EditPen /></el-icon></el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+  <div id="graph1">
+    
   </div>
-</div>
-
-
-<modal ref="CreateMo" title="Crear usuario" width="500px"  @ok="create_usr()" @cancel="close_create" cancel-title="Atras" centered>
-
-  <el-form  ref="form_cref" :model="form_c" label-width="200px" >
-
-    <el-form-item label="Código del usuario">
-      <el-input style="width:300px" v-model="form_c.codigo" />
-    </el-form-item>
-
-    <el-form-item label="Nombre" prop="nombre">
-      <el-input style="width:300px" v-model="form_c.nombre" />
-    </el-form-item>
-    
-    <el-form-item label="Apellido paterno">
-      <el-input style="width:300px" v-model="form_c.ap_pat" />
-    </el-form-item>
-
-    <el-form-item label="Apellido materno">
-      <el-input style="width:300px" v-model="form_c.ap_mat" />
-    </el-form-item>
-
-    <el-form-item label="Nro. de documento">
-      <el-input style="width:300px" v-model="form_c.nro_doc" />
-    </el-form-item>
-
-    <el-form-item label="Nro. de telefono">
-      <el-input style="width:300px" v-model="form_c.nro_tel" />
-    </el-form-item>
-
-    <el-form-item label="Dirección">
-      <el-input style="width:300px" v-model="form_c.direccion" />
-    </el-form-item>
-
-    <el-form-item label="Contraseña">
-      <el-input style="width:300px" v-model="form_c.password" />
-    </el-form-item>
-
-  </el-form>
-
-</modal>
-
-<modal ref="EditMo" no-close-on-backdrop title="Editar usuario" width="500px" cancel-title="Atras" @ok="editar_usr()" centered>
-  
-  <el-form v-loading="wait" ref="form_cref" :model="form_e" label-width="200px" >
-
-    <el-form-item label="Código del usuario">
-      <el-input style="width:300px" v-model="form_e.codigo" />
-    </el-form-item>
-
-    <el-form-item label="Nombre" prop="nombre">
-      <el-input style="width:300px" v-model="form_e.nombre" />
-    </el-form-item>
-    
-    <el-form-item label="Apellido paterno">
-      <el-input style="width:300px" v-model="form_e.ap_pat" />
-    </el-form-item>
-
-    <el-form-item label="Apellido materno">
-      <el-input style="width:300px" v-model="form_e.ap_mat" />
-    </el-form-item>
-
-    <el-form-item label="Nro. de documento">
-      <el-input style="width:300px" v-model="form_e.nro_doc" />
-    </el-form-item>
-
-    <el-form-item label="Nro. de telefono">
-      <el-input style="width:300px" v-model="form_e.nro_tel" />
-    </el-form-item>
-
-    <el-form-item label="Dirección">
-      <el-input style="width:300px" v-model="form_e.direccion" />
-    </el-form-item>
-
-    <el-form-item label="Contraseña">
-      <el-input placeholder="Dejar vacío para conservar" style="width:300px" v-model="form_e.password" />
-    </el-form-item>
-
-    <el-row style="text-align=center">
-      <el-button style="margin-left: auto;margin-right: auto" color="#E21747" :icon="CloseBold" @click="open_advertencia_e('Realmente desea eliminar a este usuario?')">Eliminar</el-button>
-    </el-row>
-
-  </el-form>
-
-</modal>
-
-<modal ref="mo_advertencia_elim" title="Confirmar" centered @ok="send_delete" @cancel="close_advertencia_e" ok-title="Si" cancel-title="Cancelar" >
-  {{alert_mo}}
-</modal>
-
-<modal ref="mo_realizado" success hide-cancel  title="Operacion completada" centered @ok="close_succes_c" ok-title="Cerrar" >
-  {{alert_mo}}
-</modal>
-
-<modal ref="mo_realizado_ed" success hide-cancel  title="Operacion completada" centered @ok="close_succes_e" ok-title="Cerrar" >
-  {{alert_mo}}
-</modal>
-
-<modal ref="mo_error" hide-cancel error title="Error al ejecutar operación" centered @ok="close_fail">
-  {{alert_mo}}
-  <br/> {{alert_cause}}
-</modal>
 
 </template>
 

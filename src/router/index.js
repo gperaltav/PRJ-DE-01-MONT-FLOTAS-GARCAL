@@ -9,10 +9,14 @@ const router = createRouter({
       component: () => import('../views/Inicio.vue'),
     },
     {
+      path: '/usuarios',
+      name: 'Adm. usuarios',
+      component: () => import('../views/Usuarios.vue'),
+    },
+    {
       path: '/personal',
       name: 'Personal',
       component: () => import('../views/Base_datos/Personal.vue'),
-
     },
     {
       path: '/proveedores',

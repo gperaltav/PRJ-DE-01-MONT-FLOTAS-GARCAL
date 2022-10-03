@@ -128,6 +128,7 @@ const handleClose = (key: string, keyPath: string[]) => {
                 <el-icon><notebook /></el-icon>
                 <span>Base de datos</span>
               </template>
+              <el-menu-item @click='change_title("Base de datos > Usuarios")' index="usuarios">Usuarios</el-menu-item>
               <el-menu-item @click='change_title("Base de datos > Clientes")' index="clientes">Clientes</el-menu-item>
               <el-menu-item @click='change_title("Base de datos > Personal")' index="personal">Personal</el-menu-item>
               <el-menu-item @click='change_title("Base de datos > Vehiculos")' index="vehiculos">Vehiculos</el-menu-item>
