@@ -413,6 +413,14 @@ export default {
 
       console.log(fech);
 
+      var pro_d=0;
+      if(this.form_c.rs===1) {
+        pro_d=29;
+      }
+      else {
+        pro_d=30;
+      }
+
       axios
       .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescompras/nuevo', 
       {
@@ -437,7 +445,7 @@ export default {
         "usu_codigo": "admin",
         "ccc_usucreacion":"admin",
         "detalle":[{
-          "pro_id":"",
+          "pro_id":pro_d,
           "via_id":String(this.form_c.via_id),
           "veh_id":"",
           "tra_id":"",
