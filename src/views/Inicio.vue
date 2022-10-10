@@ -27,6 +27,10 @@ export default {
       data_tra1:[],
       data_tra2:[],
       data_t2:[],
+      data_t3:[],
+      data_t4:[],
+      data_t5:[],
+      data_t6:[],
 
       wait:false,
 
@@ -303,14 +307,41 @@ export default {
         })
     },
 
-    get_fig2() {
+    get_fig3() {
       axios
         .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/controldocumentosvehiculos/graficos')
         .then((resp) => {
           console.log(resp);
-          this.data_t2 = resp.data;
+          this.data_t3 = resp.data;
         })
     },
+
+    get_fig4() {
+      axios
+        .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/mantenimientoscab/graficos')
+        .then((resp) => {
+          console.log(resp);
+          this.data_t4 = resp.data;
+        })
+    },
+
+    get_fig5() {
+      axios
+        .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprascab/graficos')
+        .then((resp) => {
+          console.log(resp);
+          this.data_t5 = resp.data;
+        })
+    },
+    get_fig6() {
+      axios
+        .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprasdet/graficos')
+        .then((resp) => {
+          console.log(resp);
+          this.data_t6 = resp.data;
+        })
+    },
+
 
     get_plot() {
       this.data_tra1=[];
@@ -365,15 +396,75 @@ export default {
           console.log("Hubo un error interno al ejecutar la operacion. Log:"+String(e));
           return false;
         });
-
     
+    },
+
+    get_plot2() {
+      this.data_t2=[];
+      axios
+        .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes/graficos')
+        .then((resp) => {
+          console.log(resp.data);
+          this.succes=resp.data.status;
+          if (resp.data) {
+            for (const key in resp.data) {
+              var x_tmp=[];
+              var y_tmp=[];
+              for (const key2 in resp.data[key].detalle) {
+                x_tmp.push(resp.data[key].detalle[key2].con);
+                y_tmp.push(resp.data[key].detalle[key2].monto);
+              }
+              this.data_t2.push({
+                x:x_tmp,
+                y:y_tmp,
+                name:resp.data[key].via_descripcion,
+                type: 'bar'
+              })
+            }
+            console.log(this.data_t2);
+            //grafica
+            var data = this.data_t2;
+
+            var layout = {
+              title: 'Recursos asignados por viaje',
+              barmode: 'group',
+              annotations: [
+                {
+                  font: {
+                    size: 15
+                  },
+                  showarrow: false,
+                  text: '',
+                  x: 0.17,
+                  y: 0.5
+                }
+              ],
+              height: 350,
+              width: 350,
+              showlegend: true,
+              grid: {rows: 1, columns: 1}
+            }
+            Plotly.newPlot('graph2', data, layout);
+          }
+          else {
+            console.log("Hubo un error al comunicarse con el servidor");
+          }
+        })
+        .catch((e) => {
+          console.log("Hubo un error interno al ejecutar la operacion. Log:"+String(e));
+          return false;
+        });
     }
     
   },
   mounted () {
      this.api_get_all();
      this.get_plot();
-     this.get_fig2();
+     this.get_plot2();
+     this.get_fig3();
+     this.get_fig4();
+     this.get_fig5();
+     this.get_fig6();
   },
 }
 </script>
@@ -386,9 +477,15 @@ export default {
     <div id="graph1"> 
     </div>
   </el-col>
+
+  <el-col :span="8">
+    <div id="graph2"> 
+    </div>
+  </el-col>
+
   <el-col :span="8" style="margin-top:30px">
     <span style="margin-button:30px">Documentos a vencer:</span>
-    <el-table size="small" :data="data_t2" style="width: 100%" height="250">
+    <el-table size="small" :data="data_t3" style="width: 100%" height="250">
       <el-table-column prop="emp_razonsocial" label="Empresa"  />
       <el-table-column prop="veh_placa" label="Placa" />
       <el-table-column prop="vtd_nombre" label="Tipo doc." />
@@ -396,32 +493,33 @@ export default {
        <el-table-column prop="vcl_nombre" label="Clase"  />
     </el-table>
   </el-col>
-  <el-col :span="8">
-
-  </el-col>
+  
 </el-row>
 
-<el-row>
+<el-row :gutter="5">
   <el-col :span="8">
-
+    <span style="margin-button:30px">Alerta para mantenimiento:</span>
+    <el-table size="small" :data="data_t4" style="width: 100%" height="250">
+      <el-table-column prop="emp_razonsocial" label="Empresa"  />
+      <el-table-column prop="veh_placa" label="Placa" />
+      <el-table-column prop="man_fecha" label="Fecha de mant." />
+    </el-table>
   </el-col>
   <el-col :span="8">
-
+    <span style="margin-button:30px">Vencimiento de cuentas:</span>
+    <el-table size="small" :data="data_t5" style="width: 100%" height="250">
+      <el-table-column prop="emp_razonsocial" label="Empresa"  />
+      <el-table-column prop="ccc_serienumero" label="Nro. de doc." />
+      <el-table-column prop="cce_descripcion" label="Tipo" />
+    </el-table>
   </el-col>
   <el-col :span="8">
-
-  </el-col>
-</el-row>
-
-<el-row>
-  <el-col :span="8">
-
-  </el-col>
-  <el-col :span="8">
-
-  </el-col>
-  <el-col :span="8">
-
+    <span style="margin-button:30px">Combustible:</span>
+    <el-table size="small" :data="data_t6" style="width: 100%" height="250">
+      <el-table-column prop="ruta" label="Ruta"  />
+      <el-table-column prop="veh_placa" label="Vehículo" />
+      <el-table-column prop="costo" label="Costo" />
+    </el-table>
   </el-col>
 </el-row>
 
