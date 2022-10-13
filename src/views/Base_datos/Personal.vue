@@ -423,7 +423,10 @@ export default {
             return false;
           }
         })
-        return false;
+        .catch((e) => {
+          this.open_fail("Hubo un error interno al ejecutar la operacion. Log:"+String(e));
+          return false;
+        });
     },
 
     get_descargas(uri, name) {

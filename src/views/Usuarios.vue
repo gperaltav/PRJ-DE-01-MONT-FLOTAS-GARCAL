@@ -29,6 +29,113 @@ export default {
 
       permisos_array:[],
 
+      permisos:{
+        bd_usuarios:{
+          id:1,
+          val:false
+        },
+        bd_clientes:{
+          id:1,
+          val:false
+        },
+        bd_personal:{
+          id:1,
+          val:false
+        },
+        bd_vehiculos:{
+          id:1,
+          val:false
+        },
+        bd_proveedores:{
+          id:1,
+          val:false
+        },
+        bd_productos:{
+          id:1,
+          val:false
+        },
+        bd_ubigeos:{
+          id:1,
+          val:false
+        },
+        doc_vehiculos:{
+          id:1,
+          val:false
+        },
+        doc_personal:{
+          id:1,
+          val:false
+        },
+        planificacion:{
+          id:1,
+          val:false
+        },
+        op_combustible:{
+          id:1,
+          val:false
+        },
+        op_viaticos:{
+          id:1,
+          val:false
+        },
+        op_personal:{
+          id:1,
+          val:false
+        },
+        op_r_cuentas:{
+          id:1,
+          val:false
+        },
+        op_compras:{
+          id:1,
+          val:false
+        },
+        op_v_compras:{
+          id:1,
+          val:false
+        },
+        op_pagos:{
+          id:1,
+          val:false
+        },
+        op_v_pagos:{
+          id:1,
+          val:false
+        },
+        fac_guias:{
+          id:1,
+          val:false
+        },
+        fac_configuracion:{
+          id:1,
+          val:false
+        },
+        fac_comprobantes:{
+          id:1,
+          val:false
+        },
+        fac_cobranzas:{
+          id:1,
+          val:false
+        },
+        man_vista:{
+          id:1,
+          val:false
+        },
+        man_plan:{
+          id:1,
+          val:false
+        },
+        man_tareas:{
+          id:1,
+          val:false
+        },
+        man_plantillas:{
+          id:1,
+          val:false
+        },
+      },
+
       datatree:[
         {
           label: 'Base de datos',
@@ -227,6 +334,7 @@ export default {
 
     open_editp() {
       this.$refs.mo_permisos.open()
+      //this.$refs.mo_permisos2.open()
     },
     close_editp() {
       this.$refs.mo_permisos.hide()
@@ -684,6 +792,33 @@ export default {
 
 <modal  ref="mo_permisos" title="Permisos de usuario" centered @ok="send_delete" @cancel="close_advertencia_e" ok-title="Si" cancel-title="Cancelar" >
   <el-tree check-strictly show-checkbox node-key="id" @check-change="handleCheckChange" :default-checked-keys="permisos_array" :data="datatree" :props="defaultProps" v-loading="wait2"/>
+</modal>
+
+<modal  ref="mo_permisos2" title="Permisos de usuario" centered @ok="send_delete" @cancel="close_advertencia_e" ok-title="Si" cancel-title="Cancelar" >
+   <el-form v-loading="wait2" ref="form_cref" :model="form_e" label-width="200px" >
+    <span> Base de datos:</span>
+    <el-form-item label="Usuarios">
+      <el-checkbox v-model="permisos['bd_usuarios'].val"/>
+    </el-form-item>
+    <el-form-item label="Clientes">
+      <el-checkbox v-model="permisos['bd_clientes'].val"/>
+    </el-form-item>
+    <el-form-item label="Personal">
+      <el-checkbox v-model="permisos['bd_personal'].val"/>
+    </el-form-item>
+    <el-form-item label="Vehiculos">
+      <el-checkbox v-model="permisos['bd_vehiculos'].val"/>
+    </el-form-item>
+    <el-form-item label="Proveedores">
+      <el-checkbox v-model="permisos['bd_proveedores'].val"/>
+    </el-form-item>
+    <el-form-item label="Producto">
+      <el-checkbox v-model="permisos['bd_productos'].val"/>
+    </el-form-item>
+    <el-form-item label="Ubigeos">
+      <el-checkbox v-model="permisos['bd_ubigeos'].val"/>
+    </el-form-item>
+  </el-form>
 </modal>
 
 <modal ref="mo_advertencia_elim" title="Confirmar" centered @ok="send_delete" @cancel="close_advertencia_e" ok-title="Si" cancel-title="Cancelar" >

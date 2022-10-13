@@ -334,7 +334,6 @@ export default {
 
     send_delete() {
       this.$refs.mo_advertencia_eliim.hide();
-      this.err_code=false;
       axios
         .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/borrar/',
         {
@@ -350,16 +349,13 @@ export default {
             this.err_code = true;
           }
           else {
-            this.open_fail2("Hubo un error con el servidor al ejecutar la operación","Código de error: "+resp.data.message);
+            this.open_fail("Hubo un error con el servidor al ejecutar la operación");
           }
         })
-        setTimeout(() => {
-        if (this.err_code==false) {
-          this.open_fail("Hubo un error al comunicarse con el servidor, revise su conexión");
-        }
-        }, 700)
-        
-        return this.err_code;
+        .catch(function (error) {
+          this.open_fail("Hubo un error con el servidor al ejecutar la operación, error:"+String(error));
+            return false;
+        });
     },
 
 
@@ -411,59 +407,53 @@ export default {
         })
     },
     
-    async create_usr(){
-      //llamada a API
-      //if (!this.form_cref) return
-      //await this.form_cref.validate((valid, fields) => {
-       // if (valid) {
-          axios
-          .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/nuevo', 
-          { 
-            "emp_id":parseInt(this.form_c.rs),
-            "Ubi_codigo":"",
-            "ent_nombre":this.form_c.nombre,
-            "dti_id":this.form_c.tipo_doc,
-            "ent_nrodocumento":this.form_c.nro_doc,
-            "ent_apellidopaterno":"",
-            "ent_apellidomaterno":"",
-            "ent_activo":true,
-            "zon_id":0,
-            "ent_direccion":this.form_c.direccion,
-            "ent_telefono":this.form_c.telefono,
-            "ent_celular":"",
-            "ent_paginaweb":"",
-            "ent_correo":this.form_c.correo,
-            "ent_contacto":"",
-            "ent_sexo":"",
-            "ent_usucreacion":"admin",
-            "ent_personanatural":true,
-            "ext_id":this.var_type,
-            "fdp_id":this.form_c.c_pago,
-            "fpd_diasvencimiento":Number(this.form_c.plazo),
-            "ent_estadocontribuyente":this.form_c.c_activo,
-            "ent_condicioncontribuyente":this.form_c.c_habido,
-            "pro_id":this.form_c.prod
-          })
-          .then((resp) => {
-            console.log(resp.data);
-            this.succes=resp.data.status;
-            if (this.succes) {
-              this.open_succes("Operación realizada satisfactoriamente");
-              return true;
-              
-            }
-            else {
-              this.open_fail("Hubo un error con el servidor al ejecutar la operación");
-              return false;
-            }
-          })
+    create_usr(){
+      axios
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/nuevo', 
+      { 
+        "emp_id":parseInt(this.form_c.rs),
+        "Ubi_codigo":"",
+        "ent_nombre":this.form_c.nombre,
+        "dti_id":this.form_c.tipo_doc,
+        "ent_nrodocumento":this.form_c.nro_doc,
+        "ent_apellidopaterno":"",
+        "ent_apellidomaterno":"",
+        "ent_activo":true,
+        "zon_id":0,
+        "ent_direccion":this.form_c.direccion,
+        "ent_telefono":this.form_c.telefono,
+        "ent_celular":"",
+        "ent_paginaweb":"",
+        "ent_correo":this.form_c.correo,
+        "ent_contacto":"",
+        "ent_sexo":"",
+        "ent_usucreacion":"admin",
+        "ent_personanatural":true,
+        "ext_id":this.var_type,
+        "fdp_id":this.form_c.c_pago,
+        "fpd_diasvencimiento":Number(this.form_c.plazo),
+        "ent_estadocontribuyente":this.form_c.c_activo,
+        "ent_condicioncontribuyente":this.form_c.c_habido,
+        "pro_id":this.form_c.prod
+      })
+      .then((resp) => {
+        console.log(resp.data);
+        this.succes=resp.data.status;
+        if (this.succes) {
+          this.open_succes("Operación realizada satisfactoriamente");
+          return true;
+          
+        }
+        else {
+          this.open_fail("Hubo un error con el servidor al ejecutar la operación");
           return false;
-        //} 
-        //else {
-          //console.log('Error en campos', fields);
-         // return;
-        //}
-      //})
+        }
+      })
+      .catch(function (error) {
+        this.open_fail("Hubo un error con el servidor al ejecutar la operación, error:"+String(error));
+          return false;
+      });
+      return false;
       
     },  
 
@@ -514,7 +504,10 @@ export default {
           }
           console.log(resp);
         })
-        return false;
+        .catch(function (error) {
+          this.open_fail("Hubo un error con el servidor al ejecutar la operación, error:"+String(error));
+          return false;
+        });
     },
 
     button_handle(number,number2){
@@ -523,12 +516,22 @@ export default {
       this.$refs.mo_editar_per.open();
       this.wait = true;
       this.load_edit(number,number2);
-      
-      setTimeout(() => {
+
+      axios
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/"+String(number),
+      {
+        "emp_id":String(number2),
+        "ext_id":this.var_type
+      })
+      .then((resp) => {
         this.load_data_edit();
         this.emp_cont=this.form_e.rs;
         this.wait = false;
-      }, 500)
+      })
+      .catch(function (error) {
+        this.open_fail("Hubo un error con el servidor al ejecutar la operación, error:"+String(error));
+        return false;
+      });
     }
   },
 

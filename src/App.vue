@@ -172,10 +172,6 @@ const handleClose = (key: string, keyPath: string[]) => {
               <el-menu-item @click='change_title("Facturación > Comprobantes")' index="facturacion_comprobantes">Comprobantes</el-menu-item>
               <el-menu-item @click='change_title("Facturación > Cobranzas")' index="facturacion_cobranza">Cobranzas</el-menu-item>
             </el-sub-menu>
-            <el-menu-item index="disposicion_dinero" disabled>
-              <el-icon><Money /></el-icon>
-              <template #title>Disposicion de dinero</template>
-            </el-menu-item>
             <el-sub-menu index="7">
               <template #title>
                 <el-icon><img width="15" height="15" src= "./components/mantenimiento.svg"/></el-icon>
