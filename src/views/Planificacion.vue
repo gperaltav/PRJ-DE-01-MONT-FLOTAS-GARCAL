@@ -810,8 +810,11 @@ export default {
           this.open_fail("Hubo un error con el servidor al ejecutar la operación");
           return false;
         }
-        
       })
+      .catch(function (error) {
+        this.open_fail("Hubo un error externo al ejecutar la operación, error: "+String(error));
+        return false;
+      });
     },
 
     api_get_all(){
@@ -846,7 +849,14 @@ export default {
     },
 
     api_get_filt(){
-      console.log(this.form_b.rs);
+      console.log({
+          "emp_id":String(this.form_b.rs),
+          "via_fechaviajeinicio":String(this.form_b.fecha_i),
+          "via_fechaviajefin":String(this.form_b.fecha_f),
+          "veh_placa":this.form_b.placa,
+          "ubi_nombreorigen":this.form_b.origen,
+          "ubi_nombredestino":this.form_b.destino,
+    });
       axios
         .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes', 
         {
@@ -904,6 +914,10 @@ export default {
           return false;
         }
       })
+      .catch(function (error) {
+        this.open_fail("Hubo un error externo al ejecutar la operación, error: "+String(error));
+        return false;
+      });
       return false;
     },  
 
@@ -952,8 +966,13 @@ export default {
           }
           console.log(resp);
         })
+        .catch(function (error) {
+          this.open_fail("Hubo un error externo al ejecutar la operación, error: "+String(error));
+          return false;
+        });
         return false;
     },
+
     roundUp(num, precision) {
       precision = Math.pow(10, precision)
       return Math.ceil(num * precision) / precision
@@ -976,26 +995,37 @@ export default {
       console.log(number);
       this.clear_eop;
       this.editpointer=number;
-      this.get_estado(number);
-      setTimeout(() => {
+      //this.get_estado(number);
 
+      axios
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes/codigo/"+String(number))
+      .then((resp) => {
+        this.via_estado= resp.data[0].vie_codigo;
         if(this.via_estado=="TER") {
-          console.log("si entre");
           this.open_error_estado();
           return;
         }
-        console.log("si pase");
         this.$refs.mo_editar_per.open();
         this.wait = true;
-        this.load_edit(number);
-        
-        setTimeout(() => {
+        //this.load_edit(number);
+        axios
+        .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes/"+String(number))
+        .then((resp) => {
+          this.data_edit = resp.data;
+
           this.load_data_edit();
           this.emp_cont=this.form_e.rs;
           this.wait = false;
-        }, 400)
-      }, 600)
-      
+        })
+        .catch(function (error) {
+          this.open_fail("Hubo un error externo al ejecutar la operación, error: "+String(error));
+          return false;
+        });
+      })
+      .catch(function (error) {
+        this.open_fail("Hubo un error externo al ejecutar la operación, error: "+String(error));
+        return false;
+      });
     },
 
     button_handle2(number){

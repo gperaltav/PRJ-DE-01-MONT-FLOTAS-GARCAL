@@ -515,7 +515,7 @@ export default {
       this.editpointer=number;
       this.$refs.mo_editar_per.open();
       this.wait = true;
-      this.load_edit(number,number2);
+      //this.load_edit(number,number2);
 
       axios
       .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/"+String(number),
@@ -524,6 +524,8 @@ export default {
         "ext_id":this.var_type
       })
       .then((resp) => {
+        this.data_edit = resp.data;
+        
         this.load_data_edit();
         this.emp_cont=this.form_e.rs;
         this.wait = false;

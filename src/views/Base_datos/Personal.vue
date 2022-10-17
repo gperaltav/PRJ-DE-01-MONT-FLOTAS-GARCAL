@@ -240,13 +240,13 @@ export default {
       this.form_c_op.ins_iqbf=null;
       this.form_c_op.venc_lic= null;
     },
+
     clear_eop() {
       this.form_e_op.nro_lic= '';
       this.form_e_op.cat_lic= '';
       this.form_e_op.esp= '';
       this.form_e_op.ins_iqbf= null;
       this.form_e_op.venc_lic= null;
-
     },
 
     rs_changer() {
@@ -321,10 +321,10 @@ export default {
     load_rs() {
       axios
       .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas')
-        .then((resp) => {
-          console.log(resp);
-          this.opt_rs = resp.data;
-        })
+      .then((resp) => {
+        console.log(resp);
+        this.opt_rs = resp.data;
+      })
     },
     load_esp() {
       axios

@@ -291,8 +291,11 @@ export default {
           else {
             this.open_fail("Hubo un error al comunicarse con el servidor");
           }
-          console.log(resp);
         })
+        .catch(function (error) {
+          this.open_fail("Hubo un error con el servidor al ejecutar la operación, error: "+String(error));
+          return false;
+        });
         return false;
     },
 
@@ -392,12 +395,26 @@ export default {
 
       }
       if(this.tipo_doc!=-1) {
-        this.load_edit();
-        setTimeout(() => {
+        //this.load_edit();
+        axios
+        .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/controldocumentosvehiculos/vista",
+        {
+          "veh_id": this.editpointer,
+          "vtd_id": this.tipo_doc
+        })
+        .then((resp) => {
+          this.data_edit = resp.data;
+
           this.load_data_edit();
           this.emp_cont=this.form_e.rs;
           this.wait = false;
-        }, 500)
+
+        })
+        .catch(function (error) {
+          this.open_fail("Hubo un error con el servidor al ejecutar la operación, error: "+String(error));
+          return false;
+        });
+
       }
       else {
         this.open_fail("Hubo un error interno al obtener los datos del servidor");

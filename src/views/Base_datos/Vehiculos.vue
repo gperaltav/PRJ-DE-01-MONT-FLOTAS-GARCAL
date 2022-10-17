@@ -318,6 +318,10 @@ export default {
             return false;
           }
         })
+        .catch(function (error) {
+          this.open_fail("Hubo un error con el servidor al ejecutar la operación, error:"+String(error));
+          return false;
+        });
         return false;
     },
 
@@ -372,49 +376,43 @@ export default {
         })
     },
     
-    async create_usr(){
-      //llamada a API
-      //if (!this.form_cref) return
-      //await this.form_cref.validate((valid, fields) => {
-      //  if (valid) {
-       //   console.log(this.form_c.year);
+    create_usr(){
 
-          axios
-          .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos/nuevo', 
-          { 
-            "emp_id": String(this.form_c.rs),
-            "veh_placa":this.form_c.placa,
-            "vma_id": String(this.form_c.marca),
-            "vmo_id": String(this.form_c.modelo),
-            "vti_id": this.form_c.tipo,
-            "vcl_id": this.form_c.clase,
-            "veh_anno":this.form_c.year,
-            "veh_usucreacion":"admin",
-            "veh_serie":this.form_c.serie,
-            "veh_mtc":this.form_c.mtc,
-            "veh_cargautil":String(this.form_c.carga_util),
-            "veh_kilometraje":String(this.form_c.kilometraje)
-          })
-          .then((resp) => {
-            console.log(resp.data);
-            this.succes=resp.data.status;
-            if (this.succes) {
-              this.open_succes("Operación realizada satisfactoriamente");
-              return true;
-              
-            }
-            else {
-              this.open_fail("Hubo un error con el servidor al ejecutar la operación");
-              return false;
-            }
-          })
+      axios
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos/nuevo', 
+      { 
+        "emp_id": String(this.form_c.rs),
+        "veh_placa":this.form_c.placa,
+        "vma_id": String(this.form_c.marca),
+        "vmo_id": String(this.form_c.modelo),
+        "vti_id": this.form_c.tipo,
+        "vcl_id": this.form_c.clase,
+        "veh_anno":this.form_c.year,
+        "veh_usucreacion":"admin",
+        "veh_serie":this.form_c.serie,
+        "veh_mtc":this.form_c.mtc,
+        "veh_cargautil":String(this.form_c.carga_util),
+        "veh_kilometraje":String(this.form_c.kilometraje)
+      })
+      .then((resp) => {
+        console.log(resp.data);
+        this.succes=resp.data.status;
+        if (this.succes) {
+          this.open_succes("Operación realizada satisfactoriamente");
+          return true;
+          
+        }
+        else {
+          this.open_fail("Hubo un error con el servidor al ejecutar la operación");
           return false;
-         // } 
-       // else {
-          //console.log('Error en campos', fields);
-         // return;
-        //}
-      //})
+        }
+      })
+      .catch(function (error) {
+        this.open_fail("Hubo un error con el servidor al ejecutar la operación, error:"+String(error));
+        return false;
+      });
+      return false;
+
     },  
 
     close_create() {
@@ -426,34 +424,38 @@ export default {
       //llamada a API
     
     axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos/actualizar', 
-        { 
-          "veh_id":String(this.editpointer),
-          "emp_id": String(this.form_e.rs),
-          "veh_placa":this.form_e.placa,
-          "vma_id":String(this.form_e.marca),
-          "vmo_id":String(this.form_e.modelo),
-          "vti_id": this.form_e.tipo,
-          "vcl_id": this.form_e.clase,
-          "veh_anno":this.form_e.year,
-          "veh_usucreacion":"admin",
-          "veh_serie":this.form_e.serie,
-          "veh_mtc":this.form_e.mtc,
-          "veh_cargautil":String(this.form_e.carga_util),
-          "veh_kilometraje":String(this.form_e.kilometraje)
-        })
-        .then((resp) => {
-          console.log(resp.data.status);
-          this.succes=resp.data.status;
-          if (this.succes) {
-            this.open_succes_ed("Vehiculo modificado satisfactoriamente");
-          }
-          else {
-            this.open_fail("Hubo un error al comunicarse con el servidor");
-          }
-          console.log(resp);
-        })
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos/actualizar', 
+      { 
+        "veh_id":String(this.editpointer),
+        "emp_id": String(this.form_e.rs),
+        "veh_placa":this.form_e.placa,
+        "vma_id":String(this.form_e.marca),
+        "vmo_id":String(this.form_e.modelo),
+        "vti_id": this.form_e.tipo,
+        "vcl_id": this.form_e.clase,
+        "veh_anno":this.form_e.year,
+        "veh_usucreacion":"admin",
+        "veh_serie":this.form_e.serie,
+        "veh_mtc":this.form_e.mtc,
+        "veh_cargautil":String(this.form_e.carga_util),
+        "veh_kilometraje":String(this.form_e.kilometraje)
+      })
+      .then((resp) => {
+        console.log(resp.data.status);
+        this.succes=resp.data.status;
+        if (this.succes) {
+          this.open_succes_ed("Vehiculo modificado satisfactoriamente");
+        }
+        else {
+          this.open_fail("Hubo un error al comunicarse con el servidor");
+        }
+        console.log(resp);
+      })
+      .catch(function (error) {
+        this.open_fail("Hubo un error con el servidor al ejecutar la operación, error:"+String(error));
         return false;
+      });
+      return false;
     },
 
     button_handle(number){
@@ -462,13 +464,22 @@ export default {
       this.editpointer=number;
       this.$refs.mo_editar_per.open();
       this.wait = true;
-      this.load_edit(number);
-      
-      setTimeout(() => {
+      //this.load_edit(number);
+
+      axios
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos/"+String(number))
+      .then((resp) => {
+        this.data_edit = resp.data;
+
         this.load_data_edit();
         this.emp_cont=this.form_e.rs;
         this.wait = false;
-      }, 400)
+      })
+      .catch(function (error) {
+        this.open_fail("Hubo un error con el servidor al ejecutar la operación, error:"+String(error));
+        return false;
+      });
+      
     }
   },
 
@@ -476,9 +487,6 @@ export default {
     //llamada a API
     this.api_get_all();
     this.load_rs();
-    //this.load_tc();
-    //this.load_pues();
-    //this.load_esp();
   },
 }
 

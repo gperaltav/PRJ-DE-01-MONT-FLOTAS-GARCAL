@@ -326,13 +326,11 @@ export default {
             this.open_fail2("Hubo un error con el servidor al ejecutar la operación","Código de error: "+resp.data.message);
           }
         })
-        setTimeout(() => {
-        if (this.err_code==false) {
-          this.open_fail("Hubo un error al comunicarse con el servidor, revise su conexión");
-        }
-        }, 700)
-        
-        return this.err_code;
+        .catch(function (error) {
+          this.open_fail("Hubo un error con el servidor al ejecutar la operación, error:"+String(error));
+          return false;
+        });
+
     },
 
 
@@ -456,7 +454,10 @@ export default {
           return false;
         }
       })
-      return false;
+      .catch(function (error) {
+        this.open_fail("Hubo un error con el servidor al ejecutar la operación, error:"+String(error));
+        return false;
+      });
     },  
 
     close_create() {
@@ -496,7 +497,7 @@ export default {
           "pro_id":""
         })
         .then((resp) => {
-          console.log(resp.data.status);
+          //console.log(resp.data.status);
           this.succes=resp.data.status;
           if (this.succes) {
             this.open_succes_ed("Cliente modificado satisfactoriamente");
@@ -504,9 +505,11 @@ export default {
           else {
             this.open_fail("Hubo un error al comunicarse con el servidor");
           }
-          console.log(resp);
         })
-        return false;
+        .catch(function (error) {
+          this.open_fail("Hubo un error con el servidor al ejecutar la operación, error:"+String(error));
+          return false;
+        });
     },
 
     button_handle(number,number2){
@@ -514,13 +517,22 @@ export default {
       this.editpointer=number;
       this.$refs.mo_editar_per.open();
       this.wait = true;
-      this.load_edit(number,number2);
-      
-      setTimeout(() => {
+
+      axios
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/"+String(number),
+      {
+        "emp_id":String(number2),
+        "ext_id":this.var_type
+      })
+      .then((resp) => {
+        this.data_edit = resp.data;
+
         this.load_data_edit();
         this.emp_cont=this.form_e.rs;
         this.wait = false;
-      }, 500)
+
+      })      
+
     }
   },
 

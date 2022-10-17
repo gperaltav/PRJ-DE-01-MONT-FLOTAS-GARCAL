@@ -210,8 +210,11 @@ export default {
           else {
             this.open_fail("Hubo un error al comunicarse con el servidor");
           }
-          console.log(resp);
         })
+        .catch(function (error) {
+          this.open_fail("Hubo un error con el servidor al ejecutar la operación, error: "+String(error));
+          return false;
+        });
         return false;
     },
 
@@ -284,7 +287,7 @@ export default {
           "txd_usucreacion":"admin"
         })
         .then((resp) => {
-          console.log(resp.data.status);
+          //console.log(resp.data.status);
           this.succes=resp.data.status;
           if (this.succes) {
             this.open_succes_ed("Datos modificados satisfactoriamente");
@@ -292,8 +295,11 @@ export default {
           else {
             this.open_fail("Hubo un error al comunicarse con el servidor");
           }
-          console.log(resp);
         })
+        .catch(function (error) {
+          this.open_fail("Hubo un error con el servidor al ejecutar la operación, error: "+String(error));
+          return false;
+        });
         return false;
     },
 
@@ -307,7 +313,7 @@ export default {
         .then((resp) => {
           console.log(resp);
           this.data_edit = resp.data;
-        })      
+        })
     },
 
     load_data_edit() {
@@ -372,12 +378,21 @@ export default {
 
       }
       if(this.tipo_doc!=-1) {
-        this.load_edit();
-        setTimeout(() => {
-          this.load_data_edit();
-          this.emp_cont=this.form_e.rs;
-          this.wait = false;
-        }, 500)
+        //this.load_edit();
+        axios
+        .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/controldocumentostripulacion/"+String(this.editpointer),
+          {
+            "tri_id": this.editpointer,
+            "ttd_id": this.tipo_doc
+          })
+          .then((resp) => {
+            //console.log(resp);
+            this.data_edit = resp.data;
+
+            this.load_data_edit();
+            this.emp_cont=this.form_e.rs;
+            this.wait = false;
+          })
       }
       else {
         this.open_fail("Hubo un error interno al obtener los datos del servidor");
