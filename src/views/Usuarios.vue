@@ -29,112 +29,7 @@ export default {
 
       permisos_array:[],
 
-      permisos:{
-        bd_usuarios:{
-          id:1,
-          val:false
-        },
-        bd_clientes:{
-          id:1,
-          val:false
-        },
-        bd_personal:{
-          id:1,
-          val:false
-        },
-        bd_vehiculos:{
-          id:1,
-          val:false
-        },
-        bd_proveedores:{
-          id:1,
-          val:false
-        },
-        bd_productos:{
-          id:1,
-          val:false
-        },
-        bd_ubigeos:{
-          id:1,
-          val:false
-        },
-        doc_vehiculos:{
-          id:1,
-          val:false
-        },
-        doc_personal:{
-          id:1,
-          val:false
-        },
-        planificacion:{
-          id:1,
-          val:false
-        },
-        op_combustible:{
-          id:1,
-          val:false
-        },
-        op_viaticos:{
-          id:1,
-          val:false
-        },
-        op_personal:{
-          id:1,
-          val:false
-        },
-        op_r_cuentas:{
-          id:1,
-          val:false
-        },
-        op_compras:{
-          id:1,
-          val:false
-        },
-        op_v_compras:{
-          id:1,
-          val:false
-        },
-        op_pagos:{
-          id:1,
-          val:false
-        },
-        op_v_pagos:{
-          id:1,
-          val:false
-        },
-        fac_guias:{
-          id:1,
-          val:false
-        },
-        fac_configuracion:{
-          id:1,
-          val:false
-        },
-        fac_comprobantes:{
-          id:1,
-          val:false
-        },
-        fac_cobranzas:{
-          id:1,
-          val:false
-        },
-        man_vista:{
-          id:1,
-          val:false
-        },
-        man_plan:{
-          id:1,
-          val:false
-        },
-        man_tareas:{
-          id:1,
-          val:false
-        },
-        man_plantillas:{
-          id:1,
-          val:false
-        },
-      },
+      permisos:{},
 
       datatree:[
         {
@@ -333,8 +228,8 @@ export default {
     },
 
     open_editp() {
-      this.$refs.mo_permisos.open()
-      //this.$refs.mo_permisos2.open()
+      //this.$refs.mo_permisos.open()
+      this.$refs.mo_permisos2.open()
     },
     close_editp() {
       this.$refs.mo_permisos.hide()
@@ -365,6 +260,7 @@ export default {
     close_succes_e() {
       this.$refs.mo_realizado_ed.hide();
       this.$refs.EditMo.hide();
+      this.$refs.mo_permisos2.hide();
       this.api_get_all();
       this.clear_e();
     },
@@ -550,12 +446,15 @@ export default {
     },
 
     load_data_edit_p() {
-      this.permisos_array=[];
+      //this.permisos_array=[];
+      this.permisos={}
+      console.log(this.perm_edit);
       if (!(this.perm_edit.length === 0)) {
         for (let index = 0; index < this.perm_edit.length; index++) {
-          this.permisos_array.push(this.perm_edit[index].mnu_id);
+          this.permisos[this.perm_edit[index].mnu_id]=true;
         }
       }
+      //this.permisos=this.permisos_array;
     },
 
     send_delete() {
@@ -578,6 +477,40 @@ export default {
           return false;
         });
 
+    },
+
+
+    send_edit_permisos() {
+      var tmp_arr=[];
+      for (const key in this.permisos) {
+        if(this.permisos[key]===true) {
+          tmp_arr.push({
+            "mnu_id":Number(key),
+            "abs":true
+          })
+        }
+      }
+      console.log(tmp_arr)
+      axios
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/menusxusuarios/nuevo', 
+        {
+          "usu_codigo":String(this.editpointer2),
+          "detalle":tmp_arr
+        })
+        .then((resp) => {
+          console.log(resp.data);
+          this.succes=resp.data.status;
+          if (this.succes) {
+            this.open_succes_e("Permisos de usuario configurados satisfactoriamente");
+          }
+          else {
+            this.open_fail("Hubo un error al comunicarse con el servidor");
+          }
+        })
+        .catch((e) => {
+          this.open_fail("Hubo un error interno al ejecutar la operacion. Log:"+String(e));
+          return false;
+        });
     },
 
     button_handle(key){
@@ -609,7 +542,7 @@ export default {
           console.log(resp);
           this.perm_edit = resp.data;
           this.load_data_edit_p();
-          console.log(this.permisos_array);
+          console.log(this.permisos);
           this.wait2 = false;
         })
         .catch((e)=> {
@@ -654,9 +587,12 @@ export default {
 <template>
 
 <div class="main-container">
-  <el-form :inline="true" model="formInline" label-width="auto" :size="small" >
-    <el-row>
-      <el-col :span="21">
+  <div v-if="$isMobile()">
+  <el-collapse>
+    <el-collapse-item title="Opciones">
+    <el-form :inline="true" model="formInline" label-width="auto" size="small" >
+      <el-row justify="center">
+
         <el-form-item label="Nombre">
           <el-input v-model="form_b.nombre" />
         </el-form-item>
@@ -669,23 +605,59 @@ export default {
         <el-form-item label="Codigo">
           <el-input v-model="form_b.codigo" />
         </el-form-item>
-      </el-col>
 
-      <el-col :span="3">
-          <div class="button-container">
-            <el-row class="mb-4">
-              <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
-            </el-row>
-            <el-row class="mb-4">
-              <el-button color="#008db1" :icon="Plus"  @click="open_create">Crear</el-button>
-            </el-row>
-          </div>  
-      </el-col>
-    </el-row>
-  </el-form>
+
+
+        <div class="button-container">
+          <el-row class="mb-4">
+            <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
+          </el-row>
+          <el-row class="mb-4">
+            <el-button color="#008db1" :icon="Plus"  @click="open_create">Crear</el-button>
+          </el-row>
+        </div>  
+
+      </el-row>
+    </el-form>
+    </el-collapse-item>
+  </el-collapse>
+  </div>
+
+  <div v-else>
+      <el-form  :inline="true" model="formInline" label-width="auto" >
+      <el-row>
+        <el-col :span="21">
+          <el-form-item label="Nombre">
+            <el-input v-model="form_b.nombre" />
+          </el-form-item>
+          <el-form-item label="Nro. de documento">
+            <el-input v-model="form_b.nro_doc" />
+          </el-form-item>
+          <el-form-item label="Nro. de telefono">
+            <el-input v-model="form_b.telefono" />
+          </el-form-item>
+          <el-form-item label="Codigo">
+            <el-input v-model="form_b.codigo" />
+          </el-form-item>
+        </el-col>
+
+        <el-col :span="3">
+            <div class="button-container">
+              <el-row class="mb-4">
+                <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
+              </el-row>
+              <el-row class="mb-4">
+                <el-button color="#008db1" :icon="Plus"  @click="open_create">Crear</el-button>
+              </el-row>
+            </div>  
+        </el-col>
+      </el-row>
+    </el-form>
+  </div>
+  
 
   <div class="table-container">
-    <el-table :data="users" border header-row-style="color:black;" height="98%" >
+    <el-table :data="users" border header-row-style="color:black;" height="98%" :size="$isMobile() ? 'small':'default'" >
       <el-table-column prop="usu_codigo" label="Codigo" width="120" />
       <el-table-column prop="usu_nombres" label="Nombre" width="240" />
       <el-table-column prop="usu_nrodocumento" label="Nro. de doc." />
@@ -706,9 +678,9 @@ export default {
 </div>
 
 
-<modal ref="CreateMo" title="Crear usuario" width="500px"  @ok="create_usr()" @cancel="close_create" cancel-title="Atras" centered>
+<modal ref="CreateMo" title="Crear usuario" :width="$isMobile() ? '200px':'500px'" @ok="create_usr()" @cancel="close_create" cancel-title="Atras" centered>
 
-  <el-form  ref="form_cref" :model="form_c" label-width="200px" >
+  <el-form  ref="form_cref" :model="form_c" :label-width="$isMobile() ? '150px':'200px'" :size="$isMobile() ? 'small':'default'">
 
     <el-form-item label="Código del usuario">
       <el-input style="width:300px" v-model="form_c.codigo" />
@@ -746,9 +718,9 @@ export default {
 
 </modal>
 
-<modal ref="EditMo" no-close-on-backdrop title="Editar usuario" width="500px" cancel-title="Atras" @ok="editar_usr()" centered>
+<modal ref="EditMo" no-close-on-backdrop title="Editar usuario" :width="$isMobile() ? '200px':'500px'" cancel-title="Atras" @ok="editar_usr()" centered>
   
-  <el-form v-loading="wait" ref="form_cref" :model="form_e" label-width="200px" >
+  <el-form v-loading="wait" ref="form_cref" :model="form_e" :label-width="$isMobile() ? '150px':'200px'" >
 
     <el-form-item label="Código del usuario">
       <el-input style="width:300px" v-model="form_e.codigo" />
@@ -794,30 +766,99 @@ export default {
   <el-tree check-strictly show-checkbox node-key="id" @check-change="handleCheckChange" :default-checked-keys="permisos_array" :data="datatree" :props="defaultProps" v-loading="wait2"/>
 </modal>
 
-<modal  ref="mo_permisos2" title="Permisos de usuario" centered @ok="send_delete" @cancel="close_advertencia_e" ok-title="Si" cancel-title="Cancelar" >
+<modal  ref="mo_permisos2" title="Permisos de usuario" centered @ok="send_edit_permisos" @cancel="close_advertencia_e" ok-title="Actualizar permisos" cancel-title="Cancelar" >
    <el-form v-loading="wait2" ref="form_cref" :model="form_e" label-width="200px" >
     <span> Base de datos:</span>
     <el-form-item label="Usuarios">
-      <el-checkbox v-model="permisos['bd_usuarios'].val"/>
+      <el-checkbox v-model="permisos[1]"/>
     </el-form-item>
     <el-form-item label="Clientes">
-      <el-checkbox v-model="permisos['bd_clientes'].val"/>
+      <el-checkbox v-model="permisos[2]"/>
     </el-form-item>
     <el-form-item label="Personal">
-      <el-checkbox v-model="permisos['bd_personal'].val"/>
+      <el-checkbox v-model="permisos[3]"/>
     </el-form-item>
     <el-form-item label="Vehiculos">
-      <el-checkbox v-model="permisos['bd_vehiculos'].val"/>
+      <el-checkbox v-model="permisos[4]"/>
     </el-form-item>
     <el-form-item label="Proveedores">
-      <el-checkbox v-model="permisos['bd_proveedores'].val"/>
+      <el-checkbox v-model="permisos[5]"/>
     </el-form-item>
     <el-form-item label="Producto">
-      <el-checkbox v-model="permisos['bd_productos'].val"/>
+      <el-checkbox v-model="permisos[6]"/>
     </el-form-item>
     <el-form-item label="Ubigeos">
-      <el-checkbox v-model="permisos['bd_ubigeos'].val"/>
+      <el-checkbox v-model="permisos[7]"/>
     </el-form-item>
+
+    <span> Documentos:</span>
+    <el-form-item label="Vehículos">
+      <el-checkbox v-model="permisos[8]"/>
+    </el-form-item>
+    <el-form-item label="Personal">
+      <el-checkbox v-model="permisos[9]"/>
+    </el-form-item>
+
+    <span> Planificación:</span>
+    <el-form-item label="Planificación">
+      <el-checkbox v-model="permisos[10]"/>
+    </el-form-item>
+
+    <span> Operaciones:</span>
+    <el-form-item label="Combustible">
+      <el-checkbox v-model="permisos[11]"/>
+    </el-form-item>
+    <el-form-item label="Viaticos">
+      <el-checkbox v-model="permisos[12]"/>
+    </el-form-item>
+    <el-form-item label="Personal">
+      <el-checkbox v-model="permisos[13]"/>
+    </el-form-item>
+    <el-form-item label="Rendicion de cuentas">
+      <el-checkbox v-model="permisos[14]"/>
+    </el-form-item>
+    <el-form-item label="Compras">
+      <el-checkbox v-model="permisos[15]"/>
+    </el-form-item>
+    <el-form-item label="Vista de compras">
+      <el-checkbox v-model="permisos[16]"/>
+    </el-form-item>
+    <el-form-item label="Pagos">
+      <el-checkbox v-model="permisos[17]"/>
+    </el-form-item>
+    <el-form-item label="Vista de pagos">
+      <el-checkbox v-model="permisos[18]"/>
+    </el-form-item>
+
+    <span> Facturación:</span>
+    <el-form-item label="Guias">
+      <el-checkbox v-model="permisos[19]"/>
+    </el-form-item>
+    <el-form-item label="Configuración">
+      <el-checkbox v-model="permisos[20]"/>
+    </el-form-item>
+    <el-form-item label="Comprobantes">
+      <el-checkbox v-model="permisos[21]"/>
+    </el-form-item>
+    <el-form-item label="Cobranza">
+      <el-checkbox v-model="permisos[22]"/>
+    </el-form-item>
+
+    <span> Mantenimiento:</span>
+    <el-form-item label="Vista">
+      <el-checkbox v-model="permisos[23]"/>
+    </el-form-item>
+    <el-form-item label="Plan">
+      <el-checkbox v-model="permisos[24]"/>
+    </el-form-item>
+    <el-form-item label="Tareas">
+      <el-checkbox v-model="permisos[25]"/>
+    </el-form-item>
+    <el-form-item label="Plantillas">
+      <el-checkbox v-model="permisos[26]"/>
+    </el-form-item>
+
+
   </el-form>
 </modal>
 

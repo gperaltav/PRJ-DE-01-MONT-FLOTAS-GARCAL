@@ -73,6 +73,11 @@ export default {
   components: {
     modal
   },
+  computed: {
+    is_movile() {
+      return this.$store.state.ismovile;
+    },
+  },
   data(){
     return {
       editpointer:0,
@@ -650,6 +655,7 @@ export default {
     //llamada a API
     this.api_get_all();
     this.load_rs();
+    
   },
 }
 </script>

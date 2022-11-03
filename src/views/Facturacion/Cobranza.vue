@@ -553,7 +553,10 @@ export default {
           return false;
         }
       })
-      return false;
+      .catch(function (error) {
+        this.open_fail("Hubo un error interno al ejecutar la operación, error: "+String(error));
+        return false;
+      });
 
     },  
 
@@ -591,8 +594,7 @@ export default {
           console.log(resp);
         })
         .catch(function (error) {
-          console.log(error);
-          this.open_fail("Hubo un error al comunicarse con el servidor:"+error);
+          this.open_fail("Hubo un error interno al ejecutar la operación, error: "+String(error));
           return false;
         });
         
@@ -620,13 +622,34 @@ export default {
       this.editpointer=number;
       this.$refs.mo_editar_per.open();
       this.wait = true;
-      this.load_edit(number);
+      //this.load_edit(number);
+
+      axios
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventascobros/"+String(number))
+      .then((resp) => {
+        this.data_edit = resp.data;
+
+        axios
+        .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventacab/"+String(this.data_edit[0].cvc_id))
+          .then((resp) => {
+            this.data_edit2 = resp.data;
+
+            this.load_data_edit();
+            this.emp_cont=this.form_e.rs;
+            this.wait = false;
+          })
+          .catch(function (error) {
+            this.open_fail("Hubo un error interno al ejecutar la operación, error: "+String(error));
+            return false;
+          });
+          
+        
+      })
+      .catch(function (error) {
+        this.open_fail("Hubo un error interno al ejecutar la operación, error: "+String(error));
+        return false;
+      });
       
-      setTimeout(() => {
-        this.load_data_edit();
-        this.emp_cont=this.form_e.rs;
-        this.wait = false;
-      }, 500)
     }
   },
 

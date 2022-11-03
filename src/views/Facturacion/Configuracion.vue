@@ -192,14 +192,13 @@ export default {
             this.err_code = true;
           }
           else {
-            this.open_fail2("Hubo un error con el servidor al ejecutar la operación","Código de error: "+resp.data.message);
+            this.open_fail("Hubo un error con el servidor al ejecutar la operación");
           }
         })
-        setTimeout(() => {
-        if (this.err_code==false) {
-          this.open_fail("Hubo un error al comunicarse con el servidor, revise su conexión");
-        }
-        }, 700)
+        .catch(function (error) {
+          this.open_fail("Hubo un error interno al ejecutar la operación, error: "+String(error));
+          return false;
+        });
         
         return this.err_code;
     },
@@ -319,7 +318,10 @@ export default {
           return false;
         }
       })
-      return false;
+      .catch(function (error) {
+        this.open_fail("Hubo un error interno al ejecutar la operación, error: "+String(error));
+        return false;
+      });
     },  
 
     close_create() {
@@ -353,11 +355,10 @@ export default {
           }
           console.log(resp);
         })
-        .catch((e)=> {
-          this.open_fail("Hubo un error al comunicarse con el servidor, erro:"+String(e));
+        .catch((error)=> {
+          this.open_fail("Hubo un error interno al ejecutar la operación, error: "+String(error));
           return false;
         })
-        return false;
     },
 
     button_handle(number){
@@ -373,8 +374,8 @@ export default {
           this.emp_cont=this.form_e.rs;
           this.wait = false;
         })
-        .catch((e)=> {
-          this.open_fail("Hubo un error con el servidor al cargar los datos, error: "+String(e));
+        .catch((error)=> {
+          this.open_fail("Hubo un error con el servidor al cargar los datos, error: "+String(error));
           this.$refs.mo_editar_per.hide();
         })
     }

@@ -513,15 +513,21 @@ export default {
       this.get_tipos_doc();
 
       this.form_p.cli_id=this.data_edit[0].ent_id;
-      this.get_clientes("");
+      axios
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/buscarentidadnumero', 
+      {
+        "emp_id": Number(this.emp_cont),
+        "ent_nrodocumento": "",
+        "ext_id": "cli"
+      })
+      .then((resp) => {
+        this.opt_cli = resp.data;
+        this.select_clientes4(this.form_p.cli_id);
+      })
 
       this.form_p.tipo_doc=this.data_edit[0].cvt_codigo;
       this.form_p.serie_doc=this.data_edit[0].cvc_serie;
       this.form_p.nro_doc=this.data_edit[0].cvc_numero;
-
-      setTimeout(() => {
-        this.select_clientes4(this.form_p.cli_id);
-      }, 500)
 
       this.form_p.tipo_cobro=this.data_edit[0].cvc_observacionesopcional;
     },
@@ -658,7 +664,10 @@ export default {
           return false;
         }
       })
-      return false;
+      .catch(function (error) {
+        this.open_fail("Hubo un error interno al ejecutar la operación, error: "+String(error));
+        return false;
+      });
       
     },  
 
@@ -691,6 +700,10 @@ export default {
           return false;
         }
       })
+      .catch(function (error) {
+        this.open_fail("Hubo un error interno al ejecutar la operación, error: "+String(error));
+        return false;
+      });
       return false;
 
     },  
@@ -737,8 +750,11 @@ export default {
           else {
             this.open_fail("Hubo un error al comunicarse con el servidor");
           }
-          console.log(resp);
         })
+        .catch(function (error) {
+          this.open_fail("Hubo un error interno al ejecutar la operación, error: "+String(error));
+          return false;
+        });
         return false;
     },
     roundUp(num, precision) {
@@ -764,26 +780,42 @@ export default {
       this.editpointer=number;
       this.$refs.mo_editar_per.open();
       this.wait = true;
-      this.load_edit(number);
-      
-      setTimeout(() => {
+      //this.load_edit(number);
+
+      axios
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventacab/"+String(number))
+      .then((resp) => {
+        this.data_edit = resp.data;
+
         this.load_data_edit();
         this.emp_cont=this.form_e.rs;
         this.wait = false;
-      }, 500)
+      })
+      .catch((error)=> {
+        this.open_fail("Hubo un error interno al ejecutar la operación, error: "+String(error));
+        return false;
+      })
     },
 
     button_handle_pago(number){
       console.log(number);
       this.editpointer=number;
       this.wait2 = true;
-      this.load_edit(number);
+      //this.load_edit(number);
       this.$refs.mo_create_pago.open();
 
-      setTimeout(() => {
+      axios
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventacab/"+String(number))
+      .then((resp) => {
+        this.data_edit = resp.data;
+
         this.load_data_pago();
         this.wait2 = false;
-      }, 600)
+      })
+      .catch((error)=> {
+        this.open_fail("Hubo un error interno al ejecutar la operación, error: "+String(error));
+        return false;
+      })
     }
   },
 

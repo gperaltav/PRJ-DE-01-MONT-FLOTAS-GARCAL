@@ -75,6 +75,11 @@ export default {
   components: {
     modal
   },
+  computed: {
+    is_movile() {
+      return this.$store.state.ismovile;
+    },
+  },
   data(){
     return {
       editpointer:0,
@@ -496,7 +501,101 @@ export default {
 <template>
 
 <div class="main-container">
-  <el-form @submit.prevent :inline="true" :model="formInline" label-width="auto" :size="small" >
+  <div v-if="$isMobile()">
+  <el-collapse>
+    <el-collapse-item title="Opciones">
+
+    <el-form @submit.prevent :inline="true" :model="formInline" label-width="auto" size="small" >
+    <el-row justify="center">
+
+        <el-form-item label="Razón social">
+            <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
+              <el-option
+                v-for="item in opt_rs"
+                :key="item.emp_id"
+                :label="item.emp_razonsocial"
+                :value="item.emp_id"
+              > </el-option>
+            </el-select>
+          </el-form-item>
+
+        <el-form-item label="Placa" clearable>
+          <el-input v-model="form_b.placa" />
+        </el-form-item>
+
+        <el-form-item label="Marca" clearable>
+          <el-select  v-model="form_b.marca" >
+            <el-option
+              v-for="item in opt_mar"
+              :key="item.vma_id"
+              :label="item.vma_nombre"
+              :value="item.vma_id"
+            > </el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="Modelo" clearable>
+          <el-select  v-model="form_b.modelo" >
+            <el-option
+              v-for="item in opt_mod"
+              :key="item.vmo_id"
+              :label="item.vmo_nombre"
+              :value="item.vmo_id"
+            > </el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="Año" clearable>
+          <el-col :span="11">
+            <el-date-picker
+              v-model="form_b.fecha_i"
+              format="YYYY"
+              value-format="YYYY"
+              type="year"
+              placeholder="Seleccionar año inicio"
+              style="width: 100%"
+            />
+          </el-col>
+          <el-col :span="2" class="text-center">
+            <span class="text-gray-500">-</span>
+          </el-col>
+          <el-col :span="11">
+            <el-date-picker
+              v-model="form_b.fecha_f"
+              format="YYYY"
+              value-format="YYYY"
+              type="year"
+              placeholder="Seleccionar año fin"
+              style="width: 100%"
+            />
+          </el-col>
+
+        </el-form-item>
+
+
+        
+        <div class="button-container">
+        <el-row class="mb-4">
+          <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
+        </el-row>
+        <el-row class="mb-4">
+          <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
+        </el-row>
+        <el-row class="mb-4">
+          <el-button color="#95d475" :icon=" Download" disabled>A Excel</el-button>
+        </el-row>
+        </div>
+
+    </el-row>
+      
+    </el-form>
+    
+    </el-collapse-item>
+  </el-collapse>
+  </div>
+
+  <div v-else>
+    <el-form @submit.prevent :inline="true" :model="formInline" label-width="auto" :size="small" >
     <el-row>
       <el-col :span="21">
         <el-form-item label="Razón social">
@@ -581,9 +680,11 @@ export default {
     </el-row>
       
     </el-form>
+  </div>
+  
 
   <div class="table-container">
-    <el-table :data="datap" border header-row-style="color:black;" height="98%">
+    <el-table :data="datap" border header-row-style="color:black;" height="98%" :size="$isMobile() ? 'small':'default'">
       <el-table-column prop="emp_razonsocial" label="Razon soc. asoc. " width="140" align="center" />
       <el-table-column prop="veh_placa" label="Placa" width="90" align="center"/>
       <el-table-column prop="vcl_nombre" label="Clase" width="150"/>

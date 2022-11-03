@@ -549,63 +549,125 @@ export default {
 <template>
 
 <div class="main-container">
-  <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
-    <el-row>
-      <el-col :span="21">
-        <el-form-item label="Razón social">
-            <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
-              <el-option
-                v-for="item in opt_rs"
-                :key="item.emp_id"
-                :label="item.emp_razonsocial"
-                :value="item.emp_id"
-              > </el-option>
-            </el-select>
+
+    <div v-if="$isMobile()">
+
+    <el-collapse>
+      <el-collapse-item title="Opciones">
+
+      <el-form :inline="true" :model="formInline" label-width="auto" size="small" >
+      <el-row justify="center">
+          <el-form-item label="Razón social">
+              <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
+                <el-option
+                  v-for="item in opt_rs"
+                  :key="item.emp_id"
+                  :label="item.emp_razonsocial"
+                  :value="item.emp_id"
+                > </el-option>
+              </el-select>
+            </el-form-item>
+
+          <el-form-item label="Nro. de documento">
+            <el-input v-model="form_b.nro_doc" clearable />
           </el-form-item>
 
-        <el-form-item label="Nro. de documento">
-          <el-input v-model="form_b.nro_doc" clearable />
-        </el-form-item>
+          <el-form-item label="Nombre">
+            <el-input v-model="form_b.nombre" clearable />
+          </el-form-item>
 
-        <el-form-item label="Nombre">
-          <el-input v-model="form_b.nombre" clearable />
-        </el-form-item>
+          <el-form-item label="Forma de pago preferido">
+            <el-select v-model="form_b.f_pago" placeholder="Seleccionar" clearable>
+                <el-option
+                  v-for="item in opt_fpago"
+                  :key="item.fdp_id"
+                  :label="item.fdp_descripcion"
+                  :value="item.fdp_id"
+                > </el-option>
+              </el-select>
 
-        <el-form-item label="Forma de pago preferido">
-          <el-select v-model="form_b.f_pago" placeholder="Seleccionar" clearable>
-              <el-option
-                v-for="item in opt_fpago"
-                :key="item.fdp_id"
-                :label="item.fdp_descripcion"
-                :value="item.fdp_id"
-              > </el-option>
-            </el-select>
+          </el-form-item>
 
-        </el-form-item>
+          
+          <div class="button-container">
+          <el-row class="mb-4">
+            <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
+          </el-row>
+          <el-row class="mb-4">
+            <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
+          </el-row>
+          <el-row class="mb-4">
+            <el-button color="#95d475" :icon=" Download" disabled>A Excel</el-button>
+          </el-row>
+          </div>
 
-      </el-col>
+      </el-row>
 
-      <el-col :span="3">
+      </el-form>
+      </el-collapse-item>
+    </el-collapse>
+    </div>
+
+    <div v-else>
+      <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
+      <el-row>
+        <el-col :span="21">
+          <el-form-item label="Razón social">
+              <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
+                <el-option
+                  v-for="item in opt_rs"
+                  :key="item.emp_id"
+                  :label="item.emp_razonsocial"
+                  :value="item.emp_id"
+                > </el-option>
+              </el-select>
+            </el-form-item>
+
+          <el-form-item label="Nro. de documento">
+            <el-input v-model="form_b.nro_doc" clearable />
+          </el-form-item>
+
+          <el-form-item label="Nombre">
+            <el-input v-model="form_b.nombre" clearable />
+          </el-form-item>
+
+          <el-form-item label="Forma de pago preferido">
+            <el-select v-model="form_b.f_pago" placeholder="Seleccionar" clearable>
+                <el-option
+                  v-for="item in opt_fpago"
+                  :key="item.fdp_id"
+                  :label="item.fdp_descripcion"
+                  :value="item.fdp_id"
+                > </el-option>
+              </el-select>
+
+          </el-form-item>
+
+        </el-col>
+
+        <el-col :span="3">
+          
+          <div class="button-container">
+          <el-row class="mb-4">
+            <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
+          </el-row>
+          <el-row class="mb-4">
+            <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
+          </el-row>
+          <el-row class="mb-4">
+            <el-button color="#95d475" :icon=" Download" disabled>A Excel</el-button>
+          </el-row>
+          </div>
         
-        <div class="button-container">
-        <el-row class="mb-4">
-          <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
-        </el-row>
-        <el-row class="mb-4">
-          <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
-        </el-row>
-        <el-row class="mb-4">
-          <el-button color="#95d475" :icon=" Download" disabled>A Excel</el-button>
-        </el-row>
-        </div>
-      
-      </el-col>
-    </el-row>
+        </el-col>
+      </el-row>
 
-    </el-form>
+      </el-form>
+    </div>
 
+  
   <div class="table-container">
-    <el-table :data="datap" border header-row-style="color:black;" height="98%">
+    <el-table :data="datap" border header-row-style="color:black;" height="98%" :size="$isMobile() ? 'small':'default'">
       <el-table-column prop="emp_razonsocial" label="Razon soc. aso." width="140" align="center"/>
       <el-table-column prop="ent_nombre" label="Nombre" width="450" sortable />
       <el-table-column prop="dti_id" label="Tipo de doc." width="120" align="center"/>
@@ -622,7 +684,7 @@ export default {
 
 
 <modal ref="mo_create_per" no-close-on-backdrop title="Agregar Cliente" width="500px" @ok="create_usr()" @cancel="closecrear" cancel-title="Atras" centered>
-  <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" >
+  <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" :size="$isMobile() ? 'small':'default'">
 
     <el-form-item  label="Razón soc. asoc." prop="rs">
       <el-select style="width:300px" v-model="form_c.rs" @change="rs_changer" placeholder="Seleccionar">
@@ -706,7 +768,7 @@ export default {
 
 
 <modal ref="mo_editar_per" no-close-on-backdrop title="Editar datos de Cliente" width="500px" @ok="editar_usr" cancel-title="Cancelar" @cancel="closeedit"  centered>
-  <el-form v-loading="wait" ref="form_edit_ref" :rules="rules" :model="form" label-width="150px" >
+  <el-form v-loading="wait" ref="form_edit_ref" :rules="rules" :model="form" label-width="150px" :size="$isMobile() ? 'small':'default'">
 
     <el-form-item  label="Razón soc. asoc.">
       <el-select style="width:300px" v-model="form_e.rs" @change="rs_changer" placeholder="Seleccionar">

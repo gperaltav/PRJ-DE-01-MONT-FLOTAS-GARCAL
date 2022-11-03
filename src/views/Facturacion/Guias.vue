@@ -572,27 +572,6 @@ export default {
         }
       }
 
-      console.log(send);
-      console.log({
-          "gui_id": Number(this.editpointer),
-          "emp_id":  Number(this.form_e.rs),
-          "gui_fechaemision": this.form_e.gr_fecha_em,
-          "gti_codigo":"GEM",
-          "gui_serie": this.form_e.gr_serie,
-          "gui_numero": this.form_e.gr_numero,
-          "via_id":  Number(this.data_edit[0].via_id),
-          "gui_entdestinatario":"",
-          "veh_id": Number(this.data_edit[0].veh_id),
-          "veh_idacople":"",
-          "pro_id":  Number(this.data_edit[0].pro_id),
-          "gui_estado":"THB",
-          "gui_peso": Number(this.data_edit[0].gui_peso),
-          "ubi_codigoorigen":this.data_edit[0].ubi_codigoorigen,
-          "ubi_codigodestino":this.data_edit[0].ubi_codigodestino,
-          "gui_observacion":"",
-          "gui_usucreacion":"admin"
-        });
-
       axios
         .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/guias/actualizar', 
         send)
@@ -605,9 +584,11 @@ export default {
           else {
             this.open_fail("Hubo un error al comunicarse con el servidor");
           }
-          console.log(resp);
         })
-        return false;
+        .catch((error)=> {
+          this.open_fail("Hubo un error interno al ejecutar la operación, error: "+String(error));
+          return false;
+        })
     },
 
     button_handle(id){
@@ -615,13 +596,20 @@ export default {
       this.editpointer=id;
       this.$refs.mo_editar_per.open();
       this.wait = true;
-      this.load_edit(id);
-      
-      setTimeout(() => {
+      //this.load_edit(id);
+      axios
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/guias/"+String(id))
+      .then((resp) => {
+        this.data_edit = resp.data;
+
         this.load_data_edit();
         this.emp_cont=this.form_e.rs;
         this.wait = false;
-      }, 500)
+      })
+      .catch((error)=> {
+        this.open_fail("Hubo un error interno al ejecutar la operación, error: "+String(error));
+        return false;
+      })
     }
   },
 

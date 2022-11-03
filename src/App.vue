@@ -8,7 +8,7 @@ const handleOpen = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
 }
 const handleClose = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath)
+  
 }
 
 </script>
@@ -32,19 +32,9 @@ const handleClose = (key: string, keyPath: string[]) => {
     },
     mounted() {
       console.log(this.$store.state.authenticated);
-      if(this.isMobile()) {
-        this.ancho=64;
-        this.isCollapse=true;
-      }
+      console.log(this.$isMobile());
     },
     methods: {
-      isMobile() {
-        if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-          return true
-        } else {
-          return false
-        }
-      },
       changetool() {
         if(!this.isCollapse) {
           this.ancho=64;
@@ -67,7 +57,14 @@ const handleClose = (key: string, keyPath: string[]) => {
       },
       username() {
         return this.$store.state.username
-      }
+      },
+      acc_bd() {
+        return this.$store.state.Credentials['bd'];
+      },
+      acc_chk() {
+        return this.$store.state.Credentials;
+      },
+      
     },      
   }
   
@@ -81,13 +78,13 @@ const handleClose = (key: string, keyPath: string[]) => {
     <el-header style="text-align: left; font-size: 24px">
       <el-col :span="8" style="text-align=left">
         <div class="toolbar">
-          <el-button type="text" style="padding:20px" size="small" @click="changetool()"><el-icon style="color:white" :size="20"><Expand /></el-icon></el-button>
-          <span>ERP Garcal</span>
+          <el-button type="text" style="padding:20px" size="small" @click="changetool()"><el-icon style="color:white" :size='20'><Expand /></el-icon></el-button>
+          <span :class="[$isMobile() ? 'mv-title' : 'dkt-title']">ERP Garcal</span>
         </div>
       </el-col>
       <el-col :span="8" style="text-align=center">
         <div class="sitebar">
-        <el-tag style="color:white;" color="#0c59cf">
+        <el-tag style="color:white;" color="#0c59cf" :size="$isMobile() ? 'small': ''">
           {{titlebar}}
         </el-tag>
       </div>
@@ -128,23 +125,23 @@ const handleClose = (key: string, keyPath: string[]) => {
                 <el-icon><notebook /></el-icon>
                 <span>Base de datos</span>
               </template>
-              <el-menu-item @click='change_title("Base de datos > Usuarios")' index="usuarios">Usuarios</el-menu-item>
-              <el-menu-item @click='change_title("Base de datos > Clientes")' index="clientes">Clientes</el-menu-item>
-              <el-menu-item @click='change_title("Base de datos > Personal")' index="personal">Personal</el-menu-item>
-              <el-menu-item @click='change_title("Base de datos > Vehiculos")' index="vehiculos">Vehiculos</el-menu-item>
-              <el-menu-item @click='change_title("Base de datos > Proveedores")' index="proveedores">Proveedores</el-menu-item>
-              <el-menu-item @click='change_title("Base de datos > Productos")' index="productos">Productos</el-menu-item>
-              <el-menu-item @click='change_title("Base de datos > Ubigeos")' index="ubigeos">Ubigeos</el-menu-item>
+              <el-menu-item :disabled=!acc_chk[1] @click='change_title("Base de datos > Usuarios")' index="usuarios">Usuarios</el-menu-item>
+              <el-menu-item :disabled=!acc_chk[2] @click='change_title("Base de datos > Clientes")' index="clientes">Clientes</el-menu-item>
+              <el-menu-item :disabled=!acc_chk[3] @click='change_title("Base de datos > Personal")' index="personal">Personal</el-menu-item>
+              <el-menu-item :disabled=!acc_chk[4] @click='change_title("Base de datos > Vehiculos")' index="vehiculos">Vehiculos</el-menu-item>
+              <el-menu-item :disabled=!acc_chk[5] @click='change_title("Base de datos > Proveedores")' index="proveedores">Proveedores</el-menu-item>
+              <el-menu-item :disabled=!acc_chk[6] @click='change_title("Base de datos > Productos")' index="productos">Productos</el-menu-item>
+              <el-menu-item :disabled=!acc_chk[7] @click='change_title("Base de datos > Ubigeos")' index="ubigeos">Ubigeos</el-menu-item>
             </el-sub-menu>
             <el-sub-menu index="2">
               <template #title>
                 <el-icon><document-checked /></el-icon>
                 <span>Documentos</span>
               </template>
-              <el-menu-item @click='change_title("Documentos > Vehiculos")' index="doc_vehiculos">Vehiculos</el-menu-item>
-              <el-menu-item @click='change_title("Documentos > Personal")' index="doc_personal">Personal</el-menu-item>
+              <el-menu-item :disabled=!acc_chk[8] @click='change_title("Documentos > Vehiculos")' index="doc_vehiculos">Vehiculos</el-menu-item>
+              <el-menu-item :disabled=!acc_chk[9] @click='change_title("Documentos > Personal")' index="doc_personal">Personal</el-menu-item>
             </el-sub-menu>
-            <el-menu-item @click='change_title("Planificación")' index="planificacion">
+            <el-menu-item :disabled=!acc_chk[10] @click='change_title("Planificación")' index="planificacion">
               <el-icon><trend-charts /></el-icon>
               <template #title>Planificación</template>
             </el-menu-item>
@@ -153,34 +150,34 @@ const handleClose = (key: string, keyPath: string[]) => {
                 <el-icon><operation /></el-icon>
                 <span>Operaciones</span>
               </template>
-              <el-menu-item @click='change_title("Operaciones > Combustible")' index="operaciones_combustible">Combustible</el-menu-item>
-              <el-menu-item @click='change_title("Operaciones > Viáticos")' index="operaciones_viaticos">Viáticos</el-menu-item>
-              <el-menu-item @click='change_title("Operaciones > Personal")' index="operaciones_personal">Personal</el-menu-item>
-              <el-menu-item @click='change_title("Operaciones > Rendición de cuentas")' index="operaciones_rendicion_cuentas">Rendicion de cuentas</el-menu-item>
-              <el-menu-item @click='change_title("Operaciones > Compras")' index="operaciones_compras">Compras</el-menu-item>
-              <el-menu-item @click='change_title("Operaciones > Vista de compras")' index="operaciones_compras_vista">Vista de compras</el-menu-item>
-              <el-menu-item @click='change_title("Operaciones > Pagos")' index="operaciones_pago">Pagos</el-menu-item>
-              <el-menu-item @click='change_title("Operaciones > Vista de pagos")' index="operaciones_pagos_vista">Vista de pagos</el-menu-item>
+              <el-menu-item :disabled=!acc_chk[11] @click='change_title("Operaciones > Combustible")' index="operaciones_combustible">Combustible</el-menu-item>
+              <el-menu-item :disabled=!acc_chk[12] @click='change_title("Operaciones > Viáticos")' index="operaciones_viaticos">Viáticos</el-menu-item>
+              <el-menu-item :disabled=!acc_chk[13] @click='change_title("Operaciones > Personal")' index="operaciones_personal">Personal</el-menu-item>
+              <el-menu-item :disabled=!acc_chk[14] @click='change_title("Operaciones > Rendición de cuentas")' index="operaciones_rendicion_cuentas">Rendicion de cuentas</el-menu-item>
+              <el-menu-item :disabled=!acc_chk[15] @click='change_title("Operaciones > Compras")' index="operaciones_compras">Compras</el-menu-item>
+              <el-menu-item :disabled=!acc_chk[16] @click='change_title("Operaciones > Vista de compras")' index="operaciones_compras_vista">Vista de compras</el-menu-item>
+              <el-menu-item :disabled=!acc_chk[17] @click='change_title("Operaciones > Pagos")' index="operaciones_pago">Pagos</el-menu-item>
+              <el-menu-item :disabled=!acc_chk[18] @click='change_title("Operaciones > Vista de pagos")' index="operaciones_pagos_vista">Vista de pagos</el-menu-item>
             </el-sub-menu>
             <el-sub-menu index="5">
               <template #title>
                 <el-icon><Tickets /></el-icon>
                 <span>Facturación</span>
               </template>
-              <el-menu-item @click='change_title("Facturación > Guías")' index="facturacion_guias">Guias</el-menu-item>
-              <el-menu-item @click='change_title("Facturación > Configuración")' index="facturacion_configuracion">Configuración</el-menu-item>
-              <el-menu-item @click='change_title("Facturación > Comprobantes")' index="facturacion_comprobantes">Comprobantes</el-menu-item>
-              <el-menu-item @click='change_title("Facturación > Cobranzas")' index="facturacion_cobranza">Cobranzas</el-menu-item>
+              <el-menu-item :disabled=!acc_chk[19] @click='change_title("Facturación > Guías")' index="facturacion_guias">Guias</el-menu-item>
+              <el-menu-item :disabled=!acc_chk[20] @click='change_title("Facturación > Configuración")' index="facturacion_configuracion">Configuración</el-menu-item>
+              <el-menu-item :disabled=!acc_chk[21] @click='change_title("Facturación > Comprobantes")' index="facturacion_comprobantes">Comprobantes</el-menu-item>
+              <el-menu-item :disabled=!acc_chk[22] @click='change_title("Facturación > Cobranzas")' index="facturacion_cobranza">Cobranzas</el-menu-item>
             </el-sub-menu>
             <el-sub-menu index="7">
               <template #title>
                 <el-icon><img width="15" height="15" src= "./components/mantenimiento.svg"/></el-icon>
                 <span>Mantenimiento</span>
               </template>
-              <el-menu-item @click='change_title("Mantenimiento > Mantenimientos vista")' index="mantenimiento_vista">Vista mantenimiento</el-menu-item>
-              <el-menu-item @click='change_title("Mantenimiento > Plan de mantenimiento")' index="mantenimiento_plan">Plan de mantenimiento</el-menu-item>
-              <el-menu-item @click='change_title("Mantenimiento > Tareas")' index="mantenimiento_tareas">Tareas</el-menu-item>
-              <el-menu-item @click='change_title("Mantenimiento > Plantillas")' index="mantenimiento_plantillas">Plantillas</el-menu-item>
+              <el-menu-item :disabled=!acc_chk[23] @click='change_title("Mantenimiento > Mantenimientos vista")' index="mantenimiento_vista">Vista mantenimiento</el-menu-item>
+              <el-menu-item :disabled=!acc_chk[24] @click='change_title("Mantenimiento > Plan de mantenimiento")' index="mantenimiento_plan">Plan de mantenimiento</el-menu-item>
+              <el-menu-item :disabled=!acc_chk[25] @click='change_title("Mantenimiento > Tareas")' index="mantenimiento_tareas">Tareas</el-menu-item>
+              <el-menu-item :disabled=!acc_chk[26] @click='change_title("Mantenimiento > Plantillas")' index="mantenimiento_plantillas">Plantillas</el-menu-item>
             </el-sub-menu>
           </el-menu>
         </el-scrollbar>
@@ -197,6 +194,14 @@ const handleClose = (key: string, keyPath: string[]) => {
 
 
 <style scoped>
+
+.mv-title {
+  font-size: 12px;
+}
+
+.dkt-title {
+  font-size: 24px;
+}
 
 .el-menu-v:not(.el-menu--collapse) {
   width: 200px;

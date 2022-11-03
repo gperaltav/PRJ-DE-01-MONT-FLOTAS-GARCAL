@@ -31,6 +31,7 @@ import axios from 'axios'
           console.log("Se debe ingresar una contraseña");
         }
       },
+      
       login_api() {
         axios
         .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/usuarios/comprobar', 
@@ -42,11 +43,37 @@ import axios from 'axios'
             console.log(resp);  
             var logg=resp.data[0].usu_existe;
             if(logg) {
-              console.log("Logeado");
               this.$store.dispatch('authenticate');
               this.$store.commit('set_user', {
                 username: resp.data[0].usu_codigo
               });
+              axios
+              .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/menusxusuarios', 
+              { 
+                "usu_codigo":resp.data[0].usu_codigo
+              })
+              .then((resp2) => {
+                var prmtmp={}
+                if(resp.data[0].usu_codigo==='admin') {
+                  for (let index = 1; index <= 26; index++) {
+                    prmtmp[index]=true;
+                  }
+                }
+                else {
+                  for (const key in resp2.data) {
+                    prmtmp[resp2.data[key].mnu_id]=true;
+                  }
+                }
+                
+                this.$store.commit('set_permisos', prmtmp);
+                console.log(prmtmp);
+                console.log(this.$store.state.Credentials);
+                console.log(this.$store.state.Credentials[27]);
+              })
+              .catch((e)=>{
+                alert("Hubo un error externo al obtener informacion sobre los permisos, se recomienda reiniciar la aplicación")
+              })
+
             }
             else {
               console.log("No Logeado");
@@ -55,9 +82,13 @@ import axios from 'axios'
           })
           .catch((e)=> {
             console.log(e);
-            console.log("Error interno al in8iciar sesión");
+            console.log("Error interno al iniciar sesión");
           })
       },
+    },
+    mounted() {
+      //console.log(navigator.userAgentData.mobile);
+      // problemas en otras areas
     }
   }
   
