@@ -473,17 +473,17 @@ export default {
 <template>
 
 <el-row>
-  <el-col :span="8">
+  <el-col :span="$isMobile() ? 24:8">
     <div id="graph1"> 
     </div>
   </el-col>
 
-  <el-col :span="8">
+  <el-col :span="$isMobile() ? 24:8">
     <div id="graph2"> 
     </div>
   </el-col>
 
-  <el-col :span="8" style="margin-top:30px">
+  <el-col :span="$isMobile() ? 24:8" style="margin-top:30px">
     <span style="margin-button:30px">Documentos a vencer:</span>
     <el-table size="small" :data="data_t3" style="width: 100%" height="250">
       <el-table-column prop="emp_razonsocial" label="Empresa"  />
@@ -497,7 +497,7 @@ export default {
 </el-row>
 
 <el-row :gutter="5">
-  <el-col :span="8">
+  <el-col :span="$isMobile() ? 24:8">
     <span style="margin-button:30px">Alerta para mantenimiento:</span>
     <el-table size="small" :data="data_t4" style="width: 100%" height="250">
       <el-table-column prop="emp_razonsocial" label="Empresa"  />
@@ -505,7 +505,7 @@ export default {
       <el-table-column prop="man_fecha" label="Fecha de mant." />
     </el-table>
   </el-col>
-  <el-col :span="8">
+  <el-col :span="$isMobile() ? 24:8">
     <span style="margin-button:30px">Vencimiento de cuentas:</span>
     <el-table size="small" :data="data_t5" style="width: 100%" height="250">
       <el-table-column prop="emp_razonsocial" label="Empresa"  />
@@ -513,7 +513,7 @@ export default {
       <el-table-column prop="cce_descripcion" label="Tipo" />
     </el-table>
   </el-col>
-  <el-col :span="8">
+  <el-col :span="$isMobile() ? 24:8">
     <span style="margin-button:30px">Combustible:</span>
     <el-table size="small" :data="data_t6" style="width: 100%" height="250">
       <el-table-column prop="ruta" label="Ruta"  />

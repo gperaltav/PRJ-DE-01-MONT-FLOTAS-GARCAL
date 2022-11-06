@@ -521,7 +521,7 @@ export default {
 
 <template>
   
-  <div style="width:900px; margin-left:auto;margin-right:auto;padding-right:200px">
+  <div v-if="!$isMobile()" style="width:900px; margin-left:auto;margin-right:auto;padding-right:200px">
 
     <el-row style="text-align=center;">
       <h1 style="margin-left: auto;margin-right: auto">Añadir pago</h1>
@@ -595,6 +595,124 @@ export default {
       </el-col>
 
     </el-row>
+
+    <el-form-item  label="Fecha de pago">
+      <el-date-picker
+        type="date"
+        v-model="form_c.fecha_em"
+        format="YYYY-MM-DD"
+        value-format="YYYY-MM-DD"
+        placeholder="Seleccione fecha"
+        style="width: 300px"
+      />
+    </el-form-item>
+
+    <el-form-item style="margin-left: auto;margin-right: auto" label="Tipo de pago">
+      <el-select v-model="form_c.tipo_pago" placeholder="Seleccione una opcion" style="width:300px" clearable>
+        <el-option
+          v-for="item in opt_tp"
+          :key="item.fdp_id"
+          :label="item.fdp_descripcion"
+          :value="item.fdp_id"
+        > </el-option>
+      </el-select>
+    </el-form-item>
+
+    <el-form-item style="margin-left: auto;margin-right: auto" label="Nro. de referencia">
+      <div style="width:300px">
+        <el-input v-model="form_c.referencia" placeholder="Inserte codigo de referencia"/>
+      </div>
+    </el-form-item>
+
+    <el-form-item  label="Monto">
+      <el-row style="width:600px">
+        <el-col :span="6">
+          <el-input v-model="form_c.total" placeholder="Monto" /> 
+        </el-col>
+        <el-col :span="6"> 
+          <el-select v-model="form_c.moneda" placeholder="Moneda" style="width:150px" clearable>
+            <el-option label="SOLES (S/.)" value="SOL" />
+            <el-option label="DOLARES ($)" value="DOL" />
+          </el-select> 
+        </el-col>
+      </el-row>
+    </el-form-item>
+    <el-row style="text-align=center;" >
+      <el-button  @click="transaccion_insertar" style="margin-left: auto;margin-right: auto" color="#0844a4" >Guardar</el-button>
+    </el-row>   
+    </el-form>
+  </div>
+
+  <div v-else>
+     <el-row style="text-align=center;">
+      <h1 style="margin-left: auto;margin-right: auto">Añadir pago</h1>
+    </el-row>
+
+  
+  <el-form :model="form" :label-position="left" label-width="100px" :size="$isMobile() ? 'small':'default'">
+
+    <el-form-item  label="Razón social asociada">
+      <el-select v-model="form_c.rs" @change="rs_changer" @clear="clear_c" placeholder="Seleccionar" style="width:600px" clearable>
+        <el-option
+          v-for="item in opt_rs"
+          :key="item.emp_id"
+          :label="item.emp_razonsocial"
+          :value="item.emp_id"
+        > </el-option>
+      </el-select>
+    </el-form-item>
+
+    <el-form-item  label="Proveedor">
+      <el-row style="width:600px"> 
+        <el-select
+          v-model="form_c.prv_id"
+          filterable
+          :remote-method="get_proveedores"
+          @change="select_proveedores"
+          @clear="clear_proveedores"
+          placeholder="Inserte ID de proveedor"
+          remote
+          clearable
+          :disabled="stop_cliente"
+        >
+          <template #prefix>
+            <el-icon><Search /></el-icon>
+          </template>
+
+          <el-option
+            v-for="item in opt_prv"
+            :key="item.ent_id"
+            :label="item.ent_nrodocumento"
+            :value="item.ent_id"
+          />
+        </el-select>
+
+      <el-input disabled v-model="form_c.prv_nom" placeholder="Nombre de proveedor" />
+      </el-row>
+    </el-form-item>
+
+
+
+      <el-form-item label="Tipo de doc">
+        <el-select v-model="form_c.tipo_doc"  placeholder="Tipo de doc."  clearable>
+        <el-option
+          v-for="item in opt_td"
+          :key="item.cct_codigo"
+          :label="item.cct_descripcion"
+          :value="item.cct_codigo"
+        > </el-option>
+        </el-select>
+      </el-form-item>
+
+    
+
+      <el-form-item  label="Nro. de serie">
+        <el-input v-model="form_c.serie_doc" placeholder="nro de serie" />
+      </el-form-item>
+      <el-form-item  label="Nro. de documento">
+        <el-input v-model="form_c.nro_doc" placeholder="nro de documento" />
+      </el-form-item>
+
 
     <el-form-item  label="Fecha de pago">
       <el-date-picker

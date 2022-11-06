@@ -211,7 +211,35 @@ export default {
 <template>
   
 <div class="main-container">
-  <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
+
+  <div v-if="$isMobile()">
+  <el-collapse>
+    <el-collapse-item title="Opciones">
+      <el-form :inline="true" :model="formInline" label-width="auto" size="small" >
+    <el-row justify="center">
+
+
+      <el-form-item label="Nombre completo de ubigeo">
+        <el-input  v-model="form_b.nombre" clearable />
+      </el-form-item>
+
+      <div class="button-container">
+      <el-row class="mb-4">
+        <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
+      </el-row>
+      <el-row class="mb-4">
+        <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
+      </el-row>
+      </div>
+    </el-row>
+
+    </el-form>
+    </el-collapse-item>
+  </el-collapse>
+  </div>
+
+  <div v-else>
+    <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
     <el-row>
     <el-col :span="21">
 
@@ -234,9 +262,10 @@ export default {
     </el-row>
 
     </el-form>
+  </div>  
 
   <div class="table-container">
-    <el-table :data="datap" border header-row-style="color:black" height="98%">
+    <el-table :data="datap" border header-row-style="color:black" height="98%" :size="$isMobile() ? 'small':'default'">
       <el-table-column prop="ubi_codigo" label="Código" width="130" align="center" />
       <el-table-column prop="ubi_nombre" label="Nombre corto"   />
       <el-table-column prop="ubi_nombrecompleto" label="Nombre completo"/>
@@ -246,7 +275,7 @@ export default {
 
 
 <modal ref="mo_create_per" no-close-on-backdrop title="Agregar Ubigeo" width="500px" @ok="api_nuevo" @cancel="closecrear" cancel-title="Atras" centered>
-  <el-form  @submit.prevent ref="form_cref" :rules="rules" :model="form_c" label-width="150px" >
+  <el-form  @submit.prevent ref="form_cref" :rules="rules" :model="form_c" label-width="150px" :size="$isMobile() ? 'small':'default'">
     
     <el-form-item label="Nombre de ubigeo">
       <el-input v-model="form_c.nombre" />

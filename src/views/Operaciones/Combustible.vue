@@ -533,7 +533,7 @@ export default {
 
 <template>
           
-  <div style="width:900px; margin-left:auto;margin-right:auto;padding-right:200px ">
+  <div v-if="!$isMobile()" style="width:900px; margin-left:auto;margin-right:auto;padding-right:200px ">
 
     <el-row style="text-align=center;">
       <h1 style="margin-left: auto;margin-right: auto">Añadir combustible</h1>
@@ -664,6 +664,177 @@ export default {
         </el-col>
       </el-row>
     </el-form-item>
+
+    <el-form-item style="margin-left: auto;margin-right: auto" label="Valor venta">
+      <div style="width:300px">
+        <el-input v-model="form_c.subtotal" placeholder="Inserte una cantidad">
+          <template #append>
+            <el-button @click="calcular1()" ><img style="fill:#797979" width="15" height="15" src = "../../components/calculadora.svg"/> </el-button>
+          </template>
+          <template #prepend>S/</template>
+        </el-input>
+      </div>
+    </el-form-item>
+
+    <el-form-item style="margin-left: auto;margin-right: auto" label="Impuesto">
+      <div style="width:240px">
+        <el-input v-model="form_c.impuesto" placeholder="Inserte una cantidad">
+          <template #prepend>S/</template>
+        </el-input>
+      </div>
+      <el-input style="width:60px" v-model="form_c.igv">
+        <template #suffix>%</template>
+      </el-input>
+    </el-form-item>
+
+    <el-form-item style="margin-left: auto;margin-right: auto" label="Total">
+      <div style="width:300px">
+        <el-input v-model="form_c.total" placeholder="Inserte una cantidad">
+          <template #append>
+            <el-button  @click="calcular2()"><img style="fill:#797979" width="15" height="15" src = "../../components/calculadora.svg"/> </el-button>
+          </template>
+          <template #prepend>S/</template>
+        </el-input>
+      </div>
+    </el-form-item>
+
+    <el-form-item style="margin-left: auto;margin-right: auto" label="Tipo de pago">
+      <el-select v-model="form_c.tipo_pago" placeholder="Seleccione una opcion" style="width:300px" clearable>
+        <el-option
+          v-for="item in opt_fp"
+          :key="item.fdp_id"
+          :label="item.fdp_descripcion"
+          :value="item.fdp_id"
+          
+        > </el-option>
+      </el-select>
+    </el-form-item>
+
+    <el-row style="text-align=center; margin-left:100px" >
+      <el-button  @click="transaccion_insertar" style="margin-left: auto;margin-right: auto" color="#0844a4" >Guardar</el-button>
+    </el-row>
+      
+    </el-form>
+  </div>
+
+  <div v-else>
+    <el-row style="text-align=center;">
+      <h1 >Añadir combustible</h1>
+    </el-row>
+  
+  <el-form :model="form" :label-position="left" label-width="100px" size="small">
+
+    <el-form-item  label="Razón social asociada">
+      <el-select v-model="form_c.rs" @change="rs_changer" @clear="clear_c" placeholder="Seleccionar" style="width:600px" clearable>
+        <el-option
+          v-for="item in opt_rs"
+          :key="item.emp_id"
+          :label="item.emp_razonsocial"
+          :value="item.emp_id"
+        > </el-option>
+      </el-select>
+    </el-form-item>
+
+    <el-form-item  label="Proveedor">
+
+
+        <el-select
+          v-model="form_c.prv_id"
+          filterable
+          :remote-method="get_proveedores"
+          @change="select_proveedores"
+          @clear="clear_proveedores"
+          placeholder="Inserte ID de proveedor"
+          remote
+          clearable
+          :disabled="stop_cliente"
+        >
+          <template #prefix>
+            <el-icon><Search /></el-icon>
+          </template>
+
+          <el-option
+            v-for="item in opt_prv"
+            :key="item.ent_id"
+            :label="item.ent_nrodocumento"
+            :value="item.ent_id"
+          />
+        </el-select>
+
+      <el-input disabled v-model="form_c.prv_nom" placeholder="Nombre de proveedor" />
+
+    </el-form-item>
+
+    <el-form-item label="Tipo de doc">
+        <el-select v-model="form_c.tipo_doc"  placeholder="Tipo de doc."  clearable>
+        <el-option
+          v-for="item in opt_td"
+          :key="item.cct_codigo"
+          :label="item.cct_descripcion"
+          :value="item.cct_codigo"
+        > </el-option>
+        </el-select>
+    </el-form-item>
+
+        <el-form-item  label="Nro. de serie">
+        <el-input v-model="form_c.serie_doc" placeholder="nro de serie" />
+        </el-form-item>
+
+        <el-form-item  label="Nro. de documento">
+        <el-input v-model="form_c.nro_doc" placeholder="nro de documento" />
+        </el-form-item>
+
+    <el-form-item  label="Fecha de emisión">
+      <el-date-picker
+        type="date"
+        v-model="form_c.fecha_em"
+        format="YYYY-MM-DD"
+        value-format="YYYY-MM-DD"
+        placeholder="Seleccione fecha"
+        style="width: 300px"
+      />
+    </el-form-item>
+
+    <el-form-item label="Fecha de viaje">
+      <el-row style="width:600px">
+
+        <el-date-picker
+          type="date"
+          v-model="form_c.fecha_via"
+          format="YYYY-MM-DD"
+          value-format="YYYY-MM-DD"
+          placeholder="Seleccione fecha"
+          @change="fech_changer"
+        />
+
+        <el-select v-model="form_c.via_id" placeholder="Seleccione una opcion"  clearable>
+          <el-option
+            v-for="item in opt_via"
+            :key="item.via_id"
+            :label="item.via_descripcion"
+            :value="item.via_id"
+          > </el-option>
+        </el-select> 
+      </el-row>
+    </el-form-item>
+
+    <el-form-item  label="Cantidad">
+
+        <el-col :span="12">
+          <el-input v-model="form_c.cantidad_n" placeholder="Cantidad" /> 
+        </el-col>
+        <el-col :span="12"> 
+          <el-select v-model="form_c.cantidad_un" placeholder="Unidad"  clearable>
+            <el-option label="Galones" value="gal" />
+          </el-select> 
+        </el-col>
+
+    </el-form-item>
+          <el-form-item label-width="100px" label="P. Unitario">
+        <el-input v-model="form_c.cantidad_p_uni" placeholder="Insertar monto" >
+          <template #prepend>S/</template>
+        </el-input>
+      </el-form-item>
 
     <el-form-item style="margin-left: auto;margin-right: auto" label="Valor venta">
       <div style="width:300px">

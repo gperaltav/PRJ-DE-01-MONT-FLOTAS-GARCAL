@@ -686,7 +686,7 @@ export default {
 <modal ref="mo_create_per" no-close-on-backdrop title="Agregar Cliente" width="500px" @ok="create_usr()" @cancel="closecrear" cancel-title="Atras" centered>
   <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" :size="$isMobile() ? 'small':'default'">
 
-    <el-form-item  label="Razón soc. asoc." prop="rs">
+    <el-form-item  label="Razón soc. asoc." prop="rs" >
       <el-select style="width:300px" v-model="form_c.rs" @change="rs_changer" placeholder="Seleccionar">
         <el-option
           v-for="item in opt_rs"
@@ -851,9 +851,9 @@ export default {
   </el-form>
 </modal>
 
-<modal ref="mo_sunat" no-close-on-backdrop title="Consultar RUC" width="700px" cancel-title="Cancelar" centered>
+<modal ref="mo_sunat" no-close-on-backdrop title="Consultar RUC" :width="$isMobile() ? '100%':'700px'" cancel-title="Cancelar" centered>
  <div> 
-    <object type="text/html" data="https://e-consultaruc.sunat.gob.pe/cl-ti-itmrconsruc/jcrS00Alias?accion=consPorRazonSoc&razSoc=MTS" width="700px" height="400px" style="overflow:auto;">
+    <object type="text/html" data="https://e-consultaruc.sunat.gob.pe/cl-ti-itmrconsruc/jcrS00Alias?accion=consPorRazonSoc&razSoc=MTS" :width="$isMobile() ? '100%':'700px'" height="400px" style="overflow:auto;">
     </object>
  </div>
 

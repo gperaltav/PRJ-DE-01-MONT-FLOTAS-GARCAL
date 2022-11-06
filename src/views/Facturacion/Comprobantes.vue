@@ -835,7 +835,86 @@ export default {
 <template>
   
 <div class="main-container">
-  <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
+
+
+  <div v-if="$isMobile()">
+  <el-collapse>
+    <el-collapse-item title="Opciones">
+      <el-form :inline="true" :model="formInline" label-width="auto" size="small" >
+    <el-row justify="center">
+
+      <el-form-item label="Razón social">
+        <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
+          <el-option
+            v-for="item in opt_rs"
+            :key="item.emp_id"
+            :label="item.emp_razonsocial"
+            :value="item.emp_id"
+          > </el-option>
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="Tipo de guia">
+        <el-select v-model="form_b.tipo_gui" placeholder="Seleccionar" clearable>
+          <el-option
+            v-for="item in opt_td"
+            :key="item.cct_codigo"
+            :label="item.cct_descripcion"
+            :value="item.cct_codigo"
+          > </el-option>
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="Codigo">
+        <el-input placeholder="serie-numero" v-model="form_b.nombre" clearable />
+      </el-form-item>
+
+      <el-form-item label="Fecha de emisión">
+        <el-col :span="11">
+          <el-date-picker
+            v-model="form_b.fecha_i"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
+            type="date"
+            placeholder="Seleccionar limite inicial"
+            style="width: 100%"
+          />
+        </el-col>
+        <el-col :span="2" class="text-center">
+          <span class="text-gray-500">-</span>
+        </el-col>
+        <el-col :span="11">
+          <el-date-picker
+            v-model="form_b.fecha_f"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
+            type="date"
+            placeholder="Seleccionar limite final"
+            style="width: 100%"
+          />
+        </el-col>
+      </el-form-item>
+
+      <div class="button-container">
+      <el-row class="mb-4">
+        <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
+      </el-row>
+      <el-row class="mb-4">
+        <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
+      </el-row>
+      <el-row class="mb-4">
+        <el-button color="#95d475" :icon=" Download" @click="get_descarga" disabled>A Excel</el-button>
+      </el-row>
+      </div>
+    </el-row>
+
+    </el-form>
+    </el-collapse-item>
+  </el-collapse>
+  </div>
+
+  <div v-else>
+    <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
     <el-row>
     <el-col :span="21">
       <el-form-item label="Razón social">
@@ -907,9 +986,13 @@ export default {
     </el-row>
 
     </el-form>
+  </div>
+
+
+  
 
   <div class="table-container">
-    <el-table :data="datap" border header-row-style="color:black" height="98%">
+    <el-table :data="datap" border header-row-style="color:black" height="98%" :size="$isMobile() ? 'small':'default'">
       <el-table-column prop="emp_razonsocial" label="Razon soc. aso." width="140" align="center" />
       <el-table-column prop="cvt_descripcion" label="Tipo de doc."  width="120" align="center" />
       <el-table-column prop="cvc_serienumero" label="Serie-numero" width="140" sortable/>  
@@ -935,7 +1018,7 @@ export default {
 
 
 <modal ref="mo_create" no-close-on-backdrop title="Agregar Comprobante" width="900px" @ok="create_usr" @cancel="closecrear" cancel-title="Atras" centered>
-  <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="200px" >
+  <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="200px" :size="$isMobile() ? 'small':'default'">
     <el-form-item  label="Razón social asociada">
       <el-select v-model="form_c.rs" @change="rs_changer" @clear="clear_c" placeholder="Seleccionar" style="width:600px" clearable>
         <el-option

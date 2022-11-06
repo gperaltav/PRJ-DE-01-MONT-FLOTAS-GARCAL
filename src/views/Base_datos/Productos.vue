@@ -268,7 +268,49 @@ export default {
 <template>
   
 <div class="main-container">
-  <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
+
+  <div v-if="$isMobile()">
+  <el-collapse>
+    <el-collapse-item title="Opciones">
+      <el-form :inline="true" :model="formInline" label-width="auto" size="small" >
+    <el-row justify="center">
+
+      <el-form-item label="Razón social">
+        <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
+          <el-option
+            v-for="item in opt_rs"
+            :key="item.emp_id"
+            :label="item.emp_razonsocial"
+            :value="item.emp_id"
+          > </el-option>
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="Descripción">
+        <el-input  v-model="form_b.descripcion" clearable />
+      </el-form-item>
+
+       <el-form-item label="Cód. de producto">
+        <el-input  v-model="form_b.codigo" clearable />
+      </el-form-item>
+
+      <div class="button-container">
+      <el-row class="mb-4">
+        <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
+      </el-row>
+      <el-row class="mb-4">
+        <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
+      </el-row>
+      </div>
+    </el-row>
+
+    </el-form>
+    </el-collapse-item>
+  </el-collapse>
+  </div>
+
+  <div v-else>
+    <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
     <el-row>
     <el-col :span="21">
       <el-form-item label="Razón social">
@@ -306,9 +348,11 @@ export default {
     </el-row>
 
     </el-form>
+  </div>
+  
 
   <div class="table-container">
-    <el-table :data="datap" border header-row-style="color:black" height="98%">
+    <el-table :data="datap" border header-row-style="color:black" height="98%" :size="$isMobile() ? 'small':'default'">
       <el-table-column prop="emp_razonsocial" label="Razón social" width="170" align="center" />
       <el-table-column prop="pro_descripcion" label="Descripción" />
       <el-table-column prop="pro_codsunat" label="Código"/>
@@ -323,7 +367,7 @@ export default {
 
 
 <modal ref="mo_create_per" no-close-on-backdrop title="Agregar producto" width="500px" @ok="api_nuevo" @cancel="closecrear" cancel-title="Atras" centered>
-  <el-form  @submit.prevent ref="form_cref" :rules="rules" :model="form_c" label-width="150px" >
+  <el-form  @submit.prevent ref="form_cref" :rules="rules" :model="form_c" label-width="150px" :size="$isMobile() ? 'small':'default'">
     
     <el-form-item  label="Razón soc. asoc." prop="rs">
       <el-select style="width:300px" v-model="form_c.rs" @change="rs_changer" placeholder="Seleccionar">

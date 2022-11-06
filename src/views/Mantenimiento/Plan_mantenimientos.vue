@@ -601,7 +601,48 @@ export default {
 <template>
 
 <div class="main-container">
-  <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
+
+  <div v-if="$isMobile()">
+  <el-collapse>
+    <el-collapse-item title="Opciones">
+      <el-form :inline="true" :model="formInline" label-width="auto" size="small" >
+
+      <el-row justify="center">
+
+          <el-col :span="21">
+            <el-form-item label="Razón social">
+              <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
+                <el-option
+                  v-for="item in opt_rs"
+                  :key="item.emp_id"
+                  :label="item.emp_razonsocial"
+                  :value="item.emp_id"
+                > </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="Nro. de placa">
+              <el-input v-model="form_b.placa" clearable />
+            </el-form-item>
+
+            <div class="button-container">
+              <el-row >
+                <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
+              </el-row>
+              <el-row >
+                <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
+              </el-row>
+            </div>
+          </el-col>
+
+      </el-row>
+
+      </el-form>
+    </el-collapse-item>
+  </el-collapse>
+  </div>
+
+  <div v-else>
+    <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
     <el-row>
       <el-col :span="21">
         <el-form-item label="Razón social">
@@ -632,9 +673,12 @@ export default {
     </el-row>
 
   </el-form>
+  </div>
 
-  <div class="table-container" style="width:600px;margin-left: auto;margin-right: auto;padding-right:220px">
-    <el-table :data="datap" border header-row-style="color:black;"  height="98%">
+  
+
+  <div class="table-container" :style="$isMobile() ? '':'width:600px;margin-left: auto;margin-right: auto;padding-right:220px'">
+    <el-table :data="datap" border header-row-style="color:black"  height="98%" :size="$isMobile() ? 'small':'default'">
       <el-table-column prop="emp_razonsocial" label="Razon soc. aso." width="150" align="center"/>
       <el-table-column prop="veh_placa" label="Placa"  />
       <el-table-column prop="tar_cantidad" label="Nro. de tareas" width="180" align="center"/>
@@ -650,7 +694,7 @@ export default {
 
 <modal ref="mo_create_per" no-close-on-backdrop title="Agregar plan de mantenimiento" width="600px" @ok="create_pl2" @cancel="closecrear" cancel-title="Atras" centered>
   
-  <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" >
+  <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" :size="$isMobile() ? 'small':'default'">
 
     <el-form-item  label="Razón soc. asoc." prop="rs">
       <el-select style="width:300px" v-model="form_c.rs" @change="rs_changer" placeholder="Seleccionar">
@@ -709,7 +753,7 @@ export default {
       </el-select>
     </el-form-item>
     
-    <div class="table-container" style="width:500px;margin-left: auto;margin-right: auto">
+    <div class="table-container" :style="$isMobile() ? 'height:200px':'width:500px;margin-left: auto;margin-right: auto'">
       <el-table :data="tareas" border header-row-style="color:black;"  height="98%" size="small">
         <el-table-column prop="tar_descripcion" label="Tarea" width="250" />
         <el-table-column prop="pma_avisokm" label="Aviso km." align="center" />
@@ -768,7 +812,7 @@ export default {
 </modal>
 
 <modal ref="mo_editar_per" no-close-on-backdrop title="Editar datos de plan de mantenimiento" width="600px" @ok="editar_pl" cancel-title="Cancelar" @cancel="closeedit"  centered>
-  <el-form v-loading="wait" ref="form_edit_ref" :model="form_e" label-width="150px" >
+  <el-form v-loading="wait" ref="form_edit_ref" :model="form_e" label-width="150px" :size="$isMobile() ? 'small':'default'">
 
     <el-form-item  label="Razón soc. asoc." prop="rs">
       <el-select style="width:300px" v-model="form_e.rs" @change="rs_changer" placeholder="Seleccionar" disabled>
@@ -805,7 +849,7 @@ export default {
       </el-select>
     </el-form-item>
     
-    <div class="table-container" style="width:500px;margin-left: auto;margin-right: auto">
+    <div class="table-container" :style="$isMobile() ? 'height:200px':'width:500px;margin-left: auto;margin-right: auto'">
       <el-table :data="tareas" border header-row-style="color:black;"  height="98%" size="small">
         <el-table-column prop="tar_descripcion" label="Tarea" width="250" />
         <el-table-column prop="pma_avisokm" label="Aviso km." align="center" />
@@ -862,7 +906,7 @@ export default {
 </modal>
 
 <modal ref="mo_edit_tar" no-close-on-backdrop title="Editar tarea" width="500px" @ok="edit_tar" @cancel="closeedittar" cancel-title="Atras" centered>
-  <el-form  @submit.prevent ref="form_cref" :rules="rules" :model="form_c" label-width="150px" >
+  <el-form  @submit.prevent ref="form_cref" :rules="rules" :model="form_c" label-width="150px" :size="$isMobile() ? 'small':'default'" >
     
     <el-form-item label="Nombre de ubigeo">
       <el-input disabled v-model="form_et.nom" />

@@ -1058,7 +1058,81 @@ export default {
 <template>
  
  <div class="main-container">
-  <el-form :inline="true" model="formInline" label-width="auto" :size="small" >
+
+  <div v-if="$isMobile()">
+  <el-collapse>
+    <el-collapse-item title="Opciones">
+      <el-form :inline="true" model="formInline" label-width="auto" size="small" >
+      <el-row justify="center">
+          <el-form-item label="Razón social">
+            <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
+              <el-option
+                v-for="item in opt_rs"
+                :key="item.emp_id"
+                :label="item.emp_razonsocial"
+                :value="item.emp_id"
+              > </el-option>
+            </el-select>
+          </el-form-item>
+
+          <el-form-item label="Origen" clearable>
+            <el-input v-model='form_b.origen'/>
+          </el-form-item>
+          <el-form-item label="Destino" clearable>
+            <el-input v-model='form_b.destino'/>
+          </el-form-item>
+
+          <el-form-item label="Fecha de viaje:" clearable>
+            <el-col :span="11">
+              <el-date-picker
+                v-model="form_b.fecha_i"
+                format="YYYY-MM-DD"
+                value-format="YYYY-MM-DD"
+                type="date"
+                placeholder="Seleccionar limite inicial"
+                style="width: 100%"
+              />
+            </el-col>
+            <el-col :span="2" class="text-center">
+              <span class="text-gray-500">-</span>
+            </el-col>
+            <el-col :span="11">
+              <el-date-picker
+                v-model="form_b.fecha_f"
+                format="YYYY-MM-DD"
+                value-format="YYYY-MM-DD"
+                type="date"
+                placeholder="Seleccionar limite final"
+                style="width: 100%"
+              />
+            </el-col>
+
+          </el-form-item>
+
+          <el-form-item label="Placa" clearable>
+            <el-input v-model="form_b.placa" />
+          </el-form-item>
+
+          <div class="button-container">
+          <el-row class="mb-4">
+            <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
+          </el-row>
+          <el-row class="mb-4">
+            <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
+          </el-row>
+          <el-row class="mb-4">
+            <el-button color="#95d475" :icon=" Download" @click="send_descarga">A Excel</el-button>
+          </el-row>
+          </div>  
+      </el-row>
+        
+    </el-form>
+    </el-collapse-item>
+  </el-collapse>
+  </div>
+
+  <div v-else>
+    <el-form :inline="true" model="formInline" label-width="auto"  >
     <el-row>
       <el-col :span="21">
         <el-form-item label="Razón social">
@@ -1127,9 +1201,11 @@ export default {
     </el-row>
       
   </el-form>
+  </div>
+  
 
   <div class="table-container">
-  <el-table :data="datap" border header-row-style="color:black;" height="100%">
+  <el-table :data="datap" border header-row-style="color:black;" height="100%" :size="$isMobile() ? 'small':'default'">
       <el-table-column prop="emp_razonsocial" label="Razon soc. asoc. " width="140" align="center"/>
       <el-table-column prop="via_ordenservicio" label="Nro. de servicio" width="135" align="center"/>
       <el-table-column prop="vie_nombre" label="Estado de serv." width="130" align="center"/>
@@ -1160,9 +1236,8 @@ export default {
 </div>
 
 
-
-<modal ref="mo_create_per" no-close-on-backdrop title="Nro. de orden de servicio" width="900px" @ok="create_usr" @cancel="closecrear" cancel-title="Atras" centered>
-  <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" >
+<modal ref="mo_create_per" no-close-on-backdrop title="Nuevo servicio" :width="$isMobile() ? '400px':'900px'" @ok="create_usr" @cancel="closecrear" cancel-title="Atras" centered>
+  <el-form  ref="form_cref" :rules="rules" :model="form_c" :label-width="$isMobile() ? '120px':'150px'" :size="$isMobile() ? 'small':'default'">
     <el-row style="text-align:center">
     <el-form-item style="margin-left: auto;margin-right: auto" label="Razón soc. asoc." prop="rs">
       <el-select  v-model="form_c.rs" @change="rs_changer()" placeholder="Seleccionar">
@@ -1176,7 +1251,7 @@ export default {
     </el-form-item>
     </el-row>
     <el-row>
-    <el-col :span="12">
+    <el-col :span="$isMobile() ? 24:12">
       
       <el-form-item  label="Cliente " prop="cliente_id">
         <el-select
@@ -1271,7 +1346,7 @@ export default {
       </el-form-item>
 
     </el-col>
-    <el-col :span="12">
+    <el-col :span="$isMobile() ? 24:12">
 
       <el-form-item label="Fecha y hora " prop="fecha">
         <el-date-picker
@@ -1411,7 +1486,8 @@ export default {
     <el-row style="text-align=center" >
       <el-form-item label="Observacion">
         <el-input 
-          style="width:700px" 
+          style="width:700px"
+          :style="$isMobile() ? 'width:270px':'width:700px'" 
           v-model="form_c.observacion" 
           placeholder="Observacion"
         />
@@ -1420,8 +1496,8 @@ export default {
   </el-form>
 </modal>
 
-<modal ref="mo_editar_per" no-close-on-backdrop title="Editar Viaje" width="900px" @ok="editar_usr" cancel-title="Cancelar" @cancel="closeedit"  centered>
-   <el-form  ref="form_cref" :rules="rules" :model="form_e" label-width="150px" >
+<modal ref="mo_editar_per" no-close-on-backdrop title="Editar servicio" :width="$isMobile() ? '400px':'900px'" @ok="editar_usr" cancel-title="Cancelar" @cancel="closeedit"  centered>
+   <el-form  ref="form_cref" :rules="rules" :model="form_e" :label-width="$isMobile() ? '120px':'150px'" :size="$isMobile() ? 'small':'default'">
     <el-row style="text-align:center">
     <el-form-item style="margin-left: auto;margin-right: auto" label="Razón soc. asoc." prop="rs">
       <el-select  v-model="form_e.rs" @change="rs_changer2()" placeholder="Seleccionar">
@@ -1435,7 +1511,7 @@ export default {
     </el-form-item>
     </el-row>
     <el-row>
-    <el-col :span="12">
+    <el-col :span="$isMobile() ? 24:12">
       
       <el-form-item  label="Cliente " prop="cliente_id">
         <el-select
@@ -1528,7 +1604,7 @@ export default {
       </el-form-item>
 
     </el-col>
-    <el-col :span="12">
+    <el-col :span="$isMobile() ? 24:12">
 
       <el-form-item label="Fecha y hora " prop="fecha">
         <el-date-picker
@@ -1670,7 +1746,7 @@ export default {
     <el-row style="text-align=center" >
       <el-form-item label="Observacion">
         <el-input 
-          style="width:690px" 
+          style="width:100%" 
           v-model="form_e.observacion" 
           placeholder="Observacion"
         />

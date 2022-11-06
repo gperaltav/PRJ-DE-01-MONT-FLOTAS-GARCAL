@@ -508,7 +508,95 @@ export default {
 
 <template>
   
-  <el-form :inline="true"  label-width="auto" :size="small" >
+  
+
+  <div v-if="$isMobile()">
+  <el-collapse>
+    <el-form :inline="true"  label-width="auto" size='small'>
+
+    <el-row>
+      <el-form-item style="margin-left:auto;margin-right:auto" label="Razón social asociada">
+        <el-select v-model="form_g.rs" @change="rs_changer" @clear="clear_c" placeholder="Seleccionar"  clearable>
+          <el-option
+            v-for="item in opt_rs"
+            :key="item.emp_id"
+            :label="item.emp_razonsocial"
+            :value="item.emp_id"
+          > </el-option>
+        </el-select>
+      </el-form-item>
+    </el-row>
+
+    <el-row>
+      <el-form-item style="margin-left:auto;margin-right:auto" label="Proveedor">
+            <el-select
+              v-model="form_g.prv_id"
+              filterable
+              :remote-method="get_proveedores"
+              @change="select_proveedores"
+              @clear="clear_proveedores"
+              placeholder="Inserte ID de proveedor"
+              remote
+              clearable
+              :disabled="stop_cliente"
+            >
+              <template #prefix>
+                <el-icon><Search /></el-icon>
+              </template>
+
+              <el-option
+                v-for="item in opt_prv"
+                :key="item.ent_id"
+                :label="item.ent_nrodocumento"
+                :value="item.ent_id"
+              />
+            </el-select>
+
+            <el-input disabled v-model="form_g.prv_nom" placeholder="Nombre de proveedor" />
+ 
+      </el-form-item>
+    </el-row>
+
+        <el-form-item label="Tipo de doc">
+        <el-select v-model="form_g.tipo_doc"  placeholder="Tipo de doc."  clearable>
+        <el-option
+          v-for="item in opt_td"
+          :key="item.cct_codigo"
+          :label="item.cct_descripcion"
+          :value="item.cct_codigo"
+        > </el-option>
+        </el-select>
+        </el-form-item>
+
+        <el-form-item  label="Nro. de serie">
+          <el-input v-model="form_g.serie_doc" placeholder="nro de serie" />
+        </el-form-item>
+
+        <el-form-item  label="Nro. de documento">
+          <el-input v-model="form_g.nro_doc" placeholder="nro de documento" />
+        </el-form-item>
+
+
+
+  <el-row>
+    <el-form-item  label="Fecha de pago">
+      <el-date-picker
+        type="date"
+        v-model="form_g.fecha_em"
+        format="YYYY-MM-DD"
+        value-format="YYYY-MM-DD"
+        placeholder="Seleccione fecha"
+
+      />
+    </el-form-item>
+  </el-row>
+      
+    </el-form>
+  </el-collapse>
+  </div>
+
+  <div v-else>
+    <el-form :inline="true"  label-width="auto">
 
     <el-row>
       <el-form-item style="margin-left:auto;margin-right:auto" label="Razón social asociada">
@@ -595,15 +683,15 @@ export default {
   </el-row>
       
     </el-form>
+  </div>
 
-    <div >
       <el-container style="border-style: solid; border-color:grey">
         <el-header style="padding-top:7px; background-color:grey; height:40px; color:white">
           Detalle:
         </el-header>
         <el-main>
           <div class="table-container">
-          <el-table :data="datav" border header-row-style="color:black;" >
+          <el-table :data="datav" border header-row-style="color:black;" :size="$isMobile() ? 'small':'default'">
               <el-table-column prop="det_cantidad" label="Cantidad" width="140" align="center"/>
               <el-table-column prop="det_producto" label="Producto"  />
               <el-table-column prop="det_unidad" label="Unidad" />
@@ -612,62 +700,127 @@ export default {
             </el-table>
           </div>
           <el-row style="text-align=center" >
-            <el-button color="#008db1" :icon="Plus"  @click="open_crear" style="margin-left: auto;margin-right: auto">Agregar</el-button>
+            <el-button color="#008db1" :size="$isMobile() ? 'small':'default'" :icon="Plus"  @click="open_crear" style="margin-left: auto;margin-right: auto">Agregar</el-button>
           </el-row>
         </el-main>
       </el-container>
-      <el-row>
-        <h3 style="margin-left:auto; margin-right:50px">Importe: {{subtotal}}</h3>
-      </el-row>
-      
-      <el-row>
-      <el-form-item style="margin-left:auto; margin-right:50px" label="Subtotal" prop="subtotal">
-        <el-input style="width:250px" v-model="form_g.subtotal">
-          <template #append>
-            <el-button @click="calcular1()" :icon="DArrowLeft"> </el-button>
-          </template>
-          <template #prepend>S/</template>
-        </el-input>
-      </el-form-item>
-      </el-row>
 
-      <el-row>
-      <el-form-item style="margin-right: auto;" label="Tipo de pago">
-      <el-select v-model="form_g.tipo_pago" placeholder="Seleccione una opcion" style="width:300px" clearable>
-        <el-option
-          v-for="item in opt_fp"
-          :key="item.fdp_id"
-          :label="item.fdp_descripcion"
-          :value="item.fdp_id"
-          
-        > </el-option>
-      </el-select>
-    </el-form-item>
 
-      <el-form-item style="margin-left:auto; margin-right:50px" label="Impuesto" prop="impuesto">
-        <el-input style="width:190px" v-model="form_g.impuesto">
-          <template #prepend>S/</template>
-        </el-input>
-        <el-input style="width:60px" v-model="form_g.igv">
-          <template #suffix>%</template>
-        </el-input>
-      </el-form-item>
-      </el-row>
+      <div v-if="$isMobile()">
+        <el-row>
+          <h5 style="margin-left:auto; margin-right:auto">Importe: {{subtotal}}</h5>
+        </el-row>
 
-      <el-row>
-      <el-form-item style="margin-left:auto; margin-right:50px" label="Total" prop="total">
-        <el-input style="width:250px" v-model="form_g.total">
-          <template #append>
-          <el-button  @click="calcular2()" :icon="DArrowLeft"> </el-button>
-          </template>
-          <template #prepend>S/</template>
-        </el-input>
-      </el-form-item>
-      </el-row>
-    </div>
-    <el-row style="text-align=center" >
-      <el-button color="#0844a4"  @click="transaccion_insertar" style="margin-left: auto;margin-right: auto">Guardar</el-button>
-    </el-row>
+        <el-row>
+          <el-form-item label-width="80px"  :size="$isMobile() ? 'small':'default'" label="Subtotal" prop="subtotal">
+            <el-input v-model="form_g.subtotal">
+              <template #append>
+                <el-button @click="calcular1()" :icon="DArrowLeft"> </el-button>
+              </template>
+              <template #prepend>S/</template>
+            </el-input>
+          </el-form-item>
+          </el-row>
+
+          <el-row>
+          <el-form-item label-width="80px" :size="$isMobile() ? 'small':'default'" style="margin-right: auto;" label="Tipo de pago">
+            <el-select v-model="form_g.tipo_pago" placeholder="Seleccione una opcion"  clearable>
+              <el-option
+                v-for="item in opt_fp"
+                :key="item.fdp_id"
+                :label="item.fdp_descripcion"
+                :value="item.fdp_id"
+                
+              > </el-option>
+            </el-select>
+          </el-form-item>
+
+          <el-form-item  label-width="80px" :size="$isMobile() ? 'small':'default'" label="Impuesto" prop="impuesto">
+            <el-row>
+            <el-col :span='16'>
+            <el-input  v-model="form_g.impuesto">
+              <template #prepend>S/</template>
+            </el-input>
+            </el-col>
+            <el-col :span='4'>
+            <el-input  v-model="form_g.igv">
+              <template #suffix>%</template>
+            </el-input>
+            </el-col>
+            </el-row>
+          </el-form-item>
+          </el-row>
+
+          <el-row>
+          <el-form-item label-width="80px" :size="$isMobile() ? 'small':'default'" label="Total" prop="total">
+            <el-input  v-model="form_g.total">
+              <template #append>
+              <el-button  @click="calcular2()" :icon="DArrowLeft"> </el-button>
+              </template>
+              <template #prepend>S/</template>
+            </el-input>
+          </el-form-item>
+          </el-row>
+
+        <el-row style="text-align=center" >
+          <el-button :size="$isMobile() ? 'small':'default'" color="#0844a4"  @click="transaccion_insertar" style="margin-left: auto;margin-right: auto">Guardar</el-button>
+        </el-row>
+      </div>
+
+      <div v-else>
+        <el-row>
+          <h3 style="margin-left:auto; margin-right:50px">Importe: {{subtotal}}</h3>
+        </el-row>
+        <el-row>
+          <el-form-item style="margin-left:auto; margin-right:50px" label="Subtotal" prop="subtotal">
+            <el-input style="width:250px" v-model="form_g.subtotal">
+              <template #append>
+                <el-button @click="calcular1()" :icon="DArrowLeft"> </el-button>
+              </template>
+              <template #prepend>S/</template>
+            </el-input>
+          </el-form-item>
+          </el-row>
+
+          <el-row>
+          <el-form-item style="margin-right: auto;" label="Tipo de pago">
+            <el-select v-model="form_g.tipo_pago" placeholder="Seleccione una opcion" style="width:300px" clearable>
+              <el-option
+                v-for="item in opt_fp"
+                :key="item.fdp_id"
+                :label="item.fdp_descripcion"
+                :value="item.fdp_id"
+                
+              > </el-option>
+            </el-select>
+          </el-form-item>
+
+          <el-form-item style="margin-left:auto; margin-right:50px" label="Impuesto" prop="impuesto">
+            <el-input style="width:190px" v-model="form_g.impuesto">
+              <template #prepend>S/</template>
+            </el-input>
+            <el-input style="width:60px" v-model="form_g.igv">
+              <template #suffix>%</template>
+            </el-input>
+          </el-form-item>
+          </el-row>
+
+          <el-row>
+          <el-form-item style="margin-left:auto; margin-right:50px" label="Total" prop="total">
+            <el-input style="width:250px" v-model="form_g.total">
+              <template #append>
+              <el-button  @click="calcular2()" :icon="DArrowLeft"> </el-button>
+              </template>
+              <template #prepend>S/</template>
+            </el-input>
+          </el-form-item>
+          </el-row>
+
+          <el-row style="text-align=center" >
+            <el-button color="#0844a4"  @click="transaccion_insertar" style="margin-left: auto;margin-right: auto">Guardar</el-button>
+          </el-row>
+      </div>
+
 
 <modal ref="mo_create_det" no-close-on-backdrop title="Agregar detalle" width="500px" @ok="create_det" @cancel="closecrear" cancel-title="Atras" centered>
   <el-form  ref="form_cref" :rules="rules" :model="form_t" label-width="150px" >

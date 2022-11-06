@@ -161,14 +161,14 @@ export default {
 
 <template>
   
-  <div style="width:900px; margin-left: auto;margin-right: auto;padding-right:200px">
+  <div :style='$isMobile() ?"":"width:900px; margin-left: auto;margin-right: auto;padding-right:200px"'>
 
     <el-row style="text-align=center;">
       <h1 style="margin-left: auto;margin-right: auto">Nueva tarea</h1>
     </el-row>
 
   
-  <el-form :model="form" :label-position="left" label-width="200px"  >
+    <el-form :model="form" :label-position="left" :label-width="$isMobile() ? '100px':'200px'" :size="$isMobile() ? 'small':'default'" >
 
 
     <el-form-item  label="Razón social asociada">

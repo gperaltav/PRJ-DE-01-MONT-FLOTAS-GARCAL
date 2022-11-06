@@ -469,7 +469,82 @@ export default {
 <template>
 
 <div class="main-container">
-  <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
+
+  <div v-if="$isMobile()">
+  <el-collapse>
+    <el-collapse-item title="Opciones">
+      <el-form :inline="true" :model="formInline" label-width="auto" size="small" >
+    <el-row justify="center">
+
+        <el-form-item label="Razón social">
+          <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
+            <el-option
+              v-for="item in opt_rs"
+              :key="item.emp_id"
+              :label="item.emp_razonsocial"
+              :value="item.emp_id"
+            > </el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="Código">
+          <el-input placeholder="Serie-Número" v-model="form_b.codigo" clearable />
+        </el-form-item>
+
+        <el-form-item label="Estado">
+          <el-select v-model="form_b.tipo_guia" placeholder="Seleccionar" clearable>
+            <el-option label="GUIA DE EMISION" value="GEM" />
+            <el-option label="GUIA TRANSPORTISTA" value="GTR" />
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="Fecha de emisión">
+          <el-col :span="11">
+            <el-date-picker
+              v-model="form_b.fech_inicio"
+              format="YYYY-MM-DD"
+              value-format="YYYY-MM-DD"
+              type="date"
+              placeholder="Seleccionar limite inicial"
+              style="width: 100%"
+            />
+          </el-col>
+          <el-col :span="2" class="text-center">
+            <span class="text-gray-500">-</span>
+          </el-col>
+          <el-col :span="11">
+            <el-date-picker
+              v-model="form_b.fech_fin"
+              format="YYYY-MM-DD"
+              value-format="YYYY-MM-DD"
+              type="date"
+              placeholder="Seleccionar limite final"
+              style="width: 100%"
+            />
+          </el-col>
+        </el-form-item>
+
+        <div class="button-container">
+        <el-row class="mb-4">
+          <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
+        </el-row>
+        <el-row class="mb-4">
+          <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
+        </el-row>
+        <el-row class="mb-4">
+          <el-button color="#95d475" :icon="Download" disabled>A Excel</el-button>
+        </el-row>
+        </div>
+
+    </el-row>
+
+    </el-form>
+    </el-collapse-item>
+  </el-collapse>
+  </div>
+
+  <div v-else>
+    <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
     <el-row>
       <el-col :span="21">
         <el-form-item label="Razón social">
@@ -539,9 +614,11 @@ export default {
     </el-row>
 
     </el-form>
+  </div>
+  
 
   <div class="table-container">
-    <el-table :data="datap" border header-row-style="color:black;" height="98%">
+    <el-table :data="datap" border header-row-style="color:black;" height="98%" :size="$isMobile() ? 'small':'default'">
       <el-table-column prop="emp_razonsocial" label="Razon soc. aso." width="140" align="center"/>
       <el-table-column prop="man_numero" label="Número" />
       <el-table-column prop="man_fecha" label="Fecha de mantenimiento" align="center"/> 
@@ -554,10 +631,10 @@ export default {
 
 
 <modal ref="mo_create_per" no-close-on-backdrop title="Agregar guia de mantenimiento" width="700px" @ok="create_usr()" @cancel="closecrear" cancel-title="Atras" centered>
-  <el-form ref="form_cref" :rules="rules" :model="form_c" label-width="130px" >
+  <el-form ref="form_cref" :rules="rules" :model="form_c" label-width="130px" :size="$isMobile() ? 'small':'default'" >
 
     <el-row style="margin-right:20px">
-      <el-col :span="12">
+      <el-col :span="$isMobile() ? 24:12">
         <el-form-item  label="Razón soc. asoc." prop="rs">
           <el-select style="width:300px" v-model="form_c.rs" @change="rs_changer" placeholder="Seleccionar">
             <el-option
@@ -569,7 +646,7 @@ export default {
           </el-select>
         </el-form-item>
       </el-col>
-      <el-col :span="12">
+      <el-col :span="$isMobile() ? 24:12">
         <el-form-item  label="Vehiculo ">
           <el-select
             v-model="form_c.veh_id"
@@ -597,7 +674,7 @@ export default {
     </el-row>
 
     <el-row style="margin-right:20px">
-      <el-col :span="12">
+      <el-col :span="$isMobile() ? 24:12">
         <el-form-item  label="Fecha de mant.">
           <el-date-picker
             v-model="form_c.fecha"
@@ -609,7 +686,7 @@ export default {
           />
         </el-form-item>
       </el-col>
-      <el-col :span="12">
+      <el-col :span="$isMobile() ? 24:12">
         <el-form-item  label="Kilometraje ">
           <el-input v-model="form_c.km" clearable />
         </el-form-item>

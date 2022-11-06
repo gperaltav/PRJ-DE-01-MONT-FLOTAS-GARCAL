@@ -629,7 +629,80 @@ export default {
 <template>
   
 <div class="main-container">
-  <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
+
+  <div v-if="$isMobile()">
+  <el-collapse>
+    <el-collapse-item title="Opciones">
+      <el-form :inline="true" :model="formInline" label-width="auto" size="small" >
+    <el-row justify="center">
+      <el-form-item label="Razón social">
+        <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
+          <el-option
+            v-for="item in opt_rs"
+            :key="item.emp_id"
+            :label="item.emp_razonsocial"
+            :value="item.emp_id"
+          > </el-option>
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="Tipo de guia">
+        <el-select v-model="form_b.tipo_guia" placeholder="Seleccionar" clearable>
+          <el-option label="GUIA DE EMISION" value="GEM" />
+          <el-option label="GUIA TRANSPORTISTA" value="GTR" />
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="Codigo">
+        <el-input placeholder="serie-numero" v-model="form_b.codigo" clearable />
+      </el-form-item>
+
+      <el-form-item label="Fecha de emisión">
+        <el-col :span="11">
+          <el-date-picker
+            v-model="form_b.fech_inicio"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
+            type="date"
+            placeholder="Seleccionar limite inicial"
+            style="width: 100%"
+          />
+        </el-col>
+        <el-col :span="2" class="text-center">
+          <span class="text-gray-500">-</span>
+        </el-col>
+        <el-col :span="11">
+          <el-date-picker
+            v-model="form_b.fech_fin"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
+            type="date"
+            placeholder="Seleccionar limite final"
+            style="width: 100%"
+          />
+        </el-col>
+      </el-form-item>
+
+      <div class="button-container">
+      <el-row class="mb-4">
+        <el-button color="#0844a4" :icon="Filter" @click="api_get_filt">Filtrar</el-button>
+      </el-row>
+      <el-row class="mb-4">
+        <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
+      </el-row>
+      <el-row class="mb-4">
+        <el-button color="#95d475" :icon=" Download"  disabled>A Excel</el-button>
+      </el-row>
+      </div>
+    </el-row>
+
+    </el-form>
+    </el-collapse-item>
+  </el-collapse>
+  </div>
+
+  <div v-else>
+    <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
     <el-row>
     <el-col :span="21">
       <el-form-item label="Razón social">
@@ -697,9 +770,12 @@ export default {
     </el-row>
 
     </el-form>
+  </div>
+
+  
 
   <div class="table-container">
-    <el-table :data="datap" border header-row-style="color:black;" >
+    <el-table :data="datap" border header-row-style="color:black;" :size="$isMobile() ? 'small':'default'">
       <el-table-column prop="emp_razonsocial" label="Razon soc. aso." width="140" align="center"/>
       <el-table-column prop="gti_descripcion" label="Tipo de guia"  width="200"/>
       <el-table-column prop="gui_fechaemision" label="Fecha emisión" />  
@@ -718,10 +794,10 @@ export default {
 
 
 <modal ref="mo_create_per" no-close-on-backdrop title="Agregar Guia" width="900px" @ok="crear_guia" @cancel="closecrear" cancel-title="Atras" centered>
-  <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" >
+  <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" :size="$isMobile() ? 'small':'default'">
     <el-row style="text-align:center">
     <el-form-item style="margin-left: auto;margin-right: auto" label="Razón soc. asoc." prop="rs">
-      <el-select style="width:300px" v-model="form_c.rs" @change="rs_changer" placeholder="Seleccionar">
+      <el-select :style="$isMobile() ? 'width:200px':'width:300px'" v-model="form_c.rs" @change="rs_changer" placeholder="Seleccionar">
         <el-option
           v-for="item in opt_rs"
           :key="item.emp_id"
@@ -745,7 +821,7 @@ export default {
             @change="fech_changer"
           />
 
-          <el-select v-model="form_c.id_via" placeholder="Seleccione una opcion" style="width: 300px" @change="select_viaje" clearable>
+          <el-select v-model="form_c.id_via" placeholder="Seleccione una opcion" :style="$isMobile() ? 'width:200px':'width:300px'" @change="select_viaje" clearable>
             <el-option
               v-for="item in opt_via"
               :key="item.via_id"
@@ -760,7 +836,7 @@ export default {
     </el-row>
 
     <el-row>
-      <el-col style="text-align:center" :span="12">
+      <el-col style="text-align:center" :span="$isMobile() ? 24:12">
         <h4>Guia Remitente </h4>
         <el-form-item label="Serie" >
           <el-input v-model="form_c.gr_serie" style="width: 200px" />
@@ -784,7 +860,7 @@ export default {
         </el-form-item>
       </el-col>
 
-      <el-col :span="12">
+      <el-col :span="$isMobile() ? 24:12">
         <h4>Guia Transportista </h4>
         <el-form-item label="Serie" >
           <el-input v-model="form_c.gt_serie" style="width: 200px"/>
@@ -815,11 +891,11 @@ export default {
 
 
 <modal ref="mo_editar_per" no-close-on-backdrop title="Editar datos de Guia" width="600px" @ok="editar_guia" cancel-title="Cancelar" @cancel="closeedit"  centered>
-  <el-form v-loading="wait" ref="form_cref" :rules="rules" :model="form" label-width="150px" >
+  <el-form v-loading="wait" ref="form_cref" :rules="rules" :model="form" label-width="150px" :size="$isMobile() ? 'small':'default'">
 
 
     <el-form-item label="Razón soc. asoc.">
-      <el-select style="width:300px" v-model="form_e.rs" @change="rs_changer" placeholder="Seleccionar" disabled>
+      <el-select :style="$isMobile() ? 'width:200px':'width:300px'" v-model="form_e.rs" @change="rs_changer" placeholder="Seleccionar" disabled>
         <el-option
           v-for="item in opt_rs"
           :key="item.emp_id"
@@ -832,7 +908,7 @@ export default {
 
     <el-form-item label="Viaje">
       <el-row >
-          <el-select v-model="form_e.id_via" placeholder="Seleccione una opcion" style="width: 300px" @change="select_viaje" disabled>
+          <el-select v-model="form_e.id_via" placeholder="Seleccione una opcion" :style="$isMobile() ? 'width:200px':'width:300px'" @change="select_viaje" disabled>
             <el-option
               v-for="item in opt_via"
               :key="item.via_id"

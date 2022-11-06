@@ -3,14 +3,6 @@ import { ref } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
 import { Notebook, OfficeBuilding,DocumentChecked,Operation,TrendCharts,Money,Tickets,Expand,Setting} from '@element-plus/icons-vue'
 
-const isCollapse = ref(false)
-const handleOpen = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath)
-}
-const handleClose = (key: string, keyPath: string[]) => {
-  
-}
-
 </script>
 
 <script lang="ts">
@@ -22,7 +14,8 @@ const handleClose = (key: string, keyPath: string[]) => {
     data(){
       return {
         ancho:200,
-        titlebar:'Inicio'
+        titlebar:'Inicio',
+        isCollapse:false
       }
     },
 
@@ -36,11 +29,11 @@ const handleClose = (key: string, keyPath: string[]) => {
     },
     methods: {
       changetool() {
-        if(!this.isCollapse) {
-          this.ancho=64;
+        if(this.isCollapse===false) {
+          this.ancho="64";
         }
         else {
-          this.ancho=200;
+          this.ancho="200";
         }
         this.isCollapse=!this.isCollapse;
       },
@@ -78,7 +71,7 @@ const handleClose = (key: string, keyPath: string[]) => {
     <el-header style="text-align: left; font-size: 24px">
       <el-col :span="8" style="text-align=left">
         <div class="toolbar">
-          <el-button type="text" style="padding:20px" size="small" @click="changetool()"><el-icon style="color:white" :size='20'><Expand /></el-icon></el-button>
+          <el-button type="text" style="padding:20px" size="small" @click="changetool"><el-icon style="color:white" :size='20'><Expand /></el-icon></el-button>
           <span :class="[$isMobile() ? 'mv-title' : 'dkt-title']">ERP Garcal</span>
         </div>
       </el-col>
@@ -113,8 +106,6 @@ const handleClose = (key: string, keyPath: string[]) => {
           router=true 
           :collapse="isCollapse" 
           class="el-menu-v"
-          @open="handleOpen"
-          @close="handleClose"
           >
             <el-menu-item @click='change_title("Inicio")' index="/">
               <el-icon><office-building /></el-icon>
