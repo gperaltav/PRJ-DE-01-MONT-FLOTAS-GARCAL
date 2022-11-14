@@ -246,12 +246,12 @@ export default {
 
     send_descarga() {
       axios
-        .post('http://51.222.25.71:8080/garcal-report-api/api/clientescsv')
+        .post('http://51.222.25.71:8080/garcal-report-api/api/mantenimientocsv')
         .then((resp) => {
           console.log(resp.data);
           this.succes=resp.data.status;
           if (this.succes) {
-            this.get_descargas(resp.data.message,'Reporte_clientes')
+            this.get_descargas(resp.data.message,'Reporte_mantenimiento')
             return true;
           }
           else {
@@ -532,7 +532,7 @@ export default {
           <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
         </el-row>
         <el-row class="mb-4">
-          <el-button color="#95d475" :icon="Download" disabled>A Excel</el-button>
+          <el-button color="#95d475" :icon=" Download" @click="send_descarga">A Excel</el-button>
         </el-row>
         </div>
 
@@ -606,7 +606,7 @@ export default {
           <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
         </el-row>
         <el-row class="mb-4">
-          <el-button color="#95d475" :icon="Download" disabled>A Excel</el-button>
+          <el-button color="#95d475" :icon=" Download" @click="send_descarga">A Excel</el-button>
         </el-row>
         </div>
       

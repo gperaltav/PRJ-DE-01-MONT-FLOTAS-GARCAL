@@ -597,7 +597,7 @@ export default {
             <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
           </el-row>
           <el-row class="mb-4">
-            <el-button color="#95d475" :icon=" Download" disabled>A Excel</el-button>
+            <el-button color="#95d475" :icon=" Download" @click="send_descarga">A Excel</el-button>
           </el-row>
           </div>
 
@@ -655,7 +655,7 @@ export default {
             <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
           </el-row>
           <el-row class="mb-4">
-            <el-button color="#95d475" :icon=" Download" disabled>A Excel</el-button>
+            <el-button color="#95d475" :icon=" Download" @click="send_descarga">A Excel</el-button>
           </el-row>
           </div>
         

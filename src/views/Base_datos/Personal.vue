@@ -513,7 +513,7 @@ export default {
         })
     },
     
-    async create_usr(){
+    create_usr(){
       //llamada a API
       //if (!this.form_cref) return
       this.loadingC=true;
@@ -565,12 +565,108 @@ export default {
             }
           })
           return false;
-          //} 
-        //else {
-          //console.log('Error en campos', fields);
-         // return;
-       // }
-      //})
+    },  
+
+
+
+    create_usr2(){
+      //legacy
+      if(!this.open_op) {
+          axios
+          .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/trabajadores/nuevo', 
+          { 
+            "are_id": 1,
+            "pue_id": this.form_c.tipo,
+            "emp_id": this.form_c.rs,
+            "tra_nombres":this.form_c.nombre,
+            "tra_apellidopaterno":this.form_c.apellido_p,
+            "tra_apellidomaterno":this.form_c.apellido_m,
+            "tra_nrodocumento": this.form_c.nro_doc,
+            "tra_identificador": "",
+            "tra_fechanacimiento":this.form_c.fecha_nac,
+            "tra_tipocontrato":this.form_c.contrato,
+            "tra_fechaingreso":this.form_c.fecha_i,
+            "tra_fechaingresoplanilla":this.form_c.fecha_ip,
+            "tra_fechacese":this.form_c.fecha_c,
+            "tra_usucreacion":"admin" 
+          })
+          .then((resp) => {
+            console.log(resp.data);
+            this.succes=resp.data.status;
+            if (this.succes) {
+              if(this.open_op) {
+                console.log("Tripulacion")
+                this.id_tmp=resp.data.idValue;
+                var tmpop=this.create_usr_op();
+                console.log(tmpop);
+                if(tmpop) {
+                  return true;
+                }
+                else {
+                  return false;
+                }
+              }
+              else {
+                this.loadingC=false;
+                this.open_succes("Operación realizada satisfactoriamente");
+                return true;
+              }
+            }
+          })
+          .catch((e)=>{
+            this.open_fail("Hubo un error con el servidor al ejecutar la operación, error: "+String(e));
+            return false;
+          });
+          return false;
+      }
+      else {
+        axios
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/trabajadores/nuevo', 
+        { 
+          "are_id": 1,
+          "pue_id": this.form_c.tipo,
+          "emp_id": this.form_c.rs,
+          "tra_nombres":this.form_c.nombre,
+          "tra_apellidopaterno":this.form_c.apellido_p,
+          "tra_apellidomaterno":this.form_c.apellido_m,
+          "tra_nrodocumento": this.form_c.nro_doc,
+          "tra_identificador": "",
+          "tra_fechanacimiento":this.form_c.fecha_nac,
+          "tra_tipocontrato":this.form_c.contrato,
+          "tra_fechaingreso":this.form_c.fecha_i,
+          "tra_fechaingresoplanilla":this.form_c.fecha_ip,
+          "tra_fechacese":this.form_c.fecha_c,
+          "tra_usucreacion":"admin" 
+        })
+        .then((resp) => {
+          console.log(resp.data);
+          this.succes=resp.data.status;
+          if (this.succes) {
+            if(this.open_op) {
+              console.log("Tripulacion")
+              this.id_tmp=resp.data.idValue;
+              var tmpop=this.create_usr_op();
+              console.log(tmpop);
+              if(tmpop) {
+                return true;
+              }
+              else {
+                return false;
+              }
+            }
+            else {
+              this.loadingC=false;
+              this.open_succes("Operación realizada satisfactoriamente");
+              return true;
+            }
+          }
+        })
+        .catch((e)=>{
+          this.open_fail("Hubo un error con el servidor al ejecutar la operación, error: "+String(e));
+          return false;
+        });
+        return false;
+      }
     },  
 
     create_usr_op(){

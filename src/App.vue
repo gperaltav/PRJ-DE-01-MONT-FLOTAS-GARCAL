@@ -26,6 +26,9 @@ import { Notebook, OfficeBuilding,DocumentChecked,Operation,TrendCharts,Money,Ti
     mounted() {
       console.log(this.$store.state.authenticated);
       console.log(this.$isMobile());
+      if(this.$isMobile() && this.isCollapse===false) {
+        this.changetool();
+      }
     },
     methods: {
       changetool() {
@@ -68,7 +71,7 @@ import { Notebook, OfficeBuilding,DocumentChecked,Operation,TrendCharts,Money,Ti
     <Login/>
   </el-container>
   <el-container v-else class="layout-container" style="width: 100vw; height: 100vh;">
-    <el-header style="text-align: left; font-size: 24px">
+    <el-header v-if="!$isMobile()" style="text-align: left; font-size: 24px">
       <el-col :span="8" style="text-align=left">
         <div class="toolbar">
           <el-button type="text" style="padding:20px" size="small" @click="changetool"><el-icon style="color:white" :size='20'><Expand /></el-icon></el-button>
@@ -83,6 +86,46 @@ import { Notebook, OfficeBuilding,DocumentChecked,Operation,TrendCharts,Money,Ti
       </div>
       </el-col>
       <el-col :span="8" style="text-align:right">
+        <div class="userarea">
+          <el-dropdown>
+            <el-icon style="margin-right: 8px; margin-top: 1px; color:white"
+              ><setting
+            /></el-icon>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item @click="log_out" >Salir</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+          <h6 style="margin:0">{{username}}</h6>
+        </div>
+      </el-col>
+    </el-header>
+
+    <el-header v-else style="text-align: left; font-size: 24px">
+      <el-col :span="10" style="text-align=left">
+        <div class="toolbar">
+          <el-button type="text" style="padding:20px" size="small" @click="changetool"><el-icon style="color:white" size='15'><Expand /></el-icon></el-button>
+          <span :class="[$isMobile() ? 'mv-title' : 'dkt-title']">ERP Garcal</span>
+        </div>
+      </el-col>
+
+      <el-col :span="4">
+        <el-popover
+          placement="bottom"
+          :width="200"
+          trigger="click"
+          :content="titlebar"
+          effect="dark"
+          style="color:white;background-color:blue"
+        >
+          <template #reference>
+            <el-button color="#1d439e" plain>Ruta</el-button>
+          </template>
+        </el-popover>
+      </el-col>
+
+      <el-col :span="10" style="text-align:right">
         <div class="userarea">
           <el-dropdown>
             <el-icon style="margin-right: 8px; margin-top: 1px; color:white"
@@ -187,7 +230,7 @@ import { Notebook, OfficeBuilding,DocumentChecked,Operation,TrendCharts,Money,Ti
 <style scoped>
 
 .mv-title {
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .dkt-title {

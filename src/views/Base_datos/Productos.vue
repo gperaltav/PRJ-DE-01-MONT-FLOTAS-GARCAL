@@ -52,6 +52,33 @@ export default {
   },
 
   methods: {
+    get_descargas(uri, name) {
+      var link = document.createElement("a");
+      link.download = name;
+      link.href = uri;
+      link.click();
+    },
+
+    send_descarga() {
+      axios
+        .post('http://51.222.25.71:8080/garcal-report-api/api/productoscsv')
+        .then((resp) => {
+          console.log(resp.data);
+          this.succes=resp.data.status;
+          if (this.succes) {
+            this.get_descargas(resp.data.message,'Reporte_productos')
+            return true;
+          }
+          else {
+            this.open_fail("Hubo un error con el servidor al ejecutar la operación");
+            return false;
+          }
+        })
+        .catch(function (error) {
+          this.open_fail("Hubo un error con el servidor al ejecutar la operación, error:"+String(error));
+            return false;
+        });
+    },
     checkformx (formEl: FormInstance | undefined) {
 
       formEl.validate((valid, fields) => {
@@ -342,6 +369,9 @@ export default {
       </el-row>
       <el-row class="mb-4">
         <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
+      </el-row>
+      <el-row class="mb-4">
+        <el-button color="#95d475" :icon=" Download" @click="send_descarga">A Excel</el-button>
       </el-row>
       </div>
     </el-col>

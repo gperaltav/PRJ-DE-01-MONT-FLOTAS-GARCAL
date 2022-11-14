@@ -697,7 +697,71 @@ export default {
 
 <template>
   
-  <el-form :inline="true"  label-width="auto" :size="small" >
+
+  <div v-if="$isMobile()">
+    <el-form :inline="true"  label-width="auto" size="small" >
+    <el-row>
+      <el-form-item style="margin-left:auto;margin-right:auto" label="Razón social asociada">
+        <el-select v-model="form_g.rs" @change="rs_changer" @clear="clear_rs" placeholder="Seleccionar" clearable>
+          <el-option
+            v-for="item in opt_rs"
+            :key="item.emp_id"
+            :label="item.emp_razonsocial"
+            :value="item.emp_id"
+          > </el-option>
+        </el-select>
+      </el-form-item>
+    </el-row>
+
+    <el-row style="height:50px">
+      <el-form-item style="margin-left:auto;margin-right:auto" label="Conductor">
+        <el-row justify="center"> 
+
+          <el-select
+            v-model="form_g.tra_id"
+            filterable
+            :remote-method="get_chofer"
+            @change="select_chofer"
+            @clear="clear_chofer"
+            placeholder="Inserte ID de conductor"
+            remote
+            clearable
+          >
+            <template #prefix>
+              <el-icon><Search /></el-icon>
+            </template>
+
+            <el-option
+              v-for="item in opt_tra"
+              :key="item.tra_nrodocumento"
+              :label="item.tra_nrodocumento"
+              :value="item.tra_id"
+            />
+          </el-select>
+
+        <el-input disabled v-model="form_g.tra_nom" placeholder="Nombre del conductor" />
+        </el-row>
+      </el-form-item>
+    </el-row>
+
+    <el-row>
+      <el-form-item style="margin-left:auto;margin-right:auto" label="Salida de dinero">
+        <el-select v-model="form_g.sal_dinero"  placeholder="Seleccionar"  clearable @change="select_sald">
+          <el-option
+            v-for="item in opt_sald"
+            :key="item.ccc_id"
+            :label="item.ccc_observaciones"
+            :value="item.ccc_id"
+          > </el-option>
+        </el-select>
+      </el-form-item>
+    </el-row>
+      
+  </el-form>
+  </div>
+
+  <div v-else>
+    <el-form :inline="true"  label-width="auto" :size="small" >
     <el-row>
       <el-form-item style="margin-left:auto;margin-right:auto" label="Razón social asociada">
         <el-select v-model="form_g.rs" @change="rs_changer" @clear="clear_rs" placeholder="Seleccionar" style="width:600px" clearable>
@@ -755,7 +819,9 @@ export default {
       </el-form-item>
     </el-row>
       
-    </el-form>
+  </el-form>
+  </div>
+  
 
     <div >
       <el-container style="border-style: solid; border-color:grey">
@@ -764,7 +830,7 @@ export default {
         </el-header>
         <el-main>
           <div class="table-container">
-          <el-table :data="datav" border header-row-style="color:black;" >
+          <el-table :data="datav" border header-row-style="color:black" :size="$isMobile() ? 'small':'default'">
               <el-table-column prop='det_rs' label="Razon Soc." width="120" align="center" />
               <el-table-column prop='det_td' label="Tipo de doc." width="120" align="center" />
               <el-table-column prop='det_cod' label="Serie-Numero" width="120" align="center" />
@@ -785,42 +851,83 @@ export default {
           </el-row>
         </el-main>
       </el-container>
-      <el-row>
-        <h3 style="margin-left:auto; margin-right:50px">Resumen: </h3>
+
+      <div v-if="$isMobile()">
+        
+        <el-row justify="center">
+          <h5 >Resumen: </h5>
+        </el-row>
+        
+        <el-row justify="right">
+        <el-form :inline="true" model="formInline" label-width="auto" size="small">
+        <el-form-item size="small" label="Total salida de dinero" prop="subtotal">
+          <el-input  v-model="sal_din" disabled>
+            <template #prepend>S/</template>
+          </el-input>
+        </el-form-item>
+
+
+ 
+        <el-form-item size="small" label="Total documentos" prop="subtotal">
+          <el-input  v-model="doc_din" disabled>
+            <template #prepend>S/</template>
+          </el-input>
+        </el-form-item>
+
+
+
+        <el-form-item size="small" label="Resta" prop="subtotal">
+          <el-input v-model="resta" disabled>
+            <template #prepend>S/</template>
+          </el-input>
+        </el-form-item>
+        </el-form>
+        </el-row>
+
+      <el-row justify="center" >
+        <el-button size="small" color="#0844a4"  @click="transaccion_insertar" style="margin-left: auto;margin-right: auto">Guardar</el-button>
       </el-row>
+      </div>
+
+      <div v-else>
+        <el-row>
+          <h3 style="margin-left:auto; margin-right:50px">Resumen: </h3>
+        </el-row>
+        
+        <el-row>
+        <el-form-item style="margin-left:auto; margin-right:50px" label="Total salida de dinero" prop="subtotal">
+          <el-input style="width:250px" v-model="sal_din" disabled>
+            <template #prepend>S/</template>
+          </el-input>
+        </el-form-item>
+        </el-row>
+
+        <el-row>
+        <el-form-item style="margin-left:auto; margin-right:50px" label="Total documentos" prop="subtotal">
+          <el-input style="width:250px" v-model="doc_din" disabled>
+            <template #prepend>S/</template>
+          </el-input>
+        </el-form-item>
+        </el-row>
+
+        <el-row>
+        <el-form-item style="margin-left:auto; margin-right:50px" label="Resta" prop="subtotal">
+          <el-input style="width:250px" v-model="resta" disabled>
+            <template #prepend>S/</template>
+          </el-input>
+        </el-form-item>
+        </el-row>
+
+      <el-row style="text-align=center" >
+        <el-button color="#0844a4"  @click="transaccion_insertar" style="margin-left: auto;margin-right: auto">Guardar</el-button>
+      </el-row>
+      </div>
       
-      <el-row>
-      <el-form-item style="margin-left:auto; margin-right:50px" label="Total salida de dinero" prop="subtotal">
-        <el-input style="width:250px" v-model="sal_din" disabled>
-          <template #prepend>S/</template>
-        </el-input>
-      </el-form-item>
-      </el-row>
-
-      <el-row>
-      <el-form-item style="margin-left:auto; margin-right:50px" label="Total documentos" prop="subtotal">
-        <el-input style="width:250px" v-model="doc_din" disabled>
-          <template #prepend>S/</template>
-        </el-input>
-      </el-form-item>
-      </el-row>
-
-      <el-row>
-      <el-form-item style="margin-left:auto; margin-right:50px" label="Resta" prop="subtotal">
-        <el-input style="width:250px" v-model="resta" disabled>
-          <template #prepend>S/</template>
-        </el-input>
-      </el-form-item>
-      </el-row>
-
-    <el-row style="text-align=center" >
-      <el-button color="#0844a4"  @click="transaccion_insertar" style="margin-left: auto;margin-right: auto">Guardar</el-button>
-    </el-row>
   </div>
 
 
 <modal ref="mo_create" no-close-on-backdrop title="Documento" width="900px" @ok="create_det" @cancel="close_det" cancel-title="Atras" centered>
-  <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="200px" >
+  <el-form  ref="form_cref" :rules="rules" :model="form_c" :label-width="$isMobile() ? '150px':'200px'" :size="$isMobile() ? 'small':'default'" >
     
     <el-form-item  label="Razón social asociada">
       <el-select v-model="form_c.rs" @change="rscc_changer" @clear="rscc_clear" placeholder="Seleccionar" style="width:600px" clearable>
@@ -835,7 +942,7 @@ export default {
 
     <el-form-item  label="Proveedor">
       <el-row style="width:600px"> 
-      <el-col :span="8">
+      <el-col :span="$isMobile() ? 24:8">
         <el-select
           v-model="form_c.prv_id"
           filterable
@@ -859,13 +966,13 @@ export default {
           />
         </el-select>
       </el-col>
-      <el-col :span="16"><el-input disabled v-model="form_c.prv_nom" placeholder="Nombre de proveedor" /></el-col>
+      <el-col :span="$isMobile() ? 24:8"><el-input disabled v-model="form_c.prv_nom" placeholder="Nombre de proveedor" /></el-col>
       </el-row>
     </el-form-item>
 
-    <el-row style="width:800px; margin-bottom: 18px"> 
-      <el-col :span="6">
-        <el-select v-model="form_c.doc_tipo" @change="tdocc_changer" style="width:150px; margin-left:50px" placeholder="Tipo de doc."  clearable>
+    <el-row :style="$isMobile() ? '':'width:800px; margin-bottom: 18px'"> 
+      <el-col :span="$isMobile() ? 24:6">
+        <el-select v-model="form_c.doc_tipo" @change="tdocc_changer" :style="$isMobile() ? 'width:150px; margin-left:50px':'width:150px; margin-left:50px'" placeholder="Tipo de doc."  clearable>
         <el-option
           v-for="item in opt_td"
           :key="item.cct_codigo"
@@ -875,13 +982,13 @@ export default {
         </el-select>
       </el-col>
     
-      <el-col :span="18">     
+      <el-col :span="$isMobile() ? 24:18">     
           <el-row > 
-            <el-col :span="12" >
-              <el-input v-model="form_c.doc_serie" placeholder="nro de serie" />
+            <el-col :span="$isMobile() ? 24:12" >
+              <el-input v-model="form_c.doc_serie" placeholder="nro de serie" :style="$isMobile() ? 'width:150px; margin-left:50px':''"/>
             </el-col>
-            <el-col :span="12">
-              <el-input v-model="form_c.doc_num" placeholder="nro de documento" />
+            <el-col :span="$isMobile() ? 24:12">
+              <el-input v-model="form_c.doc_num" placeholder="nro de documento" :style="$isMobile() ? 'width:150px; margin-left:50px':''" />
             </el-col>
           </el-row>
       </el-col>
@@ -900,21 +1007,21 @@ export default {
     </el-form-item>
 
     <el-form-item label="Fecha de viaje">
-      <el-row style="width:600px">
-      <el-col :span="12">
+      <el-row :style="$isMobile() ? '':'width:600px'">
+      <el-col :span="$isMobile() ? 24:12">
         <el-date-picker
           type="date"
           v-model="form_c.fech_viaje"
           format="YYYY-MM-DD"
           value-format="YYYY-MM-DD"
           placeholder="Seleccione fecha"
-          style="width: 300px"
+          :style="$isMobile() ? '':'width:300px'"
           @change="fech_changer"
         />
       </el-col>
       
-      <el-col :span="12">
-        <el-select v-model="form_c.via_id" placeholder="Seleccione una opcion" style="width:300px" clearable>
+      <el-col :span="$isMobile() ? 24:12">
+        <el-select v-model="form_c.via_id" placeholder="Seleccione una opcion" :style="$isMobile() ? '':'width:300px'" clearable>
           <el-option
             v-for="item in opt_via"
             :key="item.via_id"
@@ -928,8 +1035,8 @@ export default {
 
 
     <el-form-item  label="Producto">
-      <el-row style="width:600px">
-        <el-col :span="8">
+      <el-row :style="$isMobile() ? '':'width:600px'">
+        <el-col :span="$isMobile() ? 24:8">
           <el-select
             v-model="form_c.pro_id"
             filterable
@@ -951,10 +1058,10 @@ export default {
           </el-select>
            
         </el-col>
-        <el-col :span="8"> 
+        <el-col :span="$isMobile() ? 24:8"> 
           <el-input v-model="form_c.cantidad" placeholder="Cantidad" />
         </el-col>
-        <el-col :span="8">
+        <el-col :span="$isMobile() ? 24:8">
           <el-select v-model="form_c.un_id" placeholder="Unidad"  clearable>
             <el-option
               v-for="item in opt_uni"

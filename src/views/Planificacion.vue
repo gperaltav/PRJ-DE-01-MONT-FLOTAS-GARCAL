@@ -829,10 +829,10 @@ export default {
       var fech=aa+"-"+mm+"-"+dd;
       var fech2=aa+"-"+mm+"-01";
 
-      console.log(aa+mm+dd);
+      console.log(aa+"-"+mm+"-"+dd);
 
       axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes', 
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes/filtro', 
       {
         "emp_id":"",
         "via_fechaviajeinicio":fech2,
@@ -858,7 +858,7 @@ export default {
           "ubi_nombredestino":this.form_b.destino,
     });
       axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes', 
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes/filtro', 
         {
           "emp_id":String(this.form_b.rs),
           "via_fechaviajeinicio":String(this.form_b.fecha_i),
@@ -876,6 +876,31 @@ export default {
     create_usr(){
       //llamada a API
 
+      console.log({ 
+        "emp_id": Number(this.form_c.rs),
+        "rut_id":"",
+        "via_serie":"", 
+        "via_numero":"", 
+        "vie_codigo":"PLA",
+        "veh_idtracto":Number(this.form_c.tracto_id),
+        "veh_idremolque":this.form_c.semire_id,
+        "ent_id":Number(this.form_c.cliente_id),
+        "via_fechaviaje":this.form_c.fecha,
+        "via_horaviaje":this.form_c.hora,
+        "via_subtotal":Number(this.form_c.subtotal),
+        "via_impuesto":Number(this.form_c.impuesto),
+        "via_total":Number(this.form_c.total),
+        "via_observacion":this.form_c.observacion,
+        "ubi_codigoorigen":this.form_c.origen,
+        "ubi_codigodestino":this.form_c.destino,
+        "vfl_codigo":this.form_c.flete,
+        "tri_id":this.form_c.oper_id,
+        "pro_id":Number(this.form_c.producto_tipo),
+        "via_usucreacion":this.$store.state.username,
+        "via_cantidad":Number(this.form_c.cantidad_flete)
+      });
+      
+
       axios
       .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes/nuevo', 
       { 
@@ -885,7 +910,7 @@ export default {
         "via_numero":"", 
         "vie_codigo":"PLA",
         "veh_idtracto":Number(this.form_c.tracto_id),
-        "veh_idremolque":this.form_c.semire_id,
+        "veh_idsemiremolque":this.form_c.semire_id,
         "ent_id":Number(this.form_c.cliente_id),
         "via_fechaviaje":this.form_c.fecha,
         "via_horaviaje":this.form_c.hora,
