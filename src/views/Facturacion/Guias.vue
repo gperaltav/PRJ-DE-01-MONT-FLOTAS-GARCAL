@@ -501,7 +501,7 @@ export default {
         "ubi_codigoorigen":this.form_c.ubi_origen,
         "ubi_codigodestino":this.form_c.ubi_destino,
         "gui_observacion":"",
-        "gui_usucreacion":"admin"
+        "gui_usucreacion":this.$store.state.username
       })
       .then((resp) => {
         console.log(resp.data);
@@ -525,7 +525,7 @@ export default {
             "ubi_codigoorigen":this.form_c.ubi_origen,
             "ubi_codigodestino":this.form_c.ubi_destino,
             "gui_observacion":"",
-            "gui_usucreacion":"admin"
+            "gui_usucreacion":this.$store.state.username
           })
           .then((resp) => {
             console.log(resp.data);
@@ -576,7 +576,7 @@ export default {
           "ubi_codigoorigen":this.data_edit[0].ubi_codigoorigen,
           "ubi_codigodestino":this.data_edit[0].ubi_codigodestino,
           "gui_observacion":"",
-          "gui_usucreacion":"admin"
+          "gui_usucreacion":this.$store.state.username
         }
       }
       if(this.form_e.tipo==this.gtr_id) {
@@ -597,7 +597,7 @@ export default {
           "ubi_codigoorigen":this.data_edit[0].ubi_codigoorigen,
           "ubi_codigodestino":this.data_edit[0].ubi_codigodestino,
           "gui_observacion":"",
-          "gui_usucreacion":"admin"
+          "gui_usucreacion":this.$store.state.username
         }
       }
 

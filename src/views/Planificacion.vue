@@ -971,7 +971,7 @@ export default {
         "via_impuesto":Number(this.form_e.impuesto),
         "via_total":Number(this.form_e.total),
         "via_observacion":this.form_e.observacion,
-        "via_usumodificacion":"admin",
+        "via_usumodificacion":this.$store.state.username,
         "vie_codigo":"TER",
         "ubi_codigoorigen":this.form_e.origen,
         "ubi_codigodestino":this.form_e.destino,

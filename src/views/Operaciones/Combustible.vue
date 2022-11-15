@@ -239,7 +239,7 @@ export default {
         "ubi_codigoorigen":"010112",
         "ubi_codigodestino":"010113",
         "gui_observacion":"",
-        "gui_usucreacion":"admin"
+        "gui_usucreacion":this.$store.state.username
       })
       .then((resp) => {
         console.log(resp.data);
@@ -347,8 +347,8 @@ export default {
         "ccc_generamovimiento":false,
         "ccc_fechaingreso": this.form_c.fecha_em,
         "ccc_periodoregistro":"",
-        "usu_codigo": "admin",
-        "ccc_usucreacion":"admin"
+        "usu_codigo": this.$store.state.username,
+        "ccc_usucreacion":this.$store.state.username
       })
       .then((resp) => {
         console.log(resp.data);
@@ -382,7 +382,7 @@ export default {
         "ubi_codigoorigen":"010112",
         "ubi_codigodestino":"010113",
         "gui_observacion":"",
-        "gui_usucreacion":"admin"
+        "gui_usucreacion":this.$store.state.username
       })
       .then((resp) => {
         console.log(resp.data);
@@ -442,8 +442,8 @@ export default {
         "ccc_fechaingreso": fech,
         "ccc_periodoregistro": fech,
         "ccr_codigo":"PEA",
-        "usu_codigo": "admin",
-        "ccc_usucreacion":"admin",
+        "usu_codigo": this.$store.state.username,
+        "ccc_usucreacion":this.$store.state.username,
         "detalle":[{
           "pro_id":pro_d,
           "via_id":String(this.form_c.via_id),

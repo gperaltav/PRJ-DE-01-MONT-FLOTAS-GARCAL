@@ -535,7 +535,7 @@ export default {
             "tra_fechaingreso":this.form_c.fecha_i,
             "tra_fechaingresoplanilla":this.form_c.fecha_ip,
             "tra_fechacese":this.form_c.fecha_c,
-            "tra_usucreacion":"admin" 
+            "tra_usucreacion":this.$store.state.username 
           })
           .then((resp) => {
             console.log(resp.data);
@@ -567,8 +567,6 @@ export default {
           return false;
     },  
 
-
-
     create_usr2(){
       //legacy
       if(!this.open_op) {
@@ -588,40 +586,29 @@ export default {
             "tra_fechaingreso":this.form_c.fecha_i,
             "tra_fechaingresoplanilla":this.form_c.fecha_ip,
             "tra_fechacese":this.form_c.fecha_c,
-            "tra_usucreacion":"admin" 
+            "tra_usucreacion":this.$store.state.username 
           })
           .then((resp) => {
             console.log(resp.data);
             this.succes=resp.data.status;
             if (this.succes) {
-              if(this.open_op) {
-                console.log("Tripulacion")
-                this.id_tmp=resp.data.idValue;
-                var tmpop=this.create_usr_op();
-                console.log(tmpop);
-                if(tmpop) {
-                  return true;
-                }
-                else {
-                  return false;
-                }
-              }
-              else {
-                this.loadingC=false;
                 this.open_succes("Operación realizada satisfactoriamente");
                 return true;
-              }
+            }
+            else {
+              this.open_fail("Hubo un error con el servidor al ejecutar la operación");
+              return false;
             }
           })
           .catch((e)=>{
-            this.open_fail("Hubo un error con el servidor al ejecutar la operación, error: "+String(e));
+            this.open_fail("Hubo un error interno al ejecutar la operación, error: "+String(e));
             return false;
           });
           return false;
       }
       else {
         axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/trabajadores/nuevo', 
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/trabajadoresoperarios/nuevo', 
         { 
           "are_id": 1,
           "pue_id": this.form_c.tipo,
@@ -636,33 +623,27 @@ export default {
           "tra_fechaingreso":this.form_c.fecha_i,
           "tra_fechaingresoplanilla":this.form_c.fecha_ip,
           "tra_fechacese":this.form_c.fecha_c,
-          "tra_usucreacion":"admin" 
+          "tra_usucreacion":this.$store.state.username,
+          "tri_licenciacategoria":this.form_c_op.cat_lic,
+          "tri_licencianro":this.form_c_op.nro_lic,
+          "tri_especialidad":this.form_c_op.esp,
+          "tri_licenciafechavencimiento": this.form_c_op.venc_lic,
+          "tri_inscritossunatiqbf": this.form_c_op.ins_iqbf,
         })
         .then((resp) => {
           console.log(resp.data);
           this.succes=resp.data.status;
           if (this.succes) {
-            if(this.open_op) {
-              console.log("Tripulacion")
-              this.id_tmp=resp.data.idValue;
-              var tmpop=this.create_usr_op();
-              console.log(tmpop);
-              if(tmpop) {
+                this.open_succes("Operación realizada satisfactoriamente");
                 return true;
-              }
-              else {
-                return false;
-              }
             }
             else {
-              this.loadingC=false;
-              this.open_succes("Operación realizada satisfactoriamente");
-              return true;
+              this.open_fail("Hubo un error con el servidor al ejecutar la operación");
+              return false;
             }
-          }
         })
         .catch((e)=>{
-          this.open_fail("Hubo un error con el servidor al ejecutar la operación, error: "+String(e));
+          this.open_fail("Hubo un error interno al ejecutar la operación, error: "+String(e));
           return false;
         });
         return false;
@@ -680,7 +661,7 @@ export default {
           "tri_especialidad":this.form_c_op.esp,
           "tri_licenciafechavencimiento": this.form_c_op.venc_lic,
           "tri_inscritossunatiqbf": this.form_c_op.ins_iqbf,
-          "tri_usucreacion":"admin"
+          "tri_usucreacion":this.$store.state.username
         })
         .then((resp) => {
           console.log(resp.data.status);
@@ -722,7 +703,7 @@ export default {
           "tra_fechaingreso":this.form_e.fecha_i,
           "tra_fechaingresoplanilla":this.form_e.fecha_ip,
           "tra_fechacese":this.form_e.fecha_c,
-          "tra_usucreacion":"admin" 
+          "tra_usucreacion":this.$store.state.username 
         })
         .then((resp) => {
           console.log(resp.data.status);
@@ -763,7 +744,7 @@ export default {
           "tri_especialidad":this.form_e_op.esp,
           "tri_licenciafechavencimiento": this.form_e_op.venc_lic,
           "tri_inscritossunatiqbf": this.form_e_op.ins_iqbf,
-          "tri_usumodificacion":"admin"
+          "tri_usumodificacion":this.$store.state.username
         })
         .then((resp) => {
           console.log(resp.data.status);
@@ -1050,7 +1031,7 @@ export default {
 </div>
 
 
-<modal ref="mo_create_per" no-close-on-backdrop title="Agregar Trabajador" width="500px" @ok="create_usr" :ok-loading="loadingC" @cancel="closecrear" cancel-title="Atras" centered>
+<modal ref="mo_create_per" no-close-on-backdrop title="Agregar Trabajador" width="500px" @ok="create_usr2" :ok-loading="loadingC" @cancel="closecrear" cancel-title="Atras" centered>
 
   <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" :size="$isMobile() ? 'small':'default'">
 

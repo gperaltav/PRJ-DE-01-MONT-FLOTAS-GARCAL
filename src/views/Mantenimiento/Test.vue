@@ -199,7 +199,7 @@ export default {
           "txd_entidademisora":"",
           "txd_fechaemision":"",
           "txd_fechavencimiento":"",
-          "txd_usucreacion":"admin"
+          "txd_usucreacion":this.$store.state.username
         })
         .then((resp) => {
           console.log(resp.data.status);
@@ -281,7 +281,7 @@ export default {
           "txd_entidademisora":this.form_e.ent_emisora,
           "txd_fechaemision":this.form_e.fech_emision,
           "txd_fechavencimiento":this.form_e.fech_venc,
-          "txd_usucreacion":"admin"
+          "txd_usucreacion":this.$store.state.username
         })
         .then((resp) => {
           console.log(resp.data.status);

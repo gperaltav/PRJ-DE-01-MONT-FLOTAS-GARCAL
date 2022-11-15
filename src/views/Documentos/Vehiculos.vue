@@ -202,7 +202,7 @@ export default {
           "vxd_entidademisora":'',
           "vxd_fechaemision":'',
           "vxd_fechavencimiento":'',
-          "vxd_usucreacion":"admin"
+          "vxd_usucreacion":this.$store.state.username
         })
         .then((resp) => {
           console.log(resp.data.status);
@@ -285,7 +285,7 @@ export default {
           "vxd_entidademisora":this.form_e.ent_emisora,
           "vxd_fechaemision":this.form_e.fech_emision,
           "vxd_fechavencimiento":this.form_e.fech_venc,
-          "vxd_usucreacion":"admin"
+          "vxd_usucreacion":this.$store.state.username
         })
         .then((resp) => {
           console.log(resp.data.status);

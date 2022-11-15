@@ -472,8 +472,8 @@ export default {
         "ccc_fechaingreso": fech,
         "ccc_periodoregistro": fech,
         "ccr_codigo":"PEA",
-        "usu_codigo": "admin",
-        "ccc_usucreacion":"admin",
+        "usu_codigo": this.$store.state.username,
+        "ccc_usucreacion":this.$store.state.username,
         "detalle":this.datap
       })
       .then((resp) => {

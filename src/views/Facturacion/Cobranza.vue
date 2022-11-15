@@ -539,7 +539,7 @@ export default {
         "vec_fechacancelacion":"2022-01-06",
         "vec_descripcion":"VARIOS",
         "mon_codigo":"CAR",
-        "vec_usucreacion":"admin"
+        "vec_usucreacion":this.$store.state.username
       })
       .then((resp) => {
         console.log(resp.data);
@@ -580,7 +580,7 @@ export default {
           "vec_descripcion":"",
           "vec_tipocambio":18,
           "mon_codigo":this.form_e.moneda,
-          "vec_usucreacion":"admin"
+          "vec_usucreacion":this.$store.state.username
         })
         .then((resp) => {
           console.log(resp.data.status);

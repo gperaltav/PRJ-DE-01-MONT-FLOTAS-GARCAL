@@ -649,8 +649,8 @@ export default {
         "gui_idremitente": "",
         "gui_idtransportisa": "",
         "via_id":this.form_c.via_id,
-        "usu_codigo":"admin",
-        "cvc_usucreacion":"admin"
+        "usu_codigo":this.$store.state.username,
+        "cvc_usucreacion":this.$store.state.username
       })
       .then((resp) => {
         console.log(resp.data);
@@ -684,7 +684,7 @@ export default {
         "vec_descripcion":"",
         "vec_tipocambio":18,
         "mon_codigo":this.form_p.moneda,
-        "vec_usucreacion":"admin"
+        "vec_usucreacion":this.$store.state.username
       })
       .then((resp) => {
         console.log(resp.data);
@@ -738,8 +738,8 @@ export default {
           "gui_idremitente": "",
           "gui_idtransportisa": "",
           "via_id":this.form_e.via_id,
-          "usu_codigo":"admin",
-          "cvc_usucreacion":"admin"
+          "usu_codigo":this.$store.state.username,
+          "cvc_usucreacion":this.$store.state.username
         })
         .then((resp) => {
           console.log(resp.data.status);
