@@ -441,7 +441,7 @@ export default {
         "ccc_generamovimiento":false,
         "ccc_fechaingreso": fech,
         "ccc_periodoregistro": fech,
-        "ccr_codigo":"PEA",
+        "ccr_codigo":"COM",
         "usu_codigo": this.$store.state.username,
         "ccc_usucreacion":this.$store.state.username,
         "detalle":[{

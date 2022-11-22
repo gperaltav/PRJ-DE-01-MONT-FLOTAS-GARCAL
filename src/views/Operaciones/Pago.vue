@@ -325,7 +325,7 @@ export default {
     insertar_comprobante() {
       axios
       .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprascab/nuevo', 
-      {      
+      {
         "emp_id": Number(this.form_c.rs),
         "ent_id": Number(this.form_c.prv_id),
         "ccc_serie": this.form_c.serie_doc,

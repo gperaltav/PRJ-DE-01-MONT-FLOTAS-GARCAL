@@ -51,7 +51,8 @@ export default {
         rs: '',
         codigo: '',
         estado: '',
-        fecha_inicio: '',
+        fech_inicio: null,
+        fech_fin: null,
       }),
 
       form_c : reactive({
@@ -284,11 +285,11 @@ export default {
      axios
       .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/mantenimientoscab', 
       {
-        "emp_id":0,
-        "man_numero":0,
+        "emp_id":"",
+        "man_numero":"",
         "man_estado":"",
-        "man_fecha_inicio":"2022-01-01",
-        "man_fecha_fin":"2022-09-09"
+        "man_fecha_inicio":null,
+        "man_fecha_fin":null
       })
       .then((resp) => {
         console.log(resp);
@@ -301,11 +302,11 @@ export default {
       axios
       .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/mantenimientoscab', 
       {
-        "emp_id":0,
-        "man_numero":0,
-        "man_estado":"",
-        "man_fecha_inicio":"2022-01-01",
-        "man_fecha_fin":"2022-09-09"
+        "emp_id":this.form_b.rs,
+        "man_numero":this.form_b.codigo,
+        "man_estado":this.form_b.estado,
+        "man_fecha_inicio":this.form_b.fech_inicio,
+        "man_fecha_fin":this.form_b.fech_fin
       })
       .then((resp) => {
         console.log(resp);
@@ -491,13 +492,6 @@ export default {
           <el-input placeholder="Serie-Número" v-model="form_b.codigo" clearable />
         </el-form-item>
 
-        <el-form-item label="Estado">
-          <el-select v-model="form_b.tipo_guia" placeholder="Seleccionar" clearable>
-            <el-option label="GUIA DE EMISION" value="GEM" />
-            <el-option label="GUIA TRANSPORTISTA" value="GTR" />
-          </el-select>
-        </el-form-item>
-
         <el-form-item label="Fecha de emisión">
           <el-col :span="11">
             <el-date-picker
@@ -560,13 +554,6 @@ export default {
 
         <el-form-item label="Código">
           <el-input placeholder="Serie-Número" v-model="form_b.codigo" clearable />
-        </el-form-item>
-
-        <el-form-item label="Estado">
-          <el-select v-model="form_b.tipo_guia" placeholder="Seleccionar" clearable>
-            <el-option label="GUIA DE EMISION" value="GEM" />
-            <el-option label="GUIA TRANSPORTISTA" value="GTR" />
-          </el-select>
         </el-form-item>
 
         <el-form-item label="Fecha de emisión">

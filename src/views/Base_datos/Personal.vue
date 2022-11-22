@@ -199,7 +199,7 @@ export default {
       return;
     },
     check_op2()  {
-      for ( var xd in this.operarios_id) {
+      for (var xd in this.operarios_id) {
         if (this.form_e.tipo == this.operarios_id[xd]) {
           this.open_op=true;
           return;
@@ -367,7 +367,6 @@ export default {
         .then((resp) => {
           console.log(resp);
           this.data_edit2 = resp.data;
-          console.log(this.data_edit2);
         })      
     },
 
@@ -386,18 +385,39 @@ export default {
             this.open_fail("Hubo un error con el servidor al ejecutar la operación");
             return false;
           }
+        })
+        .catch(function (error) {
+          this.open_fail("Hubo un error con el servidor al ejecutar la operación, error:"+String(error));
+          return false;
         });
     },  
 
-    async send_delete_master() {
+    send_delete_master() {
       this.$refs.mo_advertencia_eliim.hide();
       this.helper=false;
       this.check_op2();
       if(this.open_op) {
         this.helper=true;
         console.log("Eliminando operario");
-        await this.send_delete_op();
-        this.send_delete();
+
+        axios
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/tripulacion/borrar/'+String(this.editpointer))
+        .then((resp) => {
+          console.log(resp.data);
+          this.succes=resp.data.status;
+          
+          if (this.succes) {
+            this.send_delete();
+          }
+          else {
+            this.open_fail("Hubo un error con el servidor al ejecutar la operación, error:"+resp.data.message);
+            return false;
+          }
+        })
+        .catch(function (error) {
+          this.open_fail("Hubo un error con el servidor al ejecutar la operación, error:"+String(error));
+          return false;
+        });
       }
       else {
         console.log("Eliminando trabajador");
@@ -413,10 +433,8 @@ export default {
           console.log(resp.data);
           this.succes=resp.data.status;
           if (this.succes) {
-            if(this.helper==false)
-              this.open_succes("Trabajador eliminado correctamente");
+            this.open_succes("Trabajador eliminado correctamente");
             return true;
-            
           }
           else {
             this.open_fail("Hubo un error con el servidor al ejecutar la operación");
@@ -684,6 +702,91 @@ export default {
       this.$refs.mo_create_per.hide(); 
     },
 
+    editar_tr() {
+      if(!this.open_op) {
+        axios
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/trabajadores/actualizar', 
+        { 
+          "tra_id": this.editpointer,
+          "are_id": 1,
+          "pue_id": this.form_e.tipo,
+          "emp_id": this.form_e.rs,
+          "tra_nombres":this.form_e.nombre,
+          "tra_apellidopaterno":this.form_e.apellido_p,
+          "tra_apellidomaterno":this.form_e.apellido_m,
+          "tra_nrodocumento": this.form_e.nro_doc,
+          "tra_identificador": "",
+          "tra_fechanacimiento":this.form_e.fecha_nac,
+          "tra_tipocontrato":this.form_e.contrato,
+          "tra_fechaingreso":this.form_e.fecha_i,
+          "tra_fechaingresoplanilla":this.form_e.fecha_ip,
+          "tra_fechacese":this.form_e.fecha_c,
+          "tra_usucreacion":this.$store.state.username 
+        })
+        .then((resp) => {
+          console.log(resp.data);
+          this.succes=resp.data.status;
+          if (this.succes) {
+            this.open_succes("Operación realizada satisfactoriamente");
+            return true;
+          }
+          else {
+            this.open_fail("Hubo un error con el servidor al ejecutar la operación");
+            return false;
+          }
+        })
+        .catch((e)=>{
+          this.open_fail("Hubo un error interno al ejecutar la operación, error: "+String(e));
+          return false;
+        });
+        return false;
+      }
+      else {
+        axios
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/trabajadoresoperarios/actualizar', 
+        { 
+          "tra_id": this.editpointer,
+          "are_id": 1,
+          "pue_id": this.form_e.tipo,
+          "emp_id": this.form_e.rs,
+          "tra_nombres":this.form_e.nombre,
+          "tra_apellidopaterno":this.form_e.apellido_p,
+          "tra_apellidomaterno":this.form_e.apellido_m,
+          "tra_nrodocumento": this.form_e.nro_doc,
+          "tra_identificador": "",
+          "tra_fechanacimiento":this.form_e.fecha_nac,
+          "tra_tipocontrato":this.form_e.contrato,
+          "tra_fechaingreso":this.form_e.fecha_i,
+          "tra_fechaingresoplanilla":this.form_e.fecha_ip,
+          "tra_fechacese":this.form_e.fecha_c,
+          "tra_usumodificacion":this.$store.state.username,
+
+          "tri_licenciacategoria":this.form_e_op.cat_lic,
+          "tri_licencianro":this.form_e_op.nro_lic,
+          "tri_especialidad":this.form_e_op.esp,
+          "tri_licenciafechavencimiento": this.form_e_op.venc_lic,
+          "tri_inscritossunatiqbf": this.form_e_op.ins_iqbf
+        })
+        .then((resp) => {
+          console.log(resp.data);
+          this.succes=resp.data.status;
+          if (this.succes) {
+                this.open_succes("Operación realizada satisfactoriamente");
+                return true;
+            }
+            else {
+              this.open_fail("Hubo un error con el servidor al ejecutar la operación");
+              return false;
+            }
+        })
+        .catch((e)=>{
+          this.open_fail("Hubo un error interno al ejecutar la operación, error: "+String(e));
+          return false;
+        });
+        return false;
+      }
+    },
+
     editar_usr(){
       //llamada a API
      axios
@@ -768,40 +871,46 @@ export default {
       this.$refs.mo_editar_per.open();
       this.wait = true;
       this.load_edit(number);
-      
-      setTimeout(() => {
+
+      axios
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/trabajadores/"+String(number))
+      .then((resp) => {
+        this.data_edit = resp.data;
+
         this.load_data_edit();
         this.check_op2();
-        
+
         if (this.open_op) {
           console.log("Operario");
-          this.load_edit_op(number);
-          
-          setTimeout(() => {
-          try {
+
+          axios
+          .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/tripulacion/"+String(number))
+          .then((resp) => {
+            console.log(resp);
+            this.data_edit2 = resp.data;
             this.load_data_edit_op();
-          }
-          catch(err) {
-            this.open_fail("Hubo un error con el servidor al cargar los datos de operario");
-          }
-          this.emp_cont=this.form_e.rs;
-          this.load_tc();
-          this.check_op2() ;
-          this.load_esp();
-          
-          this.load_pues();
-          
-          
-          this.wait = false;
-          }, 600)
+            this.load_tc();
+            this.check_op2() ;
+            this.load_esp();
+            this.load_pues();
+
+            this.wait = false;
+          })
+          .catch(function (error) {
+            this.open_fail("Hubo un error con el servidor al cargar los datos del operador, error:"+String(error));
+            return false;
+          });
         }
         else {
-          this.emp_cont=this.form_e.rs;
           this.load_tc();
           this.check_op2() ;
           this.wait = false;
         }
-      }, 400)
+      })
+      .catch(function (error) {
+        this.open_fail("Hubo un error con el servidor al cargar los datos del trabajador, error:"+String(error));
+        return false;
+      });
     }
   },
 
@@ -1132,7 +1241,7 @@ export default {
 
 
 
-<modal ref="mo_editar_per" no-close-on-backdrop title="Editar datos de Trabajador" width="500px" @ok="editar_usr" cancel-title="Cancelar" @cancel="closeedit"  centered>
+<modal ref="mo_editar_per" no-close-on-backdrop title="Editar datos de Trabajador" width="500px" @ok="editar_tr" cancel-title="Cancelar" @cancel="closeedit"  centered>
 <el-form v-loading="wait" ref="form_edit_ref" :rules="rules" :model="form" label-width="150px" :size="$isMobile() ? 'small':'default'">
 
     <el-form-item  label="Razón soc. asoc.">

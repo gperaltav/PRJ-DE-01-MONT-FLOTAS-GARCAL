@@ -470,6 +470,7 @@ export default {
       var dd=hoy.getDate();
 
       var fech=aa+"-"+mm+"-"+dd;
+      var fech2=aa+"-"+mm+"-01";
 
       console.log(aa+mm+dd);
       axios
@@ -480,7 +481,7 @@ export default {
         "cvc_serienumero":"",
         "fdc_codigo":"",
         "vec_nroreferencia":"",
-        "vec_fechacancelacioninicio": fech,
+        "vec_fechacancelacioninicio": fech2,
         "vec_fechacancelacionfin": fech
       })
       .then((resp) => {
