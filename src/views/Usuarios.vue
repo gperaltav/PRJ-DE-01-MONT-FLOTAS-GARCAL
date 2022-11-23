@@ -590,7 +590,7 @@ export default {
   <div v-if="$isMobile()">
   <el-collapse>
     <el-collapse-item title="Opciones">
-    <el-form :inline="true" model="formInline" label-width="auto" size="small" >
+    <el-form @submit.prevent :inline="true" model="formInline" label-width="auto" size="small" >
       <el-row justify="center">
 
         <el-form-item label="Nombre">
@@ -624,7 +624,7 @@ export default {
   </div>
 
   <div v-else>
-      <el-form  :inline="true" model="formInline" label-width="auto" >
+      <el-form @submit.prevent  :inline="true" model="formInline" label-width="auto" >
       <el-row>
         <el-col :span="21">
           <el-form-item label="Nombre">
@@ -680,7 +680,7 @@ export default {
 
 <modal ref="CreateMo" title="Crear usuario" :width="$isMobile() ? '200px':'500px'" @ok="create_usr()" @cancel="close_create" cancel-title="Atras" centered>
 
-  <el-form  ref="form_cref" :model="form_c" :label-width="$isMobile() ? '150px':'200px'" :size="$isMobile() ? 'small':'default'">
+  <el-form @submit.prevent ref="form_cref" :model="form_c" :label-width="$isMobile() ? '150px':'200px'" :size="$isMobile() ? 'small':'default'">
 
     <el-form-item label="Código del usuario">
       <el-input style="width:300px" v-model="form_c.codigo" />
@@ -720,7 +720,7 @@ export default {
 
 <modal ref="EditMo" no-close-on-backdrop title="Editar usuario" :width="$isMobile() ? '200px':'500px'" cancel-title="Atras" @ok="editar_usr()" centered>
   
-  <el-form v-loading="wait" ref="form_cref" :model="form_e" :label-width="$isMobile() ? '150px':'200px'" >
+  <el-form @submit.prevent v-loading="wait" ref="form_cref" :model="form_e" :label-width="$isMobile() ? '150px':'200px'" >
 
     <el-form-item label="Código del usuario">
       <el-input style="width:300px" v-model="form_e.codigo" />
@@ -767,10 +767,11 @@ export default {
 </modal>
 
 <modal  ref="mo_permisos2" title="Permisos de usuario" centered @ok="send_edit_permisos" @cancel="close_advertencia_e" ok-title="Actualizar permisos" cancel-title="Cancelar" >
-   <el-form v-loading="wait2" ref="form_cref" :model="form_e" label-width="200px" >
+   <el-form @submit.prevent v-loading="wait2" ref="form_cref" :model="form_e" label-width="200px" >
     <span> Base de datos:</span>
     <el-form-item label="Usuarios">
       <el-checkbox v-model="permisos[1]"/>
+      <span style="color:red">&nbsp;&nbsp; Cuidado</span>
     </el-form-item>
     <el-form-item label="Clientes">
       <el-checkbox v-model="permisos[2]"/>

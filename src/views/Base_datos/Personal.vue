@@ -297,6 +297,10 @@ export default {
       this.alert_mo=msg;
       this.$refs.mo_error.open(); 
     },
+    openfail(msg) {
+      this.alert_mo=msg;
+      this.$refs.mo_error.open(); 
+    },
     close_fail() {
       this.$refs.mo_error.hide(); 
     },
@@ -652,8 +656,8 @@ export default {
           console.log(resp.data);
           this.succes=resp.data.status;
           if (this.succes) {
-                this.open_succes("Operación realizada satisfactoriamente");
-                return true;
+              this.open_succes("Operación realizada satisfactoriamente");
+              return true;
             }
             else {
               this.open_fail("Hubo un error con el servidor al ejecutar la operación");
@@ -885,9 +889,9 @@ export default {
 
           axios
           .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/tripulacion/"+String(number))
-          .then((resp) => {
-            console.log(resp);
-            this.data_edit2 = resp.data;
+          .then((resp2) => {
+            console.log(resp2);
+            this.data_edit2 = resp2.data;
             this.load_data_edit_op();
             this.load_tc();
             this.check_op2() ;
@@ -896,8 +900,9 @@ export default {
 
             this.wait = false;
           })
-          .catch(function (error) {
-            this.open_fail("Hubo un error con el servidor al cargar los datos del operador, error:"+String(error));
+          .catch((error) => {
+            this.openfail("Hubo un error con el servidor al cargar los datos del operador, error:"+String(error));
+            this.wait = false;
             return false;
           });
         }
@@ -907,8 +912,8 @@ export default {
           this.wait = false;
         }
       })
-      .catch(function (error) {
-        this.open_fail("Hubo un error con el servidor al cargar los datos del trabajador, error:"+String(error));
+      .catch((error) => {
+        this.openfail("Hubo un error con el servidor al cargar los datos del trabajador, error:"+String(error));
         return false;
       });
     }
@@ -935,7 +940,7 @@ export default {
     <el-collapse>
       <el-collapse-item title="Opciones">
       
-      <el-form :inline="true" :model="formInline" label-width="auto" size="small" >
+      <el-form @submit.prevent :inline="true" :model="formInline" label-width="auto" size="small" >
       <el-row justify="center">
 
         <el-form-item label="Razon social">
@@ -1028,7 +1033,7 @@ export default {
 
   <div v-else>
     
-    <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
+    <el-form @submit.prevent :inline="true" :model="formInline" label-width="auto" >
       <el-row>
         <el-col :span="21">
           <el-form-item label="Razon social">
@@ -1142,7 +1147,7 @@ export default {
 
 <modal ref="mo_create_per" no-close-on-backdrop title="Agregar Trabajador" width="500px" @ok="create_usr2" :ok-loading="loadingC" @cancel="closecrear" cancel-title="Atras" centered>
 
-  <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" :size="$isMobile() ? 'small':'default'">
+  <el-form @submit.prevent  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" :size="$isMobile() ? 'small':'default'">
 
     <el-form-item  label="Razón soc. asoc." prop="rs">
       <el-select style="width:250px" v-model="form_c.rs" @change="rs_changer" placeholder="Seleccionar">
@@ -1242,7 +1247,7 @@ export default {
 
 
 <modal ref="mo_editar_per" no-close-on-backdrop title="Editar datos de Trabajador" width="500px" @ok="editar_tr" cancel-title="Cancelar" @cancel="closeedit"  centered>
-<el-form v-loading="wait" ref="form_edit_ref" :rules="rules" :model="form" label-width="150px" :size="$isMobile() ? 'small':'default'">
+<el-form @submit.prevent v-loading="wait" ref="form_edit_ref" :rules="rules" :model="form" label-width="150px" :size="$isMobile() ? 'small':'default'">
 
     <el-form-item  label="Razón soc. asoc.">
       <el-select disabled v-model="form_e.rs" placeholder="Seleccionar">

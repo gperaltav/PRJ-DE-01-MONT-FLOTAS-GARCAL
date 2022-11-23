@@ -490,6 +490,10 @@ export default {
           return false;
         }
       })
+      .catch((error) => {
+        this.open_fail("Hubo un error con el servidor al ejecutar la operación, error:"+String(error));
+        return false;
+      });
     },
 
   },
@@ -512,7 +516,7 @@ export default {
 
   <div v-if="$isMobile()">
   <el-collapse>
-    <el-form :inline="true"  label-width="auto" size='small'>
+    <el-form @submit.prevent :inline="true"  label-width="auto" size='small'>
 
     <el-row>
       <el-form-item style="margin-left:auto;margin-right:auto" label="Razón social asociada">
@@ -596,7 +600,7 @@ export default {
   </div>
 
   <div v-else>
-    <el-form :inline="true"  label-width="auto">
+    <el-form @submit.prevent :inline="true"  label-width="auto">
 
     <el-row>
       <el-form-item style="margin-left:auto;margin-right:auto" label="Razón social asociada">
@@ -823,7 +827,7 @@ export default {
 
 
 <modal ref="mo_create_det" no-close-on-backdrop title="Agregar detalle" width="500px" @ok="create_det" @cancel="closecrear" cancel-title="Atras" centered>
-  <el-form  ref="form_cref" :rules="rules" :model="form_t" label-width="150px" >
+  <el-form @submit.prevent  ref="form_cref" :rules="rules" :model="form_t" label-width="150px" >
 
     <el-form-item label="Producto" >
       <el-select style="width:300px" v-model="form_t.prod" @change="select_prod" placeholder="Seleccionar">

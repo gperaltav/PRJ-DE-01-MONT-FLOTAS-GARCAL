@@ -217,7 +217,7 @@ export default {
   <div v-if="$isMobile()">
   <el-collapse>
     <el-collapse-item title="Opciones">
-      <el-form :inline="true" :model="formInline" label-width="auto" size="small" >
+      <el-form @submit.prevent :inline="true" :model="formInline" label-width="auto" size="small" >
         <el-row justify="center">
 
           <el-form-item label="Razón social">
@@ -303,7 +303,7 @@ export default {
   </div>
 
   <div v-else>
-    <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
+    <el-form @submit.prevent :inline="true" :model="formInline" label-width="auto" :size="small" >
     <el-row>
     <el-col :span="21">
       <el-form-item label="Razón social">

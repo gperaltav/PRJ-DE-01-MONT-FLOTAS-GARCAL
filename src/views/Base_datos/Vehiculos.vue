@@ -165,7 +165,7 @@ export default {
             return false;
           }
         })
-        .catch(function (error) {
+        .catch((error) => {
           this.open_fail("Hubo un error con el servidor al ejecutar la operación, error:"+String(error));
             return false;
         });
@@ -351,7 +351,7 @@ export default {
             return false;
           }
         })
-        .catch(function (error) {
+        .catch((error) => {
           this.open_fail("Hubo un error con el servidor al ejecutar la operación, error:"+String(error));
           return false;
         });
@@ -440,7 +440,7 @@ export default {
           return false;
         }
       })
-      .catch(function (error) {
+      .catch((error) => {
         this.open_fail("Hubo un error con el servidor al ejecutar la operación, error:"+String(error));
         return false;
       });
@@ -484,7 +484,7 @@ export default {
         }
         console.log(resp);
       })
-      .catch(function (error) {
+      .catch((error) => {
         this.open_fail("Hubo un error con el servidor al ejecutar la operación, error:"+String(error));
         return false;
       });
@@ -508,7 +508,7 @@ export default {
         this.emp_cont=this.form_e.rs;
         this.wait = false;
       })
-      .catch(function (error) {
+      .catch((error) => {
         this.open_fail("Hubo un error con el servidor al ejecutar la operación, error:"+String(error));
         return false;
       });

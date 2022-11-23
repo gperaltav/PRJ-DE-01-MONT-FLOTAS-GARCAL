@@ -647,7 +647,12 @@ export default {
           return false;
         }
       })
+      .catch((error) => {
+        this.open_fail("Hubo un error con el servidor al ejecutar la operación, error:"+String(error));
+        return false;
+      });
     },
+
     roundUp(num, precision) {
       precision = Math.pow(10, precision)
       return Math.ceil(num * precision) / precision
@@ -699,7 +704,7 @@ export default {
   
 
   <div v-if="$isMobile()">
-    <el-form :inline="true"  label-width="auto" size="small" >
+    <el-form @submit.prevent :inline="true"  label-width="auto" size="small" >
     <el-row>
       <el-form-item style="margin-left:auto;margin-right:auto" label="Razón social asociada">
         <el-select v-model="form_g.rs" @change="rs_changer" @clear="clear_rs" placeholder="Seleccionar" clearable>
@@ -761,7 +766,7 @@ export default {
   </div>
 
   <div v-else>
-    <el-form :inline="true"  label-width="auto" :size="small" >
+    <el-form @submit.prevent :inline="true"  label-width="auto" :size="small" >
     <el-row>
       <el-form-item style="margin-left:auto;margin-right:auto" label="Razón social asociada">
         <el-select v-model="form_g.rs" @change="rs_changer" @clear="clear_rs" placeholder="Seleccionar" style="width:600px" clearable>
@@ -859,7 +864,7 @@ export default {
         </el-row>
         
         <el-row justify="right">
-        <el-form :inline="true" model="formInline" label-width="auto" size="small">
+        <el-form @submit.prevent :inline="true" model="formInline" label-width="auto" size="small">
         <el-form-item size="small" label="Total salida de dinero" prop="subtotal">
           <el-input  v-model="sal_din" disabled>
             <template #prepend>S/</template>
@@ -927,7 +932,7 @@ export default {
 
 
 <modal ref="mo_create" no-close-on-backdrop title="Documento" width="900px" @ok="create_det" @cancel="close_det" cancel-title="Atras" centered>
-  <el-form  ref="form_cref" :rules="rules" :model="form_c" :label-width="$isMobile() ? '150px':'200px'" :size="$isMobile() ? 'small':'default'" >
+  <el-form @submit.prevent ref="form_cref" :rules="rules" :model="form_c" :label-width="$isMobile() ? '150px':'200px'" :size="$isMobile() ? 'small':'default'" >
     
     <el-form-item  label="Razón social asociada">
       <el-select v-model="form_c.rs" @change="rscc_changer" @clear="rscc_clear" placeholder="Seleccionar" style="width:600px" clearable>

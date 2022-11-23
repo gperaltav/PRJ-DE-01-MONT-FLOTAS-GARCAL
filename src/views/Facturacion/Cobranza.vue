@@ -356,7 +356,7 @@ export default {
           this.open_fail2("Hubo un error con el servidor al ejecutar la operación","Código de error: "+resp.data.message);
         }
       })
-      .catch(function (error) {
+      .catch((error) => {
         console.log(error);
         this.open_fail("Hubo un error al comunicarse con el servidor:"+error);
         return false;
@@ -554,7 +554,7 @@ export default {
           return false;
         }
       })
-      .catch(function (error) {
+      .catch((error) => {
         this.open_fail("Hubo un error interno al ejecutar la operación, error: "+String(error));
         return false;
       });
@@ -594,7 +594,7 @@ export default {
           }
           console.log(resp);
         })
-        .catch(function (error) {
+        .catch((error) => {
           this.open_fail("Hubo un error interno al ejecutar la operación, error: "+String(error));
           return false;
         });
@@ -639,14 +639,14 @@ export default {
             this.emp_cont=this.form_e.rs;
             this.wait = false;
           })
-          .catch(function (error) {
+          .catch((error) => {
             this.open_fail("Hubo un error interno al ejecutar la operación, error: "+String(error));
             return false;
           });
           
         
       })
-      .catch(function (error) {
+      .catch((error) => {
         this.open_fail("Hubo un error interno al ejecutar la operación, error: "+String(error));
         return false;
       });
@@ -676,7 +676,7 @@ export default {
   <el-collapse>
     <el-collapse-item title="Opciones">
       
-  <el-form :inline="true" :model="formInline" label-width="auto" size="small" >
+  <el-form @submit.prevent :inline="true" :model="formInline" label-width="auto" size="small" >
     <el-row justify="center">
 
       <el-form-item label="Razón social">
@@ -762,7 +762,7 @@ export default {
 
   <div v-else>
     
-  <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
+  <el-form @submit.prevent :inline="true" :model="formInline" label-width="auto" :size="small" >
     <el-row>
     <el-col :span="21">
       <el-form-item label="Razón social">
@@ -867,7 +867,7 @@ export default {
 </div>
 
 <modal ref="mo_editar_per" no-close-on-backdrop title="Editar Cobranza" width="900px" @ok="editar_usr" @cancel="closeedit" cancel-title="Atras" centered>
-  <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="200px" >
+  <el-form @submit.prevent  ref="form_cref" :rules="rules" :model="form_c" label-width="200px" >
 
   <el-form-item  label="Razón social asociada">
     <el-select v-model="form_e.rs" @change="rs_changer" @clear="clear_c" placeholder="Seleccionar" style="width:600px" disabled>

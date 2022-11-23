@@ -195,7 +195,7 @@ export default {
             this.open_fail("Hubo un error con el servidor al ejecutar la operación");
           }
         })
-        .catch(function (error) {
+        .catch((error) => {
           this.open_fail("Hubo un error interno al ejecutar la operación, error: "+String(error));
           return false;
         });
@@ -242,12 +242,12 @@ export default {
 
     send_descarga() {
       axios
-        .post('http://51.222.25.71:8080/garcal-report-api/api/clientescsv')
+        .post('http://51.222.25.71:8080/garcal-report-api/api/guiasconfiguracioncsv')
         .then((resp) => {
           console.log(resp.data);
           this.succes=resp.data.status;
           if (this.succes) {
-            this.get_descargas(resp.data.message,'Reporte_clientes')
+            this.get_descargas(resp.data.message,'Reporte_configuracion_facturacion')
             return true;
           }
           else {
@@ -255,7 +255,7 @@ export default {
             return false;
           }
         })
-        .catch(function (error) {
+        .catch((error) => {
           this.open_fail("Hubo un error con el servidor al ejecutar la operación, error:"+String(error));
             return false;
         });
@@ -318,7 +318,7 @@ export default {
           return false;
         }
       })
-      .catch(function (error) {
+      .catch((error) => {
         this.open_fail("Hubo un error interno al ejecutar la operación, error: "+String(error));
         return false;
       });
@@ -398,7 +398,7 @@ export default {
   <div v-if="$isMobile()">
   <el-collapse>
     <el-collapse-item title="Opciones">
-      <el-form :inline="true" :model="formInline" label-width="auto" size="small" >
+      <el-form @submit.prevent :inline="true" :model="formInline" label-width="auto" size="small" >
     <el-row justify="center">
 
         <el-form-item label="Razón social">
@@ -425,7 +425,7 @@ export default {
           <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
         </el-row>
         <el-row class="mb-4">
-          <el-button color="#95d475" :icon=" Download" disabled>A Excel</el-button>
+          <el-button color="#95d475" :icon=" Download" @click="send_descarga">A Excel</el-button>
         </el-row>
         </div>
 
@@ -437,7 +437,7 @@ export default {
   </div>
 
   <div v-else>
-    <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
+    <el-form @submit.prevent :inline="true" :model="formInline" label-width="auto" :size="small" >
     <el-row>
       <el-col :span="21">
         <el-form-item label="Razón social">
@@ -466,7 +466,7 @@ export default {
           <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
         </el-row>
         <el-row class="mb-4">
-          <el-button color="#95d475" :icon=" Download" disabled>A Excel</el-button>
+          <el-button color="#95d475" :icon=" Download" @click="send_descarga">A Excel</el-button>
         </el-row>
         </div>
       
@@ -512,7 +512,7 @@ export default {
 
 
 <modal ref="mo_create_per" no-close-on-backdrop title="Agregar guia de configuración" width="500px" @ok="create_usr()" @cancel="closecrear" cancel-title="Atras" centered>
-  <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" >
+  <el-form @submit.prevent  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" >
 
     <el-form-item  label="Razón soc. asoc." prop="rs">
       <el-select style="width:300px" v-model="form_c.rs" @change="rs_changer" placeholder="Seleccionar">
@@ -575,7 +575,7 @@ export default {
 </modal>
 
 <modal ref="mo_editar_per" no-close-on-backdrop title="Editar datos de Cliente" width="500px" @ok="editar_usr" cancel-title="Cancelar" @cancel="closeedit"  centered>
-  <el-form v-loading="wait" ref="form_edit_ref" :model="form_e" label-width="150px" >
+  <el-form @submit.prevent v-loading="wait" ref="form_edit_ref" :model="form_e" label-width="150px" >
 
     <el-form-item  label="Razón soc. asoc." >
       <el-select disabled style="width:300px" v-model="form_e.rs" @change="rs_changer" placeholder="Seleccionar">

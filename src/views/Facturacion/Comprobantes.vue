@@ -571,6 +571,34 @@ export default {
       })
     },
 
+    get_descargas(uri, name) {
+      var link = document.createElement("a");
+      link.download = name;
+      link.href = uri;
+      link.click();
+    },
+
+    send_descarga() {
+      axios
+        .post('http://51.222.25.71:8080/garcal-report-api/api/guiascomprobantescsv')
+        .then((resp) => {
+          console.log(resp.data);
+          this.succes=resp.data.status;
+          if (this.succes) {
+            this.get_descargas(resp.data.message,'Reporte_guias_comprobantes')
+            return true;
+          }
+          else {
+            this.open_fail("Hubo un error con el servidor al ejecutar la operación");
+            return false;
+          }
+        })
+        .catch((error) => {
+          this.open_fail("Hubo un error con el servidor al ejecutar la operación, error:"+String(error));
+            return false;
+        });
+    },
+
     api_get_filt(){
       console.log(this.form_b.rs);
       axios
@@ -664,7 +692,7 @@ export default {
           return false;
         }
       })
-      .catch(function (error) {
+      .catch((error) => {
         this.open_fail("Hubo un error interno al ejecutar la operación, error: "+String(error));
         return false;
       });
@@ -700,7 +728,7 @@ export default {
           return false;
         }
       })
-      .catch(function (error) {
+      .catch((error) => {
         this.open_fail("Hubo un error interno al ejecutar la operación, error: "+String(error));
         return false;
       });
@@ -751,7 +779,7 @@ export default {
             this.open_fail("Hubo un error al comunicarse con el servidor");
           }
         })
-        .catch(function (error) {
+        .catch((error) => {
           this.open_fail("Hubo un error interno al ejecutar la operación, error: "+String(error));
           return false;
         });
@@ -840,7 +868,7 @@ export default {
   <div v-if="$isMobile()">
   <el-collapse>
     <el-collapse-item title="Opciones">
-      <el-form :inline="true" :model="formInline" label-width="auto" size="small" >
+      <el-form @submit.prevent :inline="true" :model="formInline" label-width="auto" size="small" >
     <el-row justify="center">
 
       <el-form-item label="Razón social">
@@ -903,7 +931,7 @@ export default {
         <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
       </el-row>
       <el-row class="mb-4">
-        <el-button color="#95d475" :icon=" Download" @click="get_descarga" disabled>A Excel</el-button>
+        <el-button color="#95d475" :icon=" Download" @click="send_descarga" >A Excel</el-button>
       </el-row>
       </div>
     </el-row>
@@ -914,7 +942,7 @@ export default {
   </div>
 
   <div v-else>
-    <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
+    <el-form @submit.prevent :inline="true" :model="formInline" label-width="auto" :size="small" >
     <el-row>
     <el-col :span="21">
       <el-form-item label="Razón social">
@@ -979,7 +1007,7 @@ export default {
         <el-button color="#008db1" :icon="Plus"  @click="opencrear">Crear</el-button>
       </el-row>
       <el-row class="mb-4">
-        <el-button color="#95d475" :icon=" Download" @click="get_descarga" disabled>A Excel</el-button>
+        <el-button color="#95d475" :icon=" Download" @click="send_descarga">A Excel</el-button>
       </el-row>
       </div>
     </el-col>
@@ -1018,7 +1046,7 @@ export default {
 
 
 <modal ref="mo_create" no-close-on-backdrop title="Agregar Comprobante" width="900px" @ok="create_usr" @cancel="closecrear" cancel-title="Atras" centered>
-  <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="200px" :size="$isMobile() ? 'small':'default'">
+  <el-form @submit.prevent  ref="form_cref" :rules="rules" :model="form_c" label-width="200px" :size="$isMobile() ? 'small':'default'">
     <el-form-item  label="Razón social asociada">
       <el-select v-model="form_c.rs" @change="rs_changer" @clear="clear_c" placeholder="Seleccionar" style="width:600px" clearable>
         <el-option
@@ -1172,7 +1200,7 @@ export default {
 
 
 <modal ref="mo_editar_per" no-close-on-backdrop title="Editar datos de Comprobante" width="900px" @ok="editar_usr" cancel-title="Cancelar" @cancel="closeedit"  centered>
-  <el-form v-loading="wait" ref="form_cref" :rules="rules" :model="form" label-width="200px" >
+  <el-form @submit.prevent v-loading="wait" ref="form_cref" :rules="rules" :model="form" label-width="200px" >
 
     <el-form-item  label="Razón social asociada">
       <el-select v-model="form_e.rs" @change="rs_changer" @clear="clear_c" placeholder="Seleccionar" style="width:600px" clearable>
@@ -1329,7 +1357,7 @@ export default {
 </modal>
 
 <modal ref="mo_create_pago" no-close-on-backdrop title="Agregar Cobranza" width="900px" @ok="create_cobranza"  cancel-title="Atras" centered>
-  <el-form v-loading="wait2" ref="form_cref" :rules="rules" :model="form_c" label-width="200px" >
+  <el-form @submit.prevent v-loading="wait2" ref="form_cref" :rules="rules" :model="form_c" label-width="200px" >
 
   <el-form-item  label="Razón social asociada">
     <el-select v-model="form_p.rs" @change="rs_changer" @clear="rs_changer" placeholder="Seleccionar" style="width:600px" disabled>

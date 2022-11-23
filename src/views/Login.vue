@@ -71,7 +71,7 @@ import axios from 'axios'
                 console.log(this.$store.state.Credentials[27]);
               })
               .catch((e)=>{
-                alert("Hubo un error externo al obtener informacion sobre los permisos, se recomienda reiniciar la aplicación")
+                alert("Hubo un error externo al obtener informacion sobre los permisos, se recomienda reiniciar la aplicación"+String(e))
               })
 
             }

@@ -1087,7 +1087,7 @@ export default {
   <div v-if="$isMobile()">
   <el-collapse>
     <el-collapse-item title="Opciones">
-      <el-form :inline="true" model="formInline" label-width="auto" size="small" >
+      <el-form @submit.prevent :inline="true" model="formInline" label-width="auto" size="small" >
       <el-row justify="center">
           <el-form-item label="Razón social">
             <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
@@ -1157,7 +1157,7 @@ export default {
   </div>
 
   <div v-else>
-    <el-form :inline="true" model="formInline" label-width="auto"  >
+    <el-form @submit.prevent :inline="true" model="formInline" label-width="auto"  >
     <el-row>
       <el-col :span="21">
         <el-form-item label="Razón social">
@@ -1262,7 +1262,7 @@ export default {
 
 
 <modal ref="mo_create_per" no-close-on-backdrop title="Nuevo servicio" :width="$isMobile() ? '400px':'900px'" @ok="create_usr" @cancel="closecrear" cancel-title="Atras" centered>
-  <el-form  ref="form_cref" :rules="rules" :model="form_c" :label-width="$isMobile() ? '120px':'150px'" :size="$isMobile() ? 'small':'default'">
+  <el-form @submit.prevent ref="form_cref" :rules="rules" :model="form_c" :label-width="$isMobile() ? '120px':'150px'" :size="$isMobile() ? 'small':'default'">
     <el-row style="text-align:center">
     <el-form-item style="margin-left: auto;margin-right: auto" label="Razón soc. asoc." prop="rs">
       <el-select  v-model="form_c.rs" @change="rs_changer()" placeholder="Seleccionar">
@@ -1522,7 +1522,7 @@ export default {
 </modal>
 
 <modal ref="mo_editar_per" no-close-on-backdrop title="Editar servicio" :width="$isMobile() ? '400px':'900px'" @ok="editar_usr" cancel-title="Cancelar" @cancel="closeedit"  centered>
-   <el-form  ref="form_cref" :rules="rules" :model="form_e" :label-width="$isMobile() ? '120px':'150px'" :size="$isMobile() ? 'small':'default'">
+   <el-form @submit.prevent  ref="form_cref" :rules="rules" :model="form_e" :label-width="$isMobile() ? '120px':'150px'" :size="$isMobile() ? 'small':'default'">
     <el-row style="text-align:center">
     <el-form-item style="margin-left: auto;margin-right: auto" label="Razón soc. asoc." prop="rs">
       <el-select  v-model="form_e.rs" @change="rs_changer2()" placeholder="Seleccionar">
@@ -1785,7 +1785,7 @@ export default {
 </modal>
 
 <modal ref="mo_estado" no-close-on-backdrop title="Estado de viaje" width="500px" @ok="set_estado" cancel-title="Cancelar" @cancel="close_estado()"  centered>
-   <el-form  ref="form_cref" :rules="rules" :model="form_e" label-width="150px" >
+   <el-form @submit.prevent  ref="form_cref" :rules="rules" :model="form_e" label-width="150px" >
     <el-row style="text-align:center">
     <el-form-item style="margin-left: auto;margin-right: auto" label="Estado de viaje" >
       <el-select  v-model="via_estado" placeholder="Seleccionar">

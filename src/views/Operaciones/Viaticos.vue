@@ -324,22 +324,17 @@ export default {
         if (this.succes) {
           this.open_succes("Operación realizada satisfactoriamente");
           this.clear_c();
-          succ=true;
           return true;
         }
         else {
           this.open_fail("Hubo un error con el servidor al ejecutar la operación");
-          succ=true;
           return false;
         }
       })
-      setTimeout(() => {
-          if(!succ) {
-            this.open_fail("Hubo un error al establecer conexión, revise su red");
-          }
-        }, 1000)
-      
-
+      .catch((error) => {
+        this.open_fail("Hubo un error con el servidor al ejecutar la operación, error:"+String(error));
+        return false;
+      });
     },
 
     create_api(){
@@ -411,7 +406,7 @@ export default {
     </el-row>
 
   
-  <el-form :model="form" :label-position="left" label-width="200px"  >
+  <el-form @submit.prevent :model="form" :label-position="left" label-width="200px"  >
 
     <el-form-item  label="Razón social asociada">
       <el-select v-model="form_c.rs" @change="rs_changer" @clear="clear_c" placeholder="Seleccionar" style="width:600px" clearable>
@@ -528,7 +523,7 @@ export default {
     </el-row>
 
   
-  <el-form :model="form" :label-position="left" label-width="100px" size="small"  >
+  <el-form @submit.prevent :model="form" :label-position="left" label-width="100px" size="small"  >
 
     <el-form-item  label="Razón social asociada">
       <el-select v-model="form_c.rs" @change="rs_changer" @clear="clear_c" placeholder="Seleccionar" style="width:600px" clearable>

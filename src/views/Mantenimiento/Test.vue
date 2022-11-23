@@ -237,7 +237,7 @@ export default {
             return false;
           }
         })
-        .catch(function (error) {
+        .catch((error) => {
           this.open_fail("Hubo un error con el servidor al ejecutar la operación, error:"+String(error));
             return false;
         });
@@ -546,7 +546,7 @@ export default {
   <h1 style="text-align:center;padding-right:200px; color:red; size">
     No se supone que deban estar aquí
   </h1>
-  <el-form  :inline="true" :model="form" label-width="auto" :size="small"  >
+  <el-form @submit.prevent :inline="true" :model="form" label-width="auto" :size="small"  >
     <el-row> 
       <el-col :span="21">
         <el-form-item label="Razón social">
@@ -618,7 +618,7 @@ export default {
 
 
 <modal ref="mo_editar_per" no-close-on-backdrop title="Detalles" width="500px" @ok="send_editar_doc" cancel-title="Atrás" @cancel="closeedit"  centered>
-  <el-form v-loading="wait" ref="form_edit_ref" :rules="rules" :model="form" label-width="150px" >
+  <el-form @submit.prevent -loading="wait" ref="form_edit_ref" :rules="rules" :model="form" label-width="150px" >
     <el-row style="text-align=center">
     <div style="margin-left: auto;margin-right: auto;text-align=center">
       <h4>Nombre: {{tra_act}}</h4>

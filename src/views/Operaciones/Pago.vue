@@ -457,6 +457,10 @@ export default {
           return false;
         }
       })
+      .catch((error) => {
+        this.open_fail("Hubo un error con el servidor al ejecutar la operación, error:"+String(error));
+        return false;
+      });
     },
 
     create_api(){
@@ -528,7 +532,7 @@ export default {
     </el-row>
 
   
-  <el-form :model="form" :label-position="left" label-width="200px" >
+  <el-form @submit.prevent :model="form" :label-position="left" label-width="200px" >
 
     <el-form-item  label="Razón social asociada">
       <el-select v-model="form_c.rs" @change="rs_changer" @clear="clear_c" placeholder="Seleccionar" style="width:600px" clearable>
@@ -649,7 +653,7 @@ export default {
     </el-row>
 
   
-  <el-form :model="form" :label-position="left" label-width="100px" :size="$isMobile() ? 'small':'default'">
+  <el-form @submit.prevent :model="form" :label-position="left" label-width="100px" :size="$isMobile() ? 'small':'default'">
 
     <el-form-item  label="Razón social asociada">
       <el-select v-model="form_c.rs" @change="rs_changer" @clear="clear_c" placeholder="Seleccionar" style="width:600px" clearable>

@@ -299,7 +299,7 @@ export default {
   <div v-if="$isMobile()">
   <el-collapse>
     <el-collapse-item title="Opciones">
-      <el-form :inline="true" :model="formInline" label-width="auto" size="small" >
+      <el-form @submit.prevent :inline="true" :model="formInline" label-width="auto" size="small" >
     <el-row justify="center">
 
       <el-form-item label="Razón social">
@@ -337,7 +337,7 @@ export default {
   </div>
 
   <div v-else>
-    <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
+    <el-form @submit.prevent :inline="true" :model="formInline" label-width="auto"  >
     <el-row>
     <el-col :span="21">
       <el-form-item label="Razón social">
@@ -397,7 +397,7 @@ export default {
 
 
 <modal ref="mo_create_per" no-close-on-backdrop title="Agregar producto" width="500px" @ok="api_nuevo" @cancel="closecrear" cancel-title="Atras" centered>
-  <el-form  @submit.prevent ref="form_cref" :rules="rules" :model="form_c" label-width="150px" :size="$isMobile() ? 'small':'default'">
+  <el-form @submit.prevent   ref="form_cref" :rules="rules" :model="form_c" label-width="150px" :size="$isMobile() ? 'small':'default'">
     
     <el-form-item  label="Razón soc. asoc." prop="rs">
       <el-select style="width:300px" v-model="form_c.rs" @change="rs_changer" placeholder="Seleccionar">

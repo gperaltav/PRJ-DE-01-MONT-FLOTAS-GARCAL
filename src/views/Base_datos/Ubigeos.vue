@@ -215,7 +215,7 @@ export default {
   <div v-if="$isMobile()">
   <el-collapse>
     <el-collapse-item title="Opciones">
-      <el-form :inline="true" :model="formInline" label-width="auto" size="small" >
+      <el-form @submit.prevent :inline="true" :model="formInline" label-width="auto" size="small" >
     <el-row justify="center">
 
 
@@ -239,7 +239,7 @@ export default {
   </div>
 
   <div v-else>
-    <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
+    <el-form @submit.prevent :inline="true" :model="formInline" label-width="auto" >
     <el-row>
     <el-col :span="21">
 
@@ -275,7 +275,7 @@ export default {
 
 
 <modal ref="mo_create_per" no-close-on-backdrop title="Agregar Ubigeo" width="500px" @ok="api_nuevo" @cancel="closecrear" cancel-title="Atras" centered>
-  <el-form  @submit.prevent ref="form_cref" :rules="rules" :model="form_c" label-width="150px" :size="$isMobile() ? 'small':'default'">
+  <el-form @submit.prevent   ref="form_cref" :rules="rules" :model="form_c" label-width="150px" :size="$isMobile() ? 'small':'default'">
     
     <el-form-item label="Nombre de ubigeo">
       <el-input v-model="form_c.nombre" />
@@ -286,7 +286,7 @@ export default {
     </el-form-item>
 
     <el-form-item label="Código asignado">
-      <el-input v-model="form_c.codigo" />
+      <el-input v-model="form_c.codigo" maxlength="6" show-word-limit/>
     </el-form-item>
 
   </el-form>

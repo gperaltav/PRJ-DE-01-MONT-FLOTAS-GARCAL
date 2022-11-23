@@ -317,7 +317,7 @@ export default {
           console.log(resp.data);
           this.opt_tar=resp.data;
         })
-        .catch(function (error) {
+        .catch((error) => {
           this.open_fail("Hubo un error con el servidor al ejecutar la operación, error:"+String(error));
         });
     },
@@ -337,7 +337,7 @@ export default {
             return false;
           }
         })
-        .catch(function (error) {
+        .catch((error) => {
           this.open_fail("Hubo un error con el servidor al ejecutar la operación, error:"+String(error));
             return false;
         });
@@ -548,7 +548,7 @@ export default {
   <div v-if="$isMobile()">
   <el-collapse>
     <el-collapse-item title="Opciones">
-      <el-form :inline="true" :model="formInline" label-width="auto" size="small" >
+      <el-form @submit.prevent :inline="true" :model="formInline" label-width="auto" size="small" >
 
         <el-row justify="center">
             <el-form-item label="Razón social">
@@ -600,7 +600,7 @@ export default {
   </div>
 
   <div v-else>
-    <el-form :inline="true" :model="formInline" label-width="auto" :size="small" >
+    <el-form @submit.prevent :inline="true" :model="formInline" label-width="auto" :size="small" >
     <el-row>
       <el-col :span="21">
         <el-form-item label="Razón social">
@@ -672,7 +672,7 @@ export default {
 
 <modal ref="mo_create_per" no-close-on-backdrop title="Agregar plan de mantenimiento" width="600px" @ok="create_pl2" @cancel="closecrear" cancel-title="Atras" centered>
   
-  <el-form  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" :size="$isMobile() ? 'small':'default'">
+  <el-form @submit.prevent  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" :size="$isMobile() ? 'small':'default'">
 
     <el-form-item  label="Razón soc. asoc." prop="rs">
       <el-select style="width:300px" v-model="form_c.rs" @change="rs_changer" placeholder="Seleccionar">
@@ -771,7 +771,7 @@ export default {
 </modal>
 
 <modal ref="mo_editar_per" no-close-on-backdrop title="Editar datos de plantilla" width="600px" @ok="editar_pl" cancel-title="Cancelar" @cancel="closeedit"  centered>
-  <el-form v-loading="wait" ref="form_edit_ref" :model="form_e" label-width="150px" :size="$isMobile() ? 'small':'default'">
+  <el-form @submit.prevent v-loading="wait" ref="form_edit_ref" :model="form_e" label-width="150px" :size="$isMobile() ? 'small':'default'">
 
     <el-form-item  label="Razón soc. asoc." prop="rs">
       <el-select disabled style="width:300px" v-model="form_e.rs" @change="rs_changer" placeholder="Seleccionar">
