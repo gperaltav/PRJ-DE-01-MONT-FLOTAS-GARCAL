@@ -460,7 +460,11 @@ export default {
 
     send_descarga() {
       axios
-        .post('http://51.222.25.71:8080/garcal-report-api/api/descargarcsv')
+        .post('http://51.222.25.71:8080/garcal-report-api/api/descargarcsv',{},{ 
+          headers:{
+          "x-api-key":"1r01N77vRK1bXkGst8wN189MJfz5ZR3d4O9FdF2H"
+          }
+        })
         .then((resp) => {
           console.log(resp.data);
           this.succes=resp.data.status;
