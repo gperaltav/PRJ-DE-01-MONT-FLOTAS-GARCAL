@@ -210,7 +210,11 @@ export default {
 
     load_rs() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas')
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas',{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);
           this.opt_rs = resp.data;
@@ -224,6 +228,10 @@ export default {
         {
           "emp_id":String(rss),
           "ext_id":this.var_type
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp);
@@ -240,6 +248,10 @@ export default {
           "emp_id":this.data_edit[0].emp_id,
           "vma_id":this.data_edit[0].vma_id,
           "ppa_descripcion":this.data_edit[0].ppa_descripcion
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp.data);
@@ -267,7 +279,11 @@ export default {
       {
         "emp_id": this.form_c.rs,
         "via_fechaviaje":query
-      })
+      },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp);
         this.opt_veh = resp.data;
@@ -280,7 +296,11 @@ export default {
       {
         "emp_id":this.emp_cont,
         "vma_nombre":query
-      })
+      },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp);
         this.opt_mar = resp.data;
@@ -293,7 +313,11 @@ export default {
       {
         "emp_id":this.form_c.rs,
         "veh_id":this.form_c.veh_id
-      })
+      },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp);
         this.opt_pla = resp.data;
@@ -312,6 +336,10 @@ export default {
         .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/tareas',{
           "tar_descripcion": key,
           "emp_id": this.emp_cont
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp.data);
@@ -324,7 +352,11 @@ export default {
 
     send_descarga() {
       axios
-        .post('http://51.222.25.71:8080/garcal-report-api/api/clientescsv')
+        .post('http://51.222.25.71:8080/garcal-report-api/api/clientescsv',{},{ 
+          headers:{
+          "x-api-key":this.$store.state.api_key1
+          }
+        })
         .then((resp) => {
           console.log(resp.data);
           this.succes=resp.data.status;
@@ -349,7 +381,11 @@ export default {
       {
         "emp_id":"",
         "vma_id":""
-      })
+      },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp);
         this.datap = resp.data;
@@ -364,6 +400,10 @@ export default {
         {
           "emp_id":this.form_b.rs,
           "veh_placa":this.form_b.placa
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp);
@@ -380,6 +420,10 @@ export default {
           "ppa_descripcion":this.form_c.nombre,
           "detalle":this.tareas_ins,
           "ppa_usucreacion": this.$store.state.username
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp.data);
@@ -476,6 +520,10 @@ export default {
           "ppa_descripcion":this.form_e.nombre,
           "detalle":this.tareas_edit,
           "ppa_usucreacion": this.$store.state.username
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp.data);
@@ -518,7 +566,11 @@ export default {
        "emp_razonsocial": number,
        "vma_id": number2,
        "ppa_descripcion": number3
-      })
+      },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           this.data_edit = resp.data;
           this.load_data_edit();

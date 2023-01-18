@@ -225,7 +225,11 @@ export default {
     },
     load_rs() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas')
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas',{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);
           this.opt_rs = resp.data;
@@ -234,7 +238,11 @@ export default {
     
     load_esp() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/especialidad/'+String(this.emp_cont))
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/especialidad/'+String(this.emp_cont),{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);
           this.opt_esp = resp.data;
@@ -243,7 +251,11 @@ export default {
 
     load_edit(id) {
       axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos/"+String(id))
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos/"+String(id),{},{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);
           this.data_edit = resp.data;
@@ -253,7 +265,11 @@ export default {
     send_delete() {
       this.$refs.mo_advertencia_eliim.hide();
       axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/tareas/borrar/'+String(this.editpointer))
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/tareas/borrar/'+String(this.editpointer),{},{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp.data.status);
           this.succes=resp.data.status;
@@ -283,7 +299,11 @@ export default {
     api_get_all(){
       //llamada a API
      axios
-        .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/tareas')
+        .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/tareas',{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);
           this.datap = resp.data;
@@ -297,6 +317,10 @@ export default {
         {
           "emp_id": "",
           "tar_descripcion": this.form_b.descripcion
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp);
@@ -313,7 +337,11 @@ export default {
         "tar_codigo": this.form_c.codigo,
         "tar_descripcion": this.form_c.descripcion,
         "tar_usucreacion": this.$store.state.username
-      })
+      },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp.data);
         this.succes=resp.data.status;
@@ -351,7 +379,11 @@ export default {
         "tar_codigo": "",
         "tar_descripcion": "",
         "tar_usucreacion": ""
-      })
+      },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp.data.status);
         this.succes=resp.data.status;
@@ -379,7 +411,11 @@ export default {
       //this.load_edit(number);
 
       axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/tareas/"+String(number))
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/tareas/"+String(number),{},{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp);
         

@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
 import { Notebook, OfficeBuilding,DocumentChecked,Operation,TrendCharts,Money,Tickets,Expand,Setting} from '@element-plus/icons-vue'
 
+
 </script>
 
 <script lang="ts">
@@ -29,6 +30,15 @@ import { Notebook, OfficeBuilding,DocumentChecked,Operation,TrendCharts,Money,Ti
       if(this.$isMobile() && this.isCollapse===false) {
         this.changetool();
       }
+      
+      this.$store.commit('set_key1',{
+              key: "1r01N77vRK1bXkGst8wN189MJfz5ZR3d4O9FdF2H"
+            });
+      this.$store.commit('set_key2',{
+              key: "1r01N77vRK1bXkGst8wN189MJfz5ZR3d4O9FdF2H"
+            });
+
+      console.log(this.$store.state.api_key1)
     },
     methods: {
       changetool() {

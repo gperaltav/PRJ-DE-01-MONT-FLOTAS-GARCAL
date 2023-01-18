@@ -270,7 +270,11 @@ export default {
 
     load_rs() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas')
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas',{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);
           this.opt_rs = resp.data;
@@ -284,7 +288,11 @@ export default {
         "emp_id": Number(this.form_g.rs),
         "ent_nrodocumento": query,
         "ext_id": "prv"
-      })
+      },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp);
         this.opt_prv = resp.data;
@@ -312,7 +320,11 @@ export default {
 
     get_formas_pago() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdepago/'+String(this.form_g.rs))
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdepago/'+String(this.form_g.rs),{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp);
         this.opt_fp = resp.data;
@@ -321,7 +333,11 @@ export default {
 
     get_tipos_doc() {
       axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprastipos/'+String(this.form_g.rs))
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprastipos/'+String(this.form_g.rs),{},{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp);
         this.opt_td = resp.data;
@@ -334,7 +350,11 @@ export default {
       {
         "emp_id": this.form_g.rs,
         "via_fechaviaje":this.form_t.fecha_via
-      })
+      },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp);
         this.opt_via = resp.data;
@@ -357,7 +377,11 @@ export default {
       {
         "emp_id": this.form_g.rs,
         "via_fechaviaje":query
-      })
+      },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp);
         this.opt_veh = resp.data;
@@ -366,7 +390,11 @@ export default {
 
     load_prod() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/productos/'+String(this.form_g.rs))
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/productos/'+String(this.form_g.rs),{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);  
           this.opt_prod = resp.data;
@@ -475,7 +503,11 @@ export default {
         "usu_codigo": this.$store.state.username,
         "ccc_usucreacion":this.$store.state.username,
         "detalle":this.datap
-      })
+      },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp.data);
         this.succes=resp.data.status;

@@ -181,7 +181,11 @@ export default {
     },
     load_rs() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas')
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas',{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);
           this.opt_rs = resp.data;
@@ -200,6 +204,10 @@ export default {
           "txd_fechaemision":"",
           "txd_fechavencimiento":"",
           "txd_usucreacion":this.$store.state.username
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp.data.status);
@@ -224,7 +232,11 @@ export default {
 
     send_descarga() {
       axios
-        .post('http://51.222.25.71:8080/garcal-report-api/api/controldocumentoschoferescsv')
+        .post('http://51.222.25.71:8080/garcal-report-api/api/controldocumentoschoferescsv',{},{ 
+          headers:{
+          "x-api-key":this.$store.state.api_key1
+          }
+        })
         .then((resp) => {
           console.log(resp.data);
           this.succes=resp.data.status;
@@ -250,6 +262,10 @@ export default {
         {
           "emp_id": "",
           "veh_placa":""
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           this.datap = resp.data;
@@ -263,6 +279,10 @@ export default {
         {
            "emp_id": this.form_b.rs,
             "tri_nombre":this.form_b.nombre,
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp);
@@ -282,6 +302,10 @@ export default {
           "txd_fechaemision":this.form_e.fech_emision,
           "txd_fechavencimiento":this.form_e.fech_venc,
           "txd_usucreacion":this.$store.state.username
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp.data.status);
@@ -303,6 +327,10 @@ export default {
         {
           "tri_id": this.editpointer,
           "ttd_id": this.tipo_doc
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp);

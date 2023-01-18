@@ -188,7 +188,11 @@ export default {
 
     load_rs() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas')
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas',{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);
           this.opt_rs = resp.data;
@@ -202,6 +206,10 @@ export default {
         {
           "emp_id":String(rss),
           "ext_id":this.var_type
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp);
@@ -218,6 +226,10 @@ export default {
           "ent_id":String(this.editpointer),
           "emp_id":String(this.form_e.rs),
           "ext_id":this.var_type
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp.data);
@@ -245,7 +257,11 @@ export default {
       {
         "emp_id": this.emp_cont,
         "veh_placa":query
-      })
+      },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp);
         this.opt_veh = resp.data;
@@ -258,7 +274,11 @@ export default {
       {
         "emp_id":this.form_c.rs,
         "veh_id":this.form_c.veh_id
-      })
+      },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp);
         this.opt_pla = resp.data;
@@ -274,7 +294,11 @@ export default {
 
     select_plantilla() {
       axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/preventivoplantilla/'+String(this.form_c.plan_id))
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/preventivoplantilla/'+String(this.form_c.plan_id),{},{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp);
         this.tareas = resp.data;
@@ -286,6 +310,10 @@ export default {
         .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/tareas',{
           "tar_descripcion": key,
           "emp_id": this.emp_cont
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp.data);
@@ -298,7 +326,11 @@ export default {
 
     send_descarga() {
       axios
-        .post('http://51.222.25.71:8080/garcal-report-api/api/clientescsv')
+        .post('http://51.222.25.71:8080/garcal-report-api/api/clientescsv',{},{ 
+          headers:{
+          "x-api-key":this.$store.state.api_key1
+          }
+        })
         .then((resp) => {
           console.log(resp.data);
           this.succes=resp.data.status;
@@ -323,6 +355,10 @@ export default {
       {
         "emp_id":"",
         "veh_placa":""
+      },{ 
+        headers:{
+          "x-api-key":this.$store.state.api_key2
+        }
       })
       .then((resp) => {
         console.log(resp);
@@ -338,6 +374,10 @@ export default {
         {
           "emp_id":this.form_b.rs,
           "veh_placa":this.form_b.placa
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp);
@@ -347,7 +387,11 @@ export default {
 
     create_tarea(req) {
       return axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/programacionmantenimiento/nuevo',req)
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/programacionmantenimiento/nuevo',req,{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
     },
     
     create_usr(){
@@ -395,6 +439,10 @@ export default {
           "pma_ultimokm": 2,
           "pma_usucreacion": this.$store.state.username
 
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp.data);
@@ -451,6 +499,10 @@ export default {
           "pma_ultimokm": 0,
           "pma_usucreacion": this.$store.state.username
 
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp.data);
@@ -502,6 +554,10 @@ export default {
           "pma_avisokm": this.form_et.avisokm,
           "pma_km": this.form_et.km,
           "pma_usucreacion":this.$store.state.username
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp.data);
@@ -532,6 +588,10 @@ export default {
           "pma_ultimokm": 2,
           "pma_usucreacion": this.$store.state.username
 
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp.data);
@@ -567,17 +627,21 @@ export default {
       .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/programacionmantenimiento/buscar',
       {
         "veh_id":number
+      },{ 
+        headers:{
+          "x-api-key":this.$store.state.api_key2
+        }
       })
-        .then((resp) => {
-          this.data_edit = resp.data;
-          this.load_data_edit();
-          this.emp_cont=this.form_e.rs;
-          this.wait = false;
-        })
-        .catch((e)=> {
-          this.open_fail("Hubo un error con el servidor al cargar los datos, error: "+String(e));
-          this.$refs.mo_editar_per.hide();
-        })
+      .then((resp) => {
+        this.data_edit = resp.data;
+        this.load_data_edit();
+        this.emp_cont=this.form_e.rs;
+        this.wait = false;
+      })
+      .catch((e)=> {
+        this.open_fail("Hubo un error con el servidor al cargar los datos, error: "+String(e));
+        this.$refs.mo_editar_per.hide();
+      })
     },
 
     button_handle2(number){

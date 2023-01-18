@@ -254,7 +254,11 @@ export default {
     },
     load_rs() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas')
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas',{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);
           this.opt_rs = resp.data;
@@ -263,7 +267,11 @@ export default {
     
     load_fpago() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdepago/'+String(this.emp_cont))
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdepago/'+String(this.emp_cont),{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);  
           this.opt_fpago = resp.data;
@@ -275,6 +283,10 @@ export default {
         { 
           "emp_id":String(this.emp_cont),
           "dti_referencia_uso":""
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp);  
@@ -283,7 +295,11 @@ export default {
     },
     load_prod() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/productos/'+String(this.emp_cont))
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/productos/'+String(this.emp_cont),{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);  
           this.opt_prod = resp.data;
@@ -297,6 +313,10 @@ export default {
         {
           "emp_id":String(rss),
           "ext_id":this.var_type
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp);
@@ -315,7 +335,7 @@ export default {
       axios
         .post('http://51.222.25.71:8080/garcal-report-api/api/proveedorescsv',{},{ 
           headers:{
-          "x-api-key":"1r01N77vRK1bXkGst8wN189MJfz5ZR3d4O9FdF2H"
+          "x-api-key":this.$store.state.api_key1
           }
         })
         .then((resp) => {
@@ -344,6 +364,10 @@ export default {
           "ent_id":String(this.editpointer),
           "emp_id":String(this.form_e.rs),
           "ext_id":this.var_type
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp.data);
@@ -385,7 +409,11 @@ export default {
     api_get_all(){
       //llamada a API
      axios
-        .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/proveedor')
+        .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/proveedor',{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);
           this.datap = resp.data;
@@ -404,6 +432,10 @@ export default {
           "ent_nrodocumento":this.form_b.nro_doc,
           "fdp_id":this.form_b.f_pago,
           "pro_id":this.form_b.prod
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp);
@@ -439,6 +471,10 @@ export default {
         "ent_estadocontribuyente":this.form_c.c_activo,
         "ent_condicioncontribuyente":this.form_c.c_habido,
         "pro_id":this.form_c.prod
+      },{ 
+        headers:{
+          "x-api-key":this.$store.state.api_key2
+        }
       })
       .then((resp) => {
         console.log(resp.data);
@@ -496,6 +532,10 @@ export default {
           "ent_estadocontribuyente":this.form_e.c_activo,
           "ent_condicioncontribuyente":this.form_e.c_habido,
           "pro_id":this.form_e.prod
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp.data.status);
@@ -526,6 +566,10 @@ export default {
       {
         "emp_id":String(number2),
         "ext_id":this.var_type
+      },{ 
+        headers:{
+          "x-api-key":this.$store.state.api_key2
+        }
       })
       .then((resp) => {
         this.data_edit = resp.data;

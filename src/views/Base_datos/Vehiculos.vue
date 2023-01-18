@@ -154,7 +154,7 @@ export default {
       axios
         .post(' http://51.222.25.71:8080/garcal-report-api/api/vehiculoscsv',{},{ 
           headers:{
-          "x-api-key":"1r01N77vRK1bXkGst8wN189MJfz5ZR3d4O9FdF2H"
+          "x-api-key":this.$store.state.api_key1
           }
         })
         .then((resp) => {
@@ -283,15 +283,23 @@ export default {
     },
     load_rs() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas')
-        .then((resp) => {
-          console.log(resp);
-          this.opt_rs = resp.data;
-        })
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas',{ 
+        headers:{
+          "x-api-key":this.$store.state.api_key2
+        }
+      })
+      .then((resp) => {
+        console.log(resp);
+        this.opt_rs = resp.data;
+      })
     },
     load_mar() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api//vehiculosmarcas/'+String(this.emp_cont))
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api//vehiculosmarcas/'+String(this.emp_cont),{ 
+        headers:{
+          "x-api-key":this.$store.state.api_key2
+        }
+      })
         .then((resp) => {
           console.log(resp);
           this.opt_mar = resp.data;
@@ -299,7 +307,11 @@ export default {
     },
     load_mod() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api//vehiculosmodelos/'+String(this.emp_cont))
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api//vehiculosmodelos/'+String(this.emp_cont),{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);
           this.opt_mod = resp.data;
@@ -307,7 +319,11 @@ export default {
     },
     load_cla() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api//vehiculosclases/'+String(this.emp_cont))
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api//vehiculosclases/'+String(this.emp_cont),{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);
           this.opt_cla = resp.data;
@@ -315,7 +331,11 @@ export default {
     },
     load_ti() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api//vehiculostipos/'+String(this.emp_cont))
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api//vehiculostipos/'+String(this.emp_cont),{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);
           this.opt_ti = resp.data;
@@ -323,7 +343,11 @@ export default {
     },
     load_esp() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/especialidad/'+String(this.emp_cont))
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/especialidad/'+String(this.emp_cont),{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);
           this.opt_esp = resp.data;
@@ -332,7 +356,11 @@ export default {
 
     load_edit(id) {
       axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos/"+String(id))
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos/"+String(id),{},{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);
           this.data_edit = resp.data;
@@ -342,7 +370,11 @@ export default {
     send_delete() {
       this.$refs.mo_advertencia_eliim.hide();
       axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos/borrar/'+String(this.editpointer))
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos/borrar/'+String(this.editpointer),{},{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp.data.status);
           this.succes=resp.data.status;
@@ -387,7 +419,11 @@ export default {
     api_get_all(){
       //llamada a API
      axios
-        .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos')
+        .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos',{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);
           this.datap = resp.data;
@@ -406,6 +442,10 @@ export default {
           "vmo_nombre":this.form_b.modelo,
           "veh_anno_inicio":String(this.form_b.fecha_i),
           "veh_anno_fin":String(this.form_b.fecha_f)
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp);
@@ -430,7 +470,11 @@ export default {
         "veh_mtc":this.form_c.mtc,
         "veh_cargautil":String(this.form_c.carga_util),
         "veh_kilometraje":String(this.form_c.kilometraje)
-      })
+      },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp.data);
         this.succes=resp.data.status;
@@ -476,6 +520,10 @@ export default {
         "veh_mtc":this.form_e.mtc,
         "veh_cargautil":String(this.form_e.carga_util),
         "veh_kilometraje":String(this.form_e.kilometraje)
+      },{ 
+        headers:{
+          "x-api-key":this.$store.state.api_key2
+        }
       })
       .then((resp) => {
         console.log(resp.data.status);
@@ -504,7 +552,11 @@ export default {
       //this.load_edit(number);
 
       axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos/"+String(number))
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos/"+String(number),{},{ 
+        headers:{
+          "x-api-key":this.$store.state.api_key2
+        }
+      })
       .then((resp) => {
         this.data_edit = resp.data;
 

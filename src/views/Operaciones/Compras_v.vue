@@ -83,7 +83,11 @@ export default {
 
     send_descarga() {
       axios
-        .post('http://51.222.25.71:8080/garcal-report-api/api/comprascsv')
+        .post('http://51.222.25.71:8080/garcal-report-api/api/comprascsv',{},{ 
+          headers:{
+          "x-api-key":this.$store.state.api_key1
+          }
+        })
         .then((resp) => {
           console.log(resp.data);
           this.succes=resp.data.status;
@@ -103,7 +107,11 @@ export default {
     },
     get_descarga() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdepago/'+String(this.emp_cont))
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdepago/'+String(this.emp_cont),{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);  
           //Download(resp.data.message,"Descargar");
@@ -261,7 +269,11 @@ export default {
     },
     load_rs() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas')
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas',{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);
           this.opt_rs = resp.data;
@@ -270,7 +282,11 @@ export default {
     
     load_fpago() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdepago/'+String(this.emp_cont))
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdepago/'+String(this.emp_cont),{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);  
           this.opt_fpago = resp.data;
@@ -282,6 +298,10 @@ export default {
         { 
           "emp_id":String(this.emp_cont),
           "dti_referencia_uso":""
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp);  
@@ -290,7 +310,11 @@ export default {
     },
     load_prod() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/productos/'+String(this.emp_cont))
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/productos/'+String(this.emp_cont),{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);  
           this.opt_prod = resp.data;
@@ -299,7 +323,11 @@ export default {
 
     load_edit(id) {
       axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventacab/"+String(id))
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventacab/"+String(id),{},{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);
           this.data_edit = resp.data;
@@ -310,7 +338,11 @@ export default {
       this.$refs.mo_advertencia_eliim.hide();
       this.err_code=false;
       axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventacab/borrar/'+String(this.editpointer))
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventacab/borrar/'+String(this.editpointer),{},{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp.data);
           this.succes=resp.data.status;
@@ -339,7 +371,11 @@ export default {
         "emp_id": Number(this.emp_cont),
         "ent_nrodocumento": query,
         "ext_id": "cli"
-      })
+      },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp);
         this.opt_cli = resp.data;
@@ -392,7 +428,11 @@ export default {
 
     get_formas_pago() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdecobro/'+String(this.emp_cont))
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdecobro/'+String(this.emp_cont),{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp);
         this.opt_fp = resp.data;
@@ -401,7 +441,11 @@ export default {
 
     get_tipos_doc() {
       axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprastipos/'+String(this.emp_cont))
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprastipos/'+String(this.emp_cont),{},{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp);
         this.opt_td = resp.data;
@@ -410,7 +454,11 @@ export default {
 
     get_estados_doc() {
       axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprasestados/'+String(this.emp_cont))
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprasestados/'+String(this.emp_cont),{},{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp);
         this.opt_ed = resp.data;
@@ -441,7 +489,11 @@ export default {
     load_viaje_data(id) {
       console.log(id);
       axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes/'+String(id))
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes/'+String(id),{},{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp);
         this.data_aux = resp.data[0];
@@ -470,7 +522,11 @@ export default {
         "cce_codigo":"",
         "ccc_fechaemisioninicio": null,
         "ccc_fechaemisionfin": null
-      })
+      },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         this.datap = resp.data;
         console.log(this.datap);
@@ -486,7 +542,11 @@ export default {
         "cce_codigo":this.form_b.estado_gui,
         "ccc_fechaemisioninicio": this.form_b.fech_inicio,
         "ccc_fechaemisionfin": this.form_b.fech_fin
-      })
+      },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         this.datap = resp.data;
         console.log(this.datap);
@@ -509,7 +569,11 @@ export default {
       {
         "emp_id": this.emp_cont,
         "via_fechaviaje":this.form_c.fecha_via
-      })
+      },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp);
         this.opt_via = resp.data;
@@ -522,7 +586,11 @@ export default {
       {
         "emp_id": this.emp_cont,
         "via_fechaviaje":this.form_e.fecha_via
-      })
+      },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp);
         this.opt_via = resp.data;

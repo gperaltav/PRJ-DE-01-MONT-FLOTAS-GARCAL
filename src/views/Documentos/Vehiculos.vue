@@ -183,7 +183,11 @@ export default {
     },
     load_rs() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas')
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas',{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);
           this.opt_rs = resp.data;
@@ -203,6 +207,10 @@ export default {
           "vxd_fechaemision":'',
           "vxd_fechavencimiento":'',
           "vxd_usucreacion":this.$store.state.username
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp.data.status);
@@ -226,13 +234,14 @@ export default {
       link.download = name;
       link.href = uri;
       link.click();
+      
     },
 
     send_descarga() {
       axios
         .post('http://51.222.25.71:8080/garcal-report-api/api/controldocumentosvehiculoscsv',{},{ 
           headers:{
-          "x-api-key":"1r01N77vRK1bXkGst8wN189MJfz5ZR3d4O9FdF2H"
+          "x-api-key":this.$store.state.api_key1
           }
         })
         .then((resp) => {
@@ -260,6 +269,10 @@ export default {
         {
           "emp_id": "",
           "veh_placa":""
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           this.datap = resp.data;
@@ -273,6 +286,10 @@ export default {
         {
           "emp_id": this.form_b.rs,
           "veh_placa":this.form_b.placa
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp);
@@ -293,6 +310,10 @@ export default {
           "vxd_fechaemision":this.form_e.fech_emision,
           "vxd_fechavencimiento":this.form_e.fech_venc,
           "vxd_usucreacion":this.$store.state.username
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp.data.status);
@@ -317,6 +338,10 @@ export default {
         {
           "veh_id": this.editpointer,
           "vtd_id": this.tipo_doc
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp);
@@ -413,6 +438,10 @@ export default {
         {
           "veh_id": this.editpointer,
           "vtd_id": this.tipo_doc
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           this.data_edit = resp.data;

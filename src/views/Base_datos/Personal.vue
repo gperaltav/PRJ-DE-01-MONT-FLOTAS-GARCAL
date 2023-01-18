@@ -324,7 +324,11 @@ export default {
     },
     load_rs() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas')
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas',{ 
+        headers:{
+        "x-api-key":this.$store.state.api_key2
+        }
+      })
       .then((resp) => {
         console.log(resp);
         this.opt_rs = resp.data;
@@ -332,7 +336,11 @@ export default {
     },
     load_esp() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/especialidad/'+String(this.emp_cont))
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/especialidad/'+String(this.emp_cont),{ 
+        headers:{
+        "x-api-key":this.$store.state.api_key2
+        }
+      })
         .then((resp) => {
           console.log(resp);
           this.opt_esp = resp.data;
@@ -341,7 +349,11 @@ export default {
 
     load_tc() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/contratos/'+String(this.emp_cont))
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/contratos/'+String(this.emp_cont),{ 
+        headers:{
+        "x-api-key":this.$store.state.api_key2
+        }
+      })
         .then((resp) => {
           console.log(resp);
           this.opt_tc = resp.data;
@@ -350,7 +362,11 @@ export default {
 
     load_pues() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/puestos/'+String(this.emp_cont))
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/puestos/'+String(this.emp_cont),{ 
+        headers:{
+        "x-api-key":this.$store.state.api_key2
+        }
+      })
         .then((resp) => {
           console.log(resp);
           this.opt_pues = resp.data;
@@ -359,7 +375,11 @@ export default {
 
     load_edit(id) {
       axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/trabajadores/"+String(id))
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/trabajadores/"+String(id),{},{ 
+        headers:{
+        "x-api-key":this.$store.state.api_key2
+        }
+      })
         .then((resp) => {
           console.log(resp);
           this.data_edit = resp.data;
@@ -367,7 +387,11 @@ export default {
     },
     load_edit_op(id) {
       axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/tripulacion/"+String(id))
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/tripulacion/"+String(id),{},{ 
+        headers:{
+        "x-api-key":this.$store.state.api_key2
+        }
+      })
         .then((resp) => {
           console.log(resp);
           this.data_edit2 = resp.data;
@@ -376,7 +400,11 @@ export default {
 
     send_delete_op() {
       axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/tripulacion/borrar/'+String(this.editpointer))
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/tripulacion/borrar/'+String(this.editpointer),{},{ 
+        headers:{
+        "x-api-key":this.$store.state.api_key2
+        }
+      })
         .then((resp) => {
           console.log(resp.data);
           this.succes=resp.data.status;
@@ -405,7 +433,11 @@ export default {
         console.log("Eliminando operario");
 
         axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/tripulacion/borrar/'+String(this.editpointer))
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/tripulacion/borrar/'+String(this.editpointer),{},{ 
+        headers:{
+        "x-api-key":this.$store.state.api_key2
+        }
+      })
         .then((resp) => {
           console.log(resp.data);
           this.succes=resp.data.status;
@@ -432,23 +464,27 @@ export default {
     send_delete() {
       
       axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/trabajadores/borrar/'+String(this.editpointer))
-        .then((resp) => {
-          console.log(resp.data);
-          this.succes=resp.data.status;
-          if (this.succes) {
-            this.open_succes("Trabajador eliminado correctamente");
-            return true;
-          }
-          else {
-            this.open_fail("Hubo un error con el servidor al ejecutar la operación");
-            return false;
-          }
-        })
-        .catch((e) => {
-          this.open_fail("Hubo un error interno al ejecutar la operacion. Log:"+String(e));
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/trabajadores/borrar/'+String(this.editpointer),{},{ 
+        headers:{
+        "x-api-key":this.$store.state.api_key2
+        }
+      })
+      .then((resp) => {
+        console.log(resp.data);
+        this.succes=resp.data.status;
+        if (this.succes) {
+          this.open_succes("Trabajador eliminado correctamente");
+          return true;
+        }
+        else {
+          this.open_fail("Hubo un error con el servidor al ejecutar la operación");
           return false;
-        });
+        }
+      })
+      .catch((e) => {
+        this.open_fail("Hubo un error interno al ejecutar la operacion. Log:"+String(e));
+        return false;
+      });
     },
 
     get_descargas(uri, name) {
@@ -462,7 +498,7 @@ export default {
       axios
         .post('http://51.222.25.71:8080/garcal-report-api/api/descargarcsv',{},{ 
           headers:{
-          "x-api-key":"1r01N77vRK1bXkGst8wN189MJfz5ZR3d4O9FdF2H"
+          "x-api-key":this.$store.state.api_key1
           }
         })
         .then((resp) => {
@@ -512,7 +548,11 @@ export default {
     api_get_all(){
       //llamada a API
      axios
-        .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/trabajadores')
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/trabajadores',{ 
+        headers:{
+        "x-api-key":this.$store.state.api_key2
+        }
+      })
         .then((resp) => {
           console.log(resp);
           this.datap = resp.data;
@@ -532,6 +572,10 @@ export default {
           "tra_tipocontrato":String(this.form_b.contrato),
           "tra_fechaingreso":this.form_b.date_i,
           "tra_fechacese":this.form_b.date_f
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp);
@@ -562,7 +606,11 @@ export default {
             "tra_fechaingresoplanilla":this.form_c.fecha_ip,
             "tra_fechacese":this.form_c.fecha_c,
             "tra_usucreacion":this.$store.state.username 
-          })
+          },{ 
+        headers:{
+          "x-api-key":this.$store.state.api_key2
+          }
+        })
           .then((resp) => {
             console.log(resp.data);
             this.succes=resp.data.status;
@@ -596,7 +644,7 @@ export default {
     create_usr2(){
       //legacy
       if(!this.open_op) {
-          axios
+        axios
           .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/trabajadores/nuevo', 
           { 
             "are_id": 1,
@@ -613,7 +661,11 @@ export default {
             "tra_fechaingresoplanilla":this.form_c.fecha_ip,
             "tra_fechacese":this.form_c.fecha_c,
             "tra_usucreacion":this.$store.state.username 
-          })
+          },{ 
+        headers:{
+          "x-api-key":this.$store.state.api_key2
+          }
+        })
           .then((resp) => {
             console.log(resp.data);
             this.succes=resp.data.status;
@@ -655,6 +707,10 @@ export default {
           "tri_especialidad":this.form_c_op.esp,
           "tri_licenciafechavencimiento": this.form_c_op.venc_lic,
           "tri_inscritossunatiqbf": this.form_c_op.ins_iqbf,
+        },{ 
+        headers:{
+          "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp.data);
@@ -688,6 +744,10 @@ export default {
           "tri_licenciafechavencimiento": this.form_c_op.venc_lic,
           "tri_inscritossunatiqbf": this.form_c_op.ins_iqbf,
           "tri_usucreacion":this.$store.state.username
+        },{ 
+        headers:{
+          "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp.data.status);
@@ -730,6 +790,10 @@ export default {
           "tra_fechaingresoplanilla":this.form_e.fecha_ip,
           "tra_fechacese":this.form_e.fecha_c,
           "tra_usucreacion":this.$store.state.username 
+        },{ 
+        headers:{
+          "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp.data);
@@ -774,6 +838,10 @@ export default {
           "tri_especialidad":this.form_e_op.esp,
           "tri_licenciafechavencimiento": this.form_e_op.venc_lic,
           "tri_inscritossunatiqbf": this.form_e_op.ins_iqbf
+        },{ 
+        headers:{
+          "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp.data);
@@ -815,6 +883,10 @@ export default {
           "tra_fechaingresoplanilla":this.form_e.fecha_ip,
           "tra_fechacese":this.form_e.fecha_c,
           "tra_usucreacion":this.$store.state.username 
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp.data.status);
@@ -856,6 +928,10 @@ export default {
           "tri_licenciafechavencimiento": this.form_e_op.venc_lic,
           "tri_inscritossunatiqbf": this.form_e_op.ins_iqbf,
           "tri_usumodificacion":this.$store.state.username
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp.data.status);
@@ -881,7 +957,11 @@ export default {
       this.load_edit(number);
 
       axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/trabajadores/"+String(number))
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/trabajadores/"+String(number),{},{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         this.data_edit = resp.data;
 
@@ -891,8 +971,12 @@ export default {
         if (this.open_op) {
           console.log("Operario");
 
-          axios
-          .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/tripulacion/"+String(number))
+        axios
+          .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/tripulacion/"+String(number),{},{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
           .then((resp2) => {
             console.log(resp2);
             this.data_edit2 = resp2.data;

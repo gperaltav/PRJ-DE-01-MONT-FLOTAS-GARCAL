@@ -165,7 +165,11 @@ export default {
 
     load_rs() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas')
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas',{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);
           this.opt_rs = resp.data;
@@ -193,7 +197,11 @@ export default {
         "ubi_codigodestino":"010113",
         "gui_observacion":"",
         "gui_usucreacion":this.$store.state.username
-      })
+      },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp.data);
         this.succes=resp.data.status;
@@ -212,7 +220,11 @@ export default {
 
     get_formas_pago() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdepago/'+String(this.form_c.rs))
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdepago/'+String(this.form_c.rs),{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp);
         this.opt_fp = resp.data;
@@ -221,7 +233,11 @@ export default {
 
     get_tipos_doc() {
       axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprastipos/'+String(this.form_c.rs))
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprastipos/'+String(this.form_c.rs),{},{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp);
         this.opt_td = resp.data;
@@ -236,7 +252,11 @@ export default {
         "emp_id": this.emp_cont,
         "tra_nrodocumento ": query,
         "tra_nombre": ""
-      })
+      },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);
           this.data_op = resp.data;
@@ -259,7 +279,11 @@ export default {
       {
         "emp_id": this.form_c.rs,
         "via_fechaviaje":this.form_c.fecha_via
-      })
+      },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp);
         this.opt_via = resp.data;
@@ -317,7 +341,11 @@ export default {
           "ccd_subtotal":Number(this.form_c.total),
           "uni_unidad":"UNI"
         }]
-      })
+      },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp.data);
         this.succes=resp.data.status;

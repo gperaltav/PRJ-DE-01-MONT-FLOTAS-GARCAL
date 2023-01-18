@@ -14,6 +14,8 @@ const store = createStore({
           
         },
         username: '',
+        api_key1: '',
+        api_key2: '',
       }
     },
     mutations: {
@@ -31,6 +33,12 @@ const store = createStore({
       },
       set_permisos (state, payload) {
         state.Credentials=payload;
+      },
+      set_key1(state,payload) {
+        state.api_key1=payload.key;
+      },
+      set_key2(state,payload) {
+        state.api_key2=payload.key;
       }
     },
     actions: {

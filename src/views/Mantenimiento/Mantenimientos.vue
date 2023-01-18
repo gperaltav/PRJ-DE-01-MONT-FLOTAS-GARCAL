@@ -157,7 +157,11 @@ export default {
 
     load_rs() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas')
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas',{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);
           this.opt_rs = resp.data;
@@ -171,6 +175,10 @@ export default {
         {
           "emp_id":String(rss),
           "ext_id":this.var_type
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp);
@@ -187,6 +195,10 @@ export default {
           "ent_id":String(this.editpointer),
           "emp_id":String(this.form_e.rs),
           "ext_id":this.var_type
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp.data);
@@ -214,7 +226,11 @@ export default {
       {
         "emp_id": this.emp_cont,
         "veh_placa":query
-      })
+      },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp);
         this.opt_veh = resp.data;
@@ -247,7 +263,11 @@ export default {
 
     send_descarga() {
       axios
-        .post('http://51.222.25.71:8080/garcal-report-api/api/mantenimientocsv')
+        .post('http://51.222.25.71:8080/garcal-report-api/api/mantenimientocsv',{},{ 
+          headers:{
+          "x-api-key":this.$store.state.api_key1
+          }
+        })
         .then((resp) => {
           console.log(resp.data);
           this.succes=resp.data.status;
@@ -268,17 +288,21 @@ export default {
 
     search_tareas(key) {
       axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/tareas',{
-          "tar_descripcion": key,
-          "emp_id": this.emp_cont
-        })
-        .then((resp) => {
-          console.log(resp.data);
-          this.opt_tar=resp.data;
-        })
-        .catch((error) => {
-          this.open_fail("Hubo un error con el servidor al ejecutar la operación, error:"+String(error));
-        });
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/tareas',{
+        "tar_descripcion": key,
+        "emp_id": this.emp_cont
+      },{ 
+        headers:{
+          "x-api-key":this.$store.state.api_key2
+        }
+      })
+      .then((resp) => {
+        console.log(resp.data);
+        this.opt_tar=resp.data;
+      })
+      .catch((error) => {
+        this.open_fail("Hubo un error con el servidor al ejecutar la operación, error:"+String(error));
+      });
     },
 
     api_get_all(){
@@ -290,6 +314,10 @@ export default {
         "man_estado":"",
         "man_fecha_inicio":null,
         "man_fecha_fin":null
+      },{ 
+        headers:{
+          "x-api-key":this.$store.state.api_key2
+        }
       })
       .then((resp) => {
         console.log(resp);
@@ -307,6 +335,10 @@ export default {
         "man_estado":this.form_b.estado,
         "man_fecha_inicio":this.form_b.fech_inicio,
         "man_fecha_fin":this.form_b.fech_fin
+      },{ 
+        headers:{
+          "x-api-key":this.$store.state.api_key2
+        }
       })
       .then((resp) => {
         console.log(resp);
@@ -320,19 +352,23 @@ export default {
       .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/programacionmantenimiento/obtener',
       {
         "veh_id":id
+      },{ 
+        headers:{
+          "x-api-key":this.$store.state.api_key2
+        }
       })
-        .then((resp) => {
-          console.log(resp);
-          if(!resp.data[0]) {
-            return;
-          }
-          this.data_t=resp.data;
-          this.tareas1 = resp.data[0].detalle;
-        })
-        .catch((e)=> {
-          this.open_fail("Hubo un error con el servidor al cargar los datos, error: "+String(e));
-          this.$refs.mo_editar_per.hide();
-        })
+      .then((resp) => {
+        console.log(resp);
+        if(!resp.data[0]) {
+          return;
+        }
+        this.data_t=resp.data;
+        this.tareas1 = resp.data[0].detalle;
+      })
+      .catch((e)=> {
+        this.open_fail("Hubo un error con el servidor al cargar los datos, error: "+String(e));
+        this.$refs.mo_editar_per.hide();
+      })
 
     },
 
@@ -382,6 +418,10 @@ export default {
         "man_numero":0,
         "man_kilometraje":this.form_c.km,
         "detalle":this.tareas_ins
+      },{ 
+        headers:{
+          "x-api-key":this.$store.state.api_key2
+        }
       })
       .then((resp) => {
         console.log(resp.data);
@@ -418,6 +458,10 @@ export default {
           "gco_numeromin": this.form_e.n_min,
           "gco_numeromax": this.form_e.n_max,
           "gco_usucreacion": this.$store.state.username
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp.data.status);
@@ -443,17 +487,21 @@ export default {
       this.$refs.mo_editar_per.open();
       this.wait = true;
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/guiasconfiguracion/'+String(number))
-        .then((resp) => {
-          this.data_edit = resp.data;
-          this.load_data_edit();
-          this.emp_cont=this.form_e.rs;
-          this.wait = false;
-        })
-        .catch((e)=> {
-          this.open_fail("Hubo un error con el servidor al cargar los datos, error: "+String(e));
-          this.$refs.mo_editar_per.hide();
-        })
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/guiasconfiguracion/'+String(number),{ 
+        headers:{
+          "x-api-key":this.$store.state.api_key2
+        }
+      })
+      .then((resp) => {
+        this.data_edit = resp.data;
+        this.load_data_edit();
+        this.emp_cont=this.form_e.rs;
+        this.wait = false;
+      })
+      .catch((e)=> {
+        this.open_fail("Hubo un error con el servidor al cargar los datos, error: "+String(e));
+        this.$refs.mo_editar_per.hide();
+      })
     }
   },
 

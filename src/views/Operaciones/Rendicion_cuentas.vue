@@ -279,7 +279,11 @@ export default {
 
     load_rs() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas')
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas',{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);
           this.opt_rs = resp.data;
@@ -307,7 +311,11 @@ export default {
         "ubi_codigodestino":"010113",
         "gui_observacion":"",
         "gui_usucreacion":this.$store.state.username
-      })
+      },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp.data);
         this.succes=resp.data.status;
@@ -330,7 +338,11 @@ export default {
         "emp_id": Number(this.form_c.rs),
         "ent_nrodocumento": query,
         "ext_id": "prv"
-      })
+      },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp);
         this.opt_prv = resp.data;
@@ -353,7 +365,11 @@ export default {
       .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprasentregardineropendiente" ,
       {
         "tra_nrodocumento":id,
-      })
+      },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);
           this.opt_sald = resp.data;
@@ -367,7 +383,11 @@ export default {
       {
         "emp_id":this.form_c.rs,
         "ent_nrodocumento":query,
-      })
+      },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);
           this.opt_prod = resp.data;
@@ -395,7 +415,11 @@ export default {
 
     get_formas_pago() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdepago/'+String(this.form_c.rs))
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdepago/'+String(this.form_c.rs),{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp);
         this.opt_fp = resp.data;
@@ -404,7 +428,11 @@ export default {
 
     get_tipos_doc() {
       axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprastipos/'+String(this.form_c.rs))
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprastipos/'+String(this.form_c.rs),{},{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp);
         this.opt_td = resp.data;
@@ -417,7 +445,11 @@ export default {
       {
         "emp_id": this.form_c.rs,
         "via_fechaviaje":this.form_c.fech_viaje
-      })
+      },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp);
         this.opt_via = resp.data;
@@ -426,7 +458,11 @@ export default {
 
     load_prod() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/productos/'+String(this.form_g.rs))
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/productos/'+String(this.form_g.rs),{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);  
           this.opt_prod = resp.data;
@@ -441,7 +477,11 @@ export default {
         "emp_id": this.emp_cont,
         "tra_nrodocumento ": query,
         "tra_nombre": ""
-      })
+      },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp);
         this.opt_tra = resp.data;
@@ -617,7 +657,11 @@ export default {
         "usu_codigo": this.$store.state.username,
         "ccc_usucreacion":this.$store.state.username,
         "detalle":this.datap,
-      })
+      },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp.data);
         this.succes=resp.data.status;
@@ -627,7 +671,11 @@ export default {
           {
             "ccc_id":Number(this.form_g.sal_dinero),
             "cce_codigo":"CAN"
-          })
+          },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
           .then((resp) => {
             console.log(resp.data);
             this.succes=resp.data.status;

@@ -166,7 +166,11 @@ export default {
 
     send_descarga() {
       axios
-        .post('http://51.222.25.71:8080/garcal-report-api/api/guiascsv')
+        .post('http://51.222.25.71:8080/garcal-report-api/api/guiascsv',{},{ 
+          headers:{
+          "x-api-key":this.$store.state.api_key1
+          }
+        })
         .then((resp) => {
           console.log(resp.data);
           this.succes=resp.data.status;
@@ -301,7 +305,11 @@ export default {
     },
     load_rs() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas')
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas',{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);
           this.opt_rs = resp.data;
@@ -310,7 +318,11 @@ export default {
     
     load_fpago() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdepago/'+String(this.emp_cont))
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdepago/'+String(this.emp_cont),{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);  
           this.opt_fpago = resp.data;
@@ -322,6 +334,10 @@ export default {
         { 
           "emp_id":String(this.emp_cont),
           "dti_referencia_uso":""
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp);  
@@ -330,7 +346,11 @@ export default {
     },
     load_prod() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/productos/'+String(this.emp_cont))
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/productos/'+String(this.emp_cont),{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);  
           this.opt_prod = resp.data;
@@ -340,7 +360,11 @@ export default {
 
     load_edit(id) {
       axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/guias/"+String(id))
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/guias/"+String(id),{},{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);
           this.data_edit = resp.data;
@@ -399,7 +423,11 @@ export default {
     load_viaje_data(id) {
       console.log(id);
       axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes/'+String(id))
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes/'+String(id),{},{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp);
         this.data_aux = resp.data[0];
@@ -413,7 +441,11 @@ export default {
       this.$refs.mo_advertencia_eliim.hide();
       this.err_code=false;
       axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/guias/borrar/'+String(this.editpointer))
+        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/guias/borrar/'+String(this.editpointer),{},{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp.data);
           this.succes=resp.data.status;
@@ -438,7 +470,11 @@ export default {
     api_get_all(){
       //llamada a API
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/guias')
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/guias',{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp);
         this.datap = resp.data;
@@ -458,7 +494,11 @@ export default {
       {
         "emp_id": this.emp_cont,
         "via_fechaviaje":this.form_c.fecha_via
-      })
+      },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp);
         this.opt_via = resp.data;
@@ -475,6 +515,10 @@ export default {
           "gui_serienumero": this.form_b.codigo,
           "gui_fechaemision_inicio": this.form_b.fech_inicio,
           "gui_fechaemision_fin": this.form_b.fech_fin
+        },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
         })
         .then((resp) => {
           console.log(resp);
@@ -502,7 +546,11 @@ export default {
         "ubi_codigodestino":this.form_c.ubi_destino,
         "gui_observacion":"",
         "gui_usucreacion":this.$store.state.username
-      })
+      },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp.data);
         this.succes=resp.data.status;
@@ -526,7 +574,11 @@ export default {
             "ubi_codigodestino":this.form_c.ubi_destino,
             "gui_observacion":"",
             "gui_usucreacion":this.$store.state.username
-          })
+          },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
           .then((resp) => {
             console.log(resp.data);
             this.succes=resp.data.status;
@@ -606,7 +658,11 @@ export default {
 
       axios
         .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/guias/actualizar', 
-        send)
+        send,{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp.data.status);
           this.succes=resp.data.status;
@@ -630,7 +686,11 @@ export default {
       this.wait = true;
       //this.load_edit(id);
       axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/guias/"+String(id))
+      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/guias/"+String(id),{},{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         this.data_edit = resp.data;
 

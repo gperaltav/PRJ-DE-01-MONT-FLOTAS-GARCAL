@@ -63,7 +63,7 @@ export default {
       axios
         .post('http://51.222.25.71:8080/garcal-report-api/api/productoscsv',{},{ 
           headers:{
-          "x-api-key":"1r01N77vRK1bXkGst8wN189MJfz5ZR3d4O9FdF2H"
+          "x-api-key":this.$store.state.api_key1
           }
         })
         .then((resp) => {
@@ -157,7 +157,11 @@ export default {
     
     load_rs() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas')
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas',{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);
           this.opt_rs = resp.data;
@@ -166,7 +170,11 @@ export default {
     
     get_formas_cobro() {
       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdecobro/'+String(this.emp_cont))
+      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdecobro/'+String(this.emp_cont),{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
         .then((resp) => {
           console.log(resp);  
           this.opt_fcobro = resp.data;
@@ -175,7 +183,11 @@ export default {
 
     get_tipos_doc() {
       axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprastipos/'+String(this.emp_cont))
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprastipos/'+String(this.emp_cont),{},{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp);
         this.opt_td = resp.data;
@@ -184,7 +196,11 @@ export default {
 
     get_estados_doc() {
       axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprasestados/'+String(this.emp_cont))
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprasestados/'+String(this.emp_cont),{},{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp);
         this.opt_ed = resp.data;
@@ -199,7 +215,11 @@ export default {
         "emp_id": 0,
         "pro_descripcion":"",
         "pro_codigo":""
-      })
+      },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         this.datap = resp.data;
         console.log(this.datap);
@@ -213,7 +233,11 @@ export default {
         "emp_id": this.form_b.rs,
         "pro_descripcion":this.form_b.descripcion,
         "pro_codigo":this.form_b.codigo
-      })
+      },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         this.datap = resp.data;
         console.log(this.datap);
@@ -229,7 +253,11 @@ export default {
     send_delete_master() {
       this.$refs.mo_advertencia.hide();
       axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/productos/borrar/'+String(this.editpointer))
+      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/productos/borrar/'+String(this.editpointer),{},{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp.data);
         this.succes=resp.data.status;
@@ -262,7 +290,11 @@ export default {
         "pro_preciocompra":0,
         "pro_codsunat":"",
         "pro_usucreacion":this.$store.state.username
-      })
+      },{ 
+          headers:{
+            "x-api-key":this.$store.state.api_key2
+          }
+        })
       .then((resp) => {
         console.log(resp.data);
         this.succes=resp.data.status;
