@@ -88,7 +88,7 @@ import { Notebook, OfficeBuilding,DocumentChecked,Operation,TrendCharts,Money,Ti
           <span :class="[$isMobile() ? 'mv-title' : 'dkt-title']">ERP Garcal</span>
         </div>
       </el-col>
-      <el-col :span="8" style="text-align=center">
+      <el-col :span="8" style="text-align:center">
         <div class="sitebar">
         <el-tag style="color:white;" color="#0c59cf" :size="$isMobile() ? 'small': ''">
           {{titlebar}}
