@@ -84,6 +84,10 @@ export default {
       this.search_rs_clear();
     },
 
+    close_succes_all() {
+      this.close_succes();
+    },
+
     search_rs_ch() {
       this.emp_cont=this.form_b.rs;
       this.form_b.tipo_gui="";

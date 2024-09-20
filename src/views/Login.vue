@@ -1,5 +1,5 @@
 <script  setup>
-import axios from 'axios'
+  import { API } from '@/API';
 </script>
 
 <script >
@@ -33,8 +33,8 @@ import axios from 'axios'
       },
       
       login_api() {
-        axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/usuarios/comprobar', 
+        API
+        .post('garcal-erp-apiv1/api/usuarios/comprobar', 
           { 
             "usu_codigo": String(this.input.username),
             "usu_clave": String(this.input.password)
@@ -51,8 +51,8 @@ import axios from 'axios'
             this.$store.commit('set_user', {
               username: resp.data[0].usu_codigo
             });
-            axios
-            .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/menusxusuarios', 
+            API
+            .post('garcal-erp-apiv1/api/menusxusuarios', 
             { 
               "usu_codigo":resp.data[0].usu_codigo
             },{ 
@@ -81,13 +81,15 @@ import axios from 'axios'
 
           }
           else {
+            //this.$store.dispatch('authenticate'); //revisar
             console.log("No Logeado");
-            console.log("Usuario o contraseña incorrectos");
+            alert("Usuario o contraseña incorrectos");
           }
         })
         .catch((e)=> {
+          //this.$store.dispatch('authenticate'); //revisar
           console.log(e);
-          console.log("Error interno al iniciar sesión");
+          alert("Error interno al iniciar sesión");
         })
       },
     },

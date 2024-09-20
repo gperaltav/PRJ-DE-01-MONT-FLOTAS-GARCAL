@@ -12,6 +12,7 @@
     "axios": "^1.7.2",
     "dotenv": "^16.0.3",
     "element-plus": "^2.1.10",
+    "fast-xml-parser": "^4.4.1",
     "vue": "^3.2.37",
     "vue-mobile-detection": "^2.0.1",
     "vue-router": "^4.1.2",

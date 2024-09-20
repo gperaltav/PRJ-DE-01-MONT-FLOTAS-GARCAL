@@ -669,7 +669,7 @@ export default {
   <div v-if="$isMobile()">
   <el-collapse>
     <el-collapse-item title="Opciones">
-      <el-form @submit.prevent :inline="true" :model="formInline" label-width="auto" size="small" >
+      <el-form @submit.prevent :inline="true" label-width="auto" size="small" >
 
       <el-row justify="center">
 

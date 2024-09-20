@@ -499,6 +499,10 @@ export default {
       }
     },
 
+    clear_chofer() {
+      this.form_g.tra_nom= "";
+    },
+
     api_det_ready() {
       this.datap=[];
       for (let tmp in this.datag)  {

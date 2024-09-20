@@ -2,13 +2,14 @@
 import { ref } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
 import { Notebook, OfficeBuilding,DocumentChecked,Operation,TrendCharts,Money,Tickets,Expand,Setting} from '@element-plus/icons-vue'
-
+import { API } from '@/API';
 
 </script>
 
 <script lang="ts">
   import Login from "./views/Login.vue"
   import Loginb from "./views/login_beta.vue"
+  import Testing from "./views/Operaciones/Combustible.vue"
   export default {
     name: 'App',
 
@@ -22,7 +23,8 @@ import { Notebook, OfficeBuilding,DocumentChecked,Operation,TrendCharts,Money,Ti
 
     components: {
       Login,
-      Loginb
+      Loginb,
+      Testing
     },
     mounted() {
       console.log(this.$store.state.authenticated);
@@ -30,6 +32,9 @@ import { Notebook, OfficeBuilding,DocumentChecked,Operation,TrendCharts,Money,Ti
       if(this.$isMobile() && this.isCollapse===false) {
         this.changetool();
       }
+
+      API.defaults.headers.common['x-api-key'] = "1r01N77vRK1bXkGst8wN189MJfz5ZR3d4O9FdF2H";
+      API.defaults.headers.common['Access-Control-Allow-Origin'] = "*";
       
       this.$store.commit('set_key1',{
               key: "1r01N77vRK1bXkGst8wN189MJfz5ZR3d4O9FdF2H"
@@ -82,7 +87,7 @@ import { Notebook, OfficeBuilding,DocumentChecked,Operation,TrendCharts,Money,Ti
   </el-container>
   <el-container v-else class="layout-container" style="width: 100vw; height: 100vh;">
     <el-header v-if="!$isMobile()" style="text-align: left; font-size: 24px">
-      <el-col :span="8" style="text-align=left">
+      <el-col :span="8" style="text-align:left">
         <div class="toolbar">
           <el-button type="text" style="padding:20px" size="small" @click="changetool"><el-icon style="color:white" :size='20'><Expand /></el-icon></el-button>
           <span :class="[$isMobile() ? 'mv-title' : 'dkt-title']">ERP Garcal</span>

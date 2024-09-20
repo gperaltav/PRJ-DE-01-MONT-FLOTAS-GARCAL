@@ -5,6 +5,9 @@ import { EditPen, Filter, Plus, Download, CloseBold, List,Search} from '@element
 
 import type { FormInstance, FormRules } from 'element-plus'
 
+import { XMLParser } from "fast-xml-parser";
+
+
 
 
 const checkyear = (rule: any, value: any, callback: any) => {
@@ -125,6 +128,55 @@ export default {
   },
 
   methods: {
+
+    vs_r() {
+      let input = document.createElement('input');
+      input.type = 'file';
+      input.accept='.xml';
+      input.id='filet'
+      input.onchange = e => {
+
+        let file = e.target.files[0];
+        
+
+        let fil= new FileReader()
+        fil.onload = xy => {
+
+          const parser = new XMLParser();
+          let jObj = parser.parse(xy.target.result);
+
+          console.log(jObj);
+
+          for (const key in jObj.Invoice['cac:InvoiceLine']) {
+            var element = jObj.Invoice['cac:InvoiceLine'][key]['cac:Item']['cbc:Description'];
+            console.log(element);
+          }
+
+          var tmp_a=jObj.Invoice['cbc:ID'].split("-")
+
+          this.form_c.serie_doc=tmp_a[0]
+          this.form_c.nro_doc=tmp_a[1]
+
+          this.form_c.fecha_em=jObj.Invoice['cbc:DueDate']
+
+          this.form_c.cantidad_n=jObj.Invoice['cbc:LineCountNumeric']
+
+          this.form_c.subtotal=jObj.Invoice['cac:LegalMonetaryTotal']['cbc:LineExtensionAmount']
+
+          this.form_c.impuesto=jObj.Invoice['cac:TaxTotal']['cbc:TaxAmount']
+
+          this.form_c.total=jObj.Invoice['cac:LegalMonetaryTotal']['cbc:TaxInclusiveAmount']
+
+          
+
+
+        }
+
+        fil.readAsText(file)
+        
+      }
+      input.click();
+    },
 
     clear_c() {
       this.form_c.rs= '',
@@ -579,11 +631,11 @@ export default {
           
   <div v-if="!$isMobile()" style="width:900px; margin-left:auto;margin-right:auto;padding-right:200px ">
 
-    <el-row style="text-align=center;">
+    <el-row style="text-align:center">
       <h1 style="margin-left: auto;margin-right: auto">Añadir combustible</h1>
     </el-row>
   
-  <el-form @submit.prevent :model="form" :label-position="left" label-width="200px" >
+  <el-form @submit.prevent :model="form_c" label-position="left" label-width="200px" >
 
     <el-form-item  label="Razón social asociada">
       <el-select v-model="form_c.rs" @change="rs_changer" @clear="clear_c" placeholder="Seleccionar" style="width:600px" clearable>
@@ -594,6 +646,39 @@ export default {
           :value="item.emp_id"
         > </el-option>
       </el-select>
+    </el-form-item>
+
+    <el-form-item label="Fecha de viaje">
+      <el-row style="width:600px">
+      <el-col :span="12">
+        <el-date-picker
+          type="date"
+          v-model="form_c.fecha_via"
+          format="YYYY-MM-DD"
+          value-format="YYYY-MM-DD"
+          placeholder="Seleccione fecha"
+          style="width: 300px"
+          @change="fech_changer"
+        />
+      </el-col>
+      
+      <el-col :span="12">
+        <el-select v-model="form_c.via_id" placeholder="Seleccione una opcion" style="width:300px" clearable>
+          <el-option
+            v-for="item in opt_via"
+            :key="item.via_id"
+            :label="item.via_descripcion"
+            :value="item.via_id"
+          > </el-option>
+        </el-select> 
+      </el-col>
+      </el-row>
+    </el-form-item>
+
+    <el-form-item>
+      <el-row justify="center">
+        <el-button @click="vs_r()" plain color="#6f6f6f">Cargar XML</el-button>
+      </el-row>
     </el-form-item>
 
     <el-form-item  label="Proveedor">
@@ -662,33 +747,6 @@ export default {
       />
     </el-form-item>
 
-    <el-form-item label="Fecha de viaje">
-      <el-row style="width:600px">
-      <el-col :span="12">
-        <el-date-picker
-          type="date"
-          v-model="form_c.fecha_via"
-          format="YYYY-MM-DD"
-          value-format="YYYY-MM-DD"
-          placeholder="Seleccione fecha"
-          style="width: 300px"
-          @change="fech_changer"
-        />
-      </el-col>
-      
-      <el-col :span="12">
-        <el-select v-model="form_c.via_id" placeholder="Seleccione una opcion" style="width:300px" clearable>
-          <el-option
-            v-for="item in opt_via"
-            :key="item.via_id"
-            :label="item.via_descripcion"
-            :value="item.via_id"
-          > </el-option>
-        </el-select> 
-      </el-col>
-      </el-row>
-    </el-form-item>
-
     <el-form-item  label="Cantidad">
       <el-row style="width:600px">
         <el-col :span="6">
@@ -700,7 +758,7 @@ export default {
           </el-select> 
         </el-col>
         <el-col :span="12">
-          <el-form-item label-width="100px" label="P. Unitario">
+          <el-form-item label-width="100px" label="P. Unitario" style="padding-left: 10px;">
             <el-input v-model="form_c.cantidad_p_uni" placeholder="Insertar monto" >
               <template #prepend>S/</template>
             </el-input>
@@ -754,7 +812,7 @@ export default {
       </el-select>
     </el-form-item>
 
-    <el-row style="text-align=center; margin-left:100px" >
+    <el-row style="text-align:center; margin-left:100px" >
       <el-button  @click="transaccion_insertar" style="margin-left: auto;margin-right: auto" color="#0844a4" >Guardar</el-button>
     </el-row>
       
@@ -762,7 +820,7 @@ export default {
   </div>
 
   <div v-else>
-    <el-row style="text-align=center;">
+    <el-row style="text-align:center;">
       <h1 >Añadir combustible</h1>
     </el-row>
   
@@ -779,8 +837,36 @@ export default {
       </el-select>
     </el-form-item>
 
-    <el-form-item  label="Proveedor">
+    <el-form-item label="Fecha inicio de viaje">
+      <el-row style="width:600px">
 
+        <el-date-picker
+          type="date"
+          v-model="form_c.fecha_via"
+          format="YYYY-MM-DD"
+          value-format="YYYY-MM-DD"
+          placeholder="Seleccione fecha"
+          @change="fech_changer"
+        />
+
+        <el-select v-model="form_c.via_id" placeholder="Seleccione una opcion"  clearable>
+          <el-option
+            v-for="item in opt_via"
+            :key="item.via_id"
+            :label="item.via_descripcion"
+            :value="item.via_id"
+          > </el-option>
+        </el-select> 
+      </el-row>
+    </el-form-item>
+
+    <el-form-item>
+      <el-row justify="center">
+        <el-button @click="vs_r()" plain color="#6f6f6f">Cargar XML</el-button>
+      </el-row>
+    </el-form-item>
+
+    <el-form-item  label="Proveedor">
 
         <el-select
           v-model="form_c.prv_id"
@@ -839,28 +925,6 @@ export default {
       />
     </el-form-item>
 
-    <el-form-item label="Fecha de viaje">
-      <el-row style="width:600px">
-
-        <el-date-picker
-          type="date"
-          v-model="form_c.fecha_via"
-          format="YYYY-MM-DD"
-          value-format="YYYY-MM-DD"
-          placeholder="Seleccione fecha"
-          @change="fech_changer"
-        />
-
-        <el-select v-model="form_c.via_id" placeholder="Seleccione una opcion"  clearable>
-          <el-option
-            v-for="item in opt_via"
-            :key="item.via_id"
-            :label="item.via_descripcion"
-            :value="item.via_id"
-          > </el-option>
-        </el-select> 
-      </el-row>
-    </el-form-item>
 
     <el-form-item  label="Cantidad">
 
@@ -925,7 +989,7 @@ export default {
       </el-select>
     </el-form-item>
 
-    <el-row style="text-align=center; margin-left:100px" >
+    <el-row style="text-align:center; margin-left:100px" >
       <el-button  @click="transaccion_insertar" style="margin-left: auto;margin-right: auto" color="#0844a4" >Guardar</el-button>
     </el-row>
       

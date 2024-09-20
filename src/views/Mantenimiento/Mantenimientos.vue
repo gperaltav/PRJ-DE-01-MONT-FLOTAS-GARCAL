@@ -28,6 +28,7 @@ export default {
 
       opt_rs: [],
       opt_veh:[],
+      opt_tar:[],
 
       data_edit: [],
       data_edit2: [],
@@ -64,7 +65,12 @@ export default {
       }),
 
       form_e : reactive({
-
+        serie:null,
+        veh_id:null,
+        gti:null,
+        n_min:null,
+        n_max:null,
+        estado:null,
       }),
     }
   },
@@ -137,6 +143,13 @@ export default {
 
     rs_changer() {
       this.emp_cont=this.form_c.rs;
+    },
+
+    search_rs_clear() {
+      this.form_b.codigo= '';
+      this.form_b.estado= '';
+      this.form_b.fech_inicio= null;
+      this.form_b.fech_fin= null;
     },
 
     clear_c() {
@@ -522,11 +535,11 @@ export default {
   <div v-if="$isMobile()">
   <el-collapse>
     <el-collapse-item title="Opciones">
-      <el-form @submit.prevent :inline="true" :model="formInline" label-width="auto" size="small" >
+      <el-form @submit.prevent :inline="true" label-width="auto" size="small" >
     <el-row justify="center">
 
         <el-form-item label="Razón social">
-          <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
+          <el-select v-model="form_b.rs" @change="search_rs_clear" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
             <el-option
               v-for="item in opt_rs"
               :key="item.emp_id"
@@ -586,11 +599,11 @@ export default {
   </div>
 
   <div v-else>
-    <el-form @submit.prevent :inline="true" :model="formInline" label-width="auto" :size="small" >
+    <el-form @submit.prevent :inline="true" label-width="auto" size="small" >
     <el-row>
       <el-col :span="21">
         <el-form-item label="Razón social">
-          <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
+          <el-select v-model="form_b.rs" @change="search_rs_clear" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
             <el-option
               v-for="item in opt_rs"
               :key="item.emp_id"
@@ -666,7 +679,7 @@ export default {
 
 
 <modal ref="mo_create_per" no-close-on-backdrop title="Agregar guia de mantenimiento" width="700px" @ok="create_usr()" @cancel="closecrear" cancel-title="Atras" centered>
-  <el-form @submit.prevent ref="form_cref" :rules="rules" :model="form_c" label-width="130px" :size="$isMobile() ? 'small':'default'" >
+  <el-form @submit.prevent ref="form_cref" :model="form_c" label-width="130px" :size="$isMobile() ? 'small':'default'" >
 
     <el-row style="margin-right:20px">
       <el-col :span="$isMobile() ? 24:12">
