@@ -1,9 +1,9 @@
 <script  setup>
 import { reactive } from 'vue'
-import axios from 'axios'
-import { EditPen, Filter, Plus, Download, SetUp} from '@element-plus/icons-vue'
+import { EditPen, Filter, Plus, SetUp} from '@element-plus/icons-vue'
 
-import { ref } from 'vue'
+import {API} from '@/API'
+
 
 </script>
 
@@ -303,12 +303,8 @@ export default {
     },
 
     load_edit(id) {
-      axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/usuarios/'+String(id),{},{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+        .post('usuarios/'+String(id))
         .then((resp) => {
           console.log(resp);
           this.data_edit = resp.data;
@@ -317,8 +313,8 @@ export default {
 
     create_usr(){
       //llamada a API
-      axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/usuarios/nuevo', 
+      API
+        .post('usuarios/nuevo', 
         { 
           "usu_codigo": this.form_c.codigo,
           "usu_clave": this.form_c.password,
@@ -329,10 +325,6 @@ export default {
           "usu_telefono": this.form_c.nro_tel,
           "usu_direccion": this.form_c.direccion,
           "usu_usucreacion": this.$store.state.username
-        },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
         })
         .then((resp) => {
           console.log(resp.data);
@@ -355,8 +347,8 @@ export default {
 
     editar_usr(){
       //llamada a API
-      axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/usuarios/actualizar', 
+      API
+        .post('usuarios/actualizar', 
         { 
           "usu_codigo": this.editpointer,
           "usu_clave": this.form_e.password,
@@ -367,10 +359,6 @@ export default {
           "usu_telefono": this.form_e.nro_tel,
           "usu_direccion": this.form_e.direccion,
           "usu_usucreacion": this.$store.state.username
-        },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
         })
         .then((resp) => {
           console.log(resp.data);
@@ -419,8 +407,8 @@ export default {
     },
 
     editar_permisos() {
-      axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/menusxusuarios/nuevo', 
+      API
+        .post('menusxusuarios/nuevo', 
         {      
           "usu_codigo":this.editpointer2,
           "detalle":[{
@@ -430,10 +418,6 @@ export default {
             "mnu_id":2,
             "abs":true
           }]
-        },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
         })
         .then((resp) => {
           console.log(resp.data);
@@ -476,12 +460,8 @@ export default {
     send_delete() {
       this.close_advertencia_e();
 
-      axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/usuarios/borrar/'+String(this.editpointer),{},{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+        .post('usuarios/borrar/'+String(this.editpointer),{})
         .then((resp) => {
           console.log(resp.data);
           this.succes=resp.data.status;
@@ -511,15 +491,11 @@ export default {
         }
       }
       console.log(tmp_arr)
-      axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/menusxusuarios/nuevo', 
+      API
+        .post('menusxusuarios/nuevo', 
         {
           "usu_codigo":String(this.editpointer2),
           "detalle":tmp_arr
-        },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
         })
         .then((resp) => {
           console.log(resp.data);
@@ -557,15 +533,11 @@ export default {
       this.permisos_array=[];
       this.open_editp();
       this.wait2 = true;
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/menusxusuarios',
+      API
+      .post('menusxusuarios',
       {      
         "usu_codigo":key
-      },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
         .then((resp) => {
           console.log(resp);
           this.perm_edit = resp.data;
@@ -581,12 +553,8 @@ export default {
 
     api_get_all (){
       //llamada a API
-      axios
-        .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/usuarios',{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+        .get('usuarios')
         .then((resp) => {
           console.log(resp);
           this.users = resp.data;
@@ -771,7 +739,7 @@ export default {
       <el-input placeholder="Dejar vacío para conservar" style="width:300px" v-model="form_e.password" />
     </el-form-item>
 
-    <el-row style="text-align=center">
+    <el-row style="text-align:center">
       <el-button style="margin-left: auto;margin-right: auto" color="#E21747" :icon="CloseBold" @click="open_advertencia_e('Realmente desea eliminar a este usuario?')">Eliminar</el-button>
     </el-row>
 

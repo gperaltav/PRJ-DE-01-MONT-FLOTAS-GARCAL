@@ -1,9 +1,8 @@
 <script  setup>
 import { reactive } from 'vue'
-import axios from 'axios'
-import { EditPen, Filter, Plus, Download} from '@element-plus/icons-vue'
 
-import { ref } from 'vue'
+import {API} from '@/API'
+
 import '../assets/plotly.min.js'
 
 </script>
@@ -123,7 +122,6 @@ export default {
       this.api_get_all();
       this.clear_e();
     },
-
     open_advertencia_e(msg) {
       this.alert_mo=msg;
       this.$refs.mo_advertencia_elim.open();
@@ -162,12 +160,8 @@ export default {
     },
 
     load_edit(id) {
-      axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/usuarios/'+String(id),{},{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+        .post('usuarios/'+String(id))
         .then((resp) => {
           console.log(resp);
           this.data_edit = resp.data;
@@ -176,8 +170,8 @@ export default {
 
     create_usr(){
       //llamada a API
-      axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/usuarios/nuevo', 
+      API
+        .post('usuarios/nuevo', 
         { 
           "usu_codigo": this.form_c.codigo,
           "usu_clave": this.form_c.password,
@@ -188,10 +182,6 @@ export default {
           "usu_telefono": this.form_c.nro_tel,
           "usu_direccion": this.form_c.direccion,
           "usu_usucreacion": this.$store.state.username
-        },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
         })
         .then((resp) => {
           console.log(resp.data);
@@ -214,8 +204,8 @@ export default {
 
     editar_usr(){
       //llamada a API
-      axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/usuarios/actualizar', 
+      API
+        .post('usuarios/actualizar', 
         { 
           "usu_codigo": this.editpointer,
           "usu_clave": this.form_e.password,
@@ -226,10 +216,6 @@ export default {
           "usu_telefono": this.form_e.nro_tel,
           "usu_direccion": this.form_e.direccion,
           "usu_usucreacion": this.$store.state.username
-        },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
         })
         .then((resp) => {
           console.log(resp.data);
@@ -260,12 +246,8 @@ export default {
     send_delete() {
       this.close_advertencia_e();
 
-      axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/usuarios/borrar/'+String(this.editpointer),{},{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+        .post('usuarios/borrar/'+String(this.editpointer),{})
         .then((resp) => {
           console.log(resp.data);
           this.succes=resp.data.status;
@@ -300,12 +282,8 @@ export default {
 
     api_get_all (){
       //llamada a API
-      axios
-        .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/usuarios',{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+        .get('usuarios')
         .then((resp) => {
           console.log(resp);
           this.users = resp.data;
@@ -313,12 +291,8 @@ export default {
     },
 
     get_fig3() {
-      axios
-        .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/controldocumentosvehiculos/graficos',{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+        .get('controldocumentosvehiculos/graficos')
         .then((resp) => {
           console.log(resp);
           this.data_t3 = resp.data;
@@ -326,12 +300,8 @@ export default {
     },
 
     get_fig4() {
-      axios
-        .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/mantenimientoscab/graficos',{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+        .get('mantenimientoscab/graficos')
         .then((resp) => {
           console.log(resp);
           this.data_t4 = resp.data;
@@ -339,24 +309,16 @@ export default {
     },
 
     get_fig5() {
-      axios
-        .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprascab/graficos',{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+        .get('comprobantescomprascab/graficos')
         .then((resp) => {
           console.log(resp);
           this.data_t5 = resp.data;
         })
     },
     get_fig6() {
-      axios
-        .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprasdet/graficos',{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+        .get('comprobantescomprasdet/graficos')
         .then((resp) => {
           console.log(resp);
           this.data_t6 = resp.data;
@@ -367,12 +329,8 @@ export default {
     get_plot() {
       this.data_tra1=[];
       this.data_tra2=[];
-      axios
-        .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/trabajadores/graficos',{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+        .get('trabajadores/graficos')
         .then((resp) => {
           console.log(resp.data);
           this.succes=resp.data.status;
@@ -426,12 +384,8 @@ export default {
 
     get_plot2() {
       this.data_t2=[];
-      axios
-        .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes/graficos',{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+        .get('viajes/graficos')
         .then((resp) => {
           console.log(resp.data);
           this.succes=resp.data.status;
@@ -513,7 +467,7 @@ export default {
   </el-col>
 
   <el-col :span="$isMobile() ? 24:8" style="margin-top:30px">
-    <span style="margin-button:30px">Documentos a vencer:</span>
+    <span style="margin-bottom:30px">Documentos a vencer:</span>
     <el-table size="small" :data="data_t3" style="width: 100%" height="250">
       <el-table-column prop="emp_razonsocial" label="Empresa"  />
       <el-table-column prop="veh_placa" label="Placa" />
@@ -527,7 +481,7 @@ export default {
 
 <el-row :gutter="5">
   <el-col :span="$isMobile() ? 24:8">
-    <span style="margin-button:30px">Alerta para mantenimiento:</span>
+    <span style="margin-bottom:30px">Alerta para mantenimiento:</span>
     <el-table size="small" :data="data_t4" style="width: 100%" height="250">
       <el-table-column prop="emp_razonsocial" label="Empresa"  />
       <el-table-column prop="veh_placa" label="Placa" />
@@ -535,7 +489,7 @@ export default {
     </el-table>
   </el-col>
   <el-col :span="$isMobile() ? 24:8">
-    <span style="margin-button:30px">Vencimiento de cuentas:</span>
+    <span style="margin-bottom:30px">Vencimiento de cuentas:</span>
     <el-table size="small" :data="data_t5" style="width: 100%" height="250">
       <el-table-column prop="emp_razonsocial" label="Empresa"  />
       <el-table-column prop="ccc_serienumero" label="Nro. de doc." />
@@ -543,7 +497,7 @@ export default {
     </el-table>
   </el-col>
   <el-col :span="$isMobile() ? 24:8">
-    <span style="margin-button:30px">Combustible:</span>
+    <span style="margin-bottom:30px">Combustible:</span>
     <el-table size="small" :data="data_t6" style="width: 100%" height="250">
       <el-table-column prop="ruta" label="Ruta"  />
       <el-table-column prop="veh_placa" label="Vehículo" />

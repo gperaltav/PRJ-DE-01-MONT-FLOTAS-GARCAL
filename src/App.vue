@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { RouterLink, RouterView } from 'vue-router'
+
+import { RouterView } from 'vue-router'
 import { Notebook, OfficeBuilding,DocumentChecked,Operation,TrendCharts,Money,Tickets,Expand,Setting} from '@element-plus/icons-vue'
-import { API } from '@/API';
 
 </script>
 
@@ -33,8 +32,7 @@ import { API } from '@/API';
         this.changetool();
       }
 
-      API.defaults.headers.common['x-api-key'] = "1r01N77vRK1bXkGst8wN189MJfz5ZR3d4O9FdF2H";
-      API.defaults.headers.common['Access-Control-Allow-Origin'] = "*";
+      //API.defaults.headers.common['x-api-key'] = "1r01N77vRK1bXkGst8wN189MJfz5ZR3d4O9FdF2H";
       
       this.$store.commit('set_key1',{
               key: "1r01N77vRK1bXkGst8wN189MJfz5ZR3d4O9FdF2H"
@@ -118,7 +116,7 @@ import { API } from '@/API';
     </el-header>
 
     <el-header v-else style="text-align: left; font-size: 24px">
-      <el-col :span="10" style="text-align=left">
+      <el-col :span="10" style="text-align:left">
         <div class="toolbar">
           <el-button type="text" style="padding:20px" size="small" @click="changetool"><el-icon style="color:white" size='15'><Expand /></el-icon></el-button>
           <span :class="[$isMobile() ? 'mv-title' : 'dkt-title']">ERP Garcal</span>
@@ -179,7 +177,7 @@ import { API } from '@/API';
               <el-menu-item :disabled=!acc_chk[3] @click='change_title("Base de datos > Personal")' index="personal">Personal</el-menu-item>
               <el-menu-item :disabled=!acc_chk[4] @click='change_title("Base de datos > Vehiculos")' index="vehiculos">Vehiculos</el-menu-item>
               <el-menu-item :disabled=!acc_chk[5] @click='change_title("Base de datos > Proveedores")' index="proveedores">Proveedores</el-menu-item>
-              <el-menu-item :disabled=!acc_chk[6] @click='change_title("Base de datos > Productos")' index="productos">Productos</el-menu-item>
+              <el-menu-item :disabled=!acc_chk[6] @click='change_title("Base de datos > Bienes y servicios")' index="bienes_servicios">Bienes y servicios</el-menu-item>
               <el-menu-item :disabled=!acc_chk[7] @click='change_title("Base de datos > Ubigeos")' index="ubigeos">Ubigeos</el-menu-item>
             </el-sub-menu>
             <el-sub-menu index="2">
@@ -187,7 +185,9 @@ import { API } from '@/API';
                 <el-icon><document-checked /></el-icon>
                 <span>Documentos</span>
               </template>
+              <el-menu-item :disabled=!acc_chk[8] @click='change_title("Documentos > Tipos de doc. vehiculos")' index="tdoc_vehiculos">Tipos de doc. vehiculos</el-menu-item>
               <el-menu-item :disabled=!acc_chk[8] @click='change_title("Documentos > Vehiculos")' index="doc_vehiculos">Vehiculos</el-menu-item>
+              <el-menu-item :disabled=!acc_chk[8] @click='change_title("Documentos > Tipos de doc. personal")' index="tdoc_personal">Tipos de doc. personal</el-menu-item>
               <el-menu-item :disabled=!acc_chk[9] @click='change_title("Documentos > Personal")' index="doc_personal">Personal</el-menu-item>
             </el-sub-menu>
             <el-menu-item :disabled=!acc_chk[10] @click='change_title("Planificación")' index="planificacion">

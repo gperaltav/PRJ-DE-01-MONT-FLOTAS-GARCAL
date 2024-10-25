@@ -3,6 +3,9 @@ import { reactive,ref } from 'vue'
 import axios from 'axios'
 import { EditPen, Filter, Plus, Download, CloseBold,Search} from '@element-plus/icons-vue'
 
+import { API} from '@/API'
+import {REAPI} from '@/API/report.js'
+
 import type { FormInstance, FormRules } from 'element-plus'
 
 const checknombre = (rule: any, value: any, callback: any) => {
@@ -61,7 +64,7 @@ const rules = reactive({
 
 </script>
 
-<script lang="ts">
+<script lang="ts" >
 import modal from "../../components/modal.vue"
 export default {
   components: {
@@ -253,12 +256,8 @@ export default {
       this.search_rs_clear();
     },
     load_rs() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas',{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .get('empresas')
         .then((resp) => {
           console.log(resp);
           this.opt_rs = resp.data;
@@ -266,27 +265,19 @@ export default {
     },
     
     load_fpago() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdepago/'+String(this.emp_cont),{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .get('formasdepago/'+String(this.emp_cont))
         .then((resp) => {
           console.log(resp);  
           this.opt_fpago = resp.data;
         })
     },
     load_tdoc() {
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/documentos', 
+      API
+      .post('documentos', 
         { 
           "emp_id":String(this.emp_cont),
           "dti_referencia_uso":""
-        },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
         })
         .then((resp) => {
           console.log(resp);  
@@ -294,12 +285,8 @@ export default {
         })
     },
     load_prod() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/productos/'+String(this.emp_cont),{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .get('productos/'+String(this.emp_cont))
         .then((resp) => {
           console.log(resp);  
           this.opt_prod = resp.data;
@@ -308,8 +295,8 @@ export default {
     },
 
     load_edit(id,rss) {
-      axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/"+String(id),
+      API
+      .post("entidad/"+String(id),
         {
           "emp_id":String(rss),
           "ext_id":this.var_type
@@ -332,12 +319,8 @@ export default {
     },
 
     send_descarga() {
-      axios
-        .post('http://51.222.25.71:8080/garcal-report-api/api/proveedorescsv',{},{ 
-          headers:{
-          "x-api-key":this.$store.state.api_key1
-          }
-        })
+      REAPI
+        .post('proveedorescsv')
         .then((resp) => {
           console.log(resp.data);
           this.succes=resp.data.status;
@@ -358,16 +341,12 @@ export default {
 
     send_delete() {
       this.$refs.mo_advertencia_eliim.hide();
-      axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/borrar/',
+      API
+        .post('entidad/borrar',
         {
           "ent_id":String(this.editpointer),
           "emp_id":String(this.form_e.rs),
           "ext_id":this.var_type
-        },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
         })
         .then((resp) => {
           console.log(resp.data);
@@ -408,12 +387,8 @@ export default {
 
     api_get_all(){
       //llamada a API
-     axios
-        .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/proveedor',{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+     API
+        .get('entidad/proveedor')
         .then((resp) => {
           console.log(resp);
           this.datap = resp.data;
@@ -423,8 +398,8 @@ export default {
 
     api_get_filt(){
       console.log(this.form_b.rs);
-      axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad', 
+      API
+        .post('entidad', 
         {
           "emp_id": String(this.form_b.rs),
           "ext_id":this.var_type,
@@ -432,10 +407,6 @@ export default {
           "ent_nrodocumento":this.form_b.nro_doc,
           "fdp_id":this.form_b.f_pago,
           "pro_id":this.form_b.prod
-        },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
         })
         .then((resp) => {
           console.log(resp);
@@ -444,8 +415,8 @@ export default {
     },
     
     create_usr(){
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/nuevo', 
+      API
+      .post('entidad/nuevo', 
       { 
         "emp_id":parseInt(this.form_c.rs),
         "Ubi_codigo":"",
@@ -471,10 +442,6 @@ export default {
         "ent_estadocontribuyente":this.form_c.c_activo,
         "ent_condicioncontribuyente":this.form_c.c_habido,
         "pro_id":this.form_c.prod
-      },{ 
-        headers:{
-          "x-api-key":this.$store.state.api_key2
-        }
       })
       .then((resp) => {
         console.log(resp.data);
@@ -504,8 +471,8 @@ export default {
 
     editar_usr(){
       //llamada a API
-      axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/actualizar', 
+      API
+        .post('entidad/actualizar', 
         { 
           "ent_id" :this.editpointer,
           "emp_id":parseInt(this.form_e.rs),
@@ -532,10 +499,6 @@ export default {
           "ent_estadocontribuyente":this.form_e.c_activo,
           "ent_condicioncontribuyente":this.form_e.c_habido,
           "pro_id":this.form_e.prod
-        },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
         })
         .then((resp) => {
           console.log(resp.data.status);
@@ -561,15 +524,11 @@ export default {
       this.wait = true;
       //this.load_edit(number,number2);
 
-      axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/"+String(number),
+      API
+      .post("entidad/"+String(number),
       {
         "emp_id":String(number2),
         "ext_id":this.var_type
-      },{ 
-        headers:{
-          "x-api-key":this.$store.state.api_key2
-        }
       })
       .then((resp) => {
         this.data_edit = resp.data;
@@ -899,7 +858,7 @@ export default {
       <el-input style="width:300px" v-model="form_e.telefono" />
     </el-form-item>
 
-    <el-row style="text-align=center" >
+    <el-row style="text-align:center" >
       <el-button style="margin-left: auto;margin-right: auto" color="#E21747" :icon="CloseBold" @click="open_confirmar('Realmente desea eliminar a este proveedor?')">Eliminar</el-button>
     </el-row>
 

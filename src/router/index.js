@@ -83,8 +83,8 @@ const router = createRouter({
       }
     },
     {
-      path: '/productos',
-      name: 'Productos',
+      path: '/bienes_servicios',
+      name: 'Bienes y servicios',
       component: () => import('../views/Base_datos/Productos.vue'),
       beforeEnter: (to, from, next) => {
         if(store.state.Credentials[6]) {
@@ -107,6 +107,34 @@ const router = createRouter({
           next(false);
         }
       }
+    },
+    {
+      path: '/tdoc_vehiculos',
+      name: 'Tipos doc. Vehiculos',
+      component: () => import('../views/Documentos/TiposDocV.vue'),
+      beforeEnter: (to, from, next) => {
+        if(store.state.Credentials[8]) {
+          next();
+          
+        } else {
+          next(false);
+        }
+      }
+      
+    },
+    {
+      path: '/tdoc_personal',
+      name: 'Tipos doc. Personal',
+      component: () => import('../views/Documentos/TiposDocP.vue'),
+      beforeEnter: (to, from, next) => {
+        if(store.state.Credentials[9]) {
+          next();
+          
+        } else {
+          next(false);
+        }
+      }
+      
     },
     {
       path: '/doc_personal',

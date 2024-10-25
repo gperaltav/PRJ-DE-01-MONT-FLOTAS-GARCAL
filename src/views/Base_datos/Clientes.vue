@@ -1,7 +1,9 @@
 <script lang="ts" setup>
 import { reactive,ref } from 'vue'
-import axios from 'axios'
 import { EditPen, Filter, Plus, Download, CloseBold, Search} from '@element-plus/icons-vue'
+
+import { API } from '@/API';
+import { REAPI } from '@/API/report.js';
 
 import type { FormInstance, FormRules } from 'element-plus'
 
@@ -231,60 +233,40 @@ export default {
       this.search_rs_clear();
     },
     load_rs() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas',{ 
-          headers:{
-          "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .get('empresas')
         .then((resp) => {
           console.log(resp);
           this.opt_rs = resp.data;
         })
     },
     load_mar() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api//vehiculosmarcas/'+String(this.emp_cont),{ 
-          headers:{
-          "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .get('vehiculosmarcas/'+String(this.emp_cont))
         .then((resp) => {
           console.log(resp);
           this.opt_mar = resp.data;
         })
     },
     load_mod() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api//vehiculosmodelos/'+String(this.emp_cont),{ 
-          headers:{
-          "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .get('vehiculosmodelos/'+String(this.emp_cont))
         .then((resp) => {
           console.log(resp);
           this.opt_mod = resp.data;
         })
     },
     load_cla() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api//vehiculosclases/'+String(this.emp_cont),{ 
-          headers:{
-          "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .get('vehiculosclases/'+String(this.emp_cont))
         .then((resp) => {
           console.log(resp);
           this.opt_cla = resp.data;
         })
     },
     load_ti() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api//vehiculostipos/'+String(this.emp_cont),{ 
-          headers:{
-          "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .get('vehiculostipos/'+String(this.emp_cont))
         .then((resp) => {
           console.log(resp);
           this.opt_ti = resp.data;
@@ -292,27 +274,19 @@ export default {
     },
     
     load_fpago() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdecobro/'+String(this.emp_cont),{ 
-          headers:{
-          "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .get('formasdecobro/'+String(this.emp_cont))
         .then((resp) => {
           console.log(resp);  
           this.opt_fpago = resp.data;
         })
     },
     load_tdoc() {
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/documentos', 
+      API
+      .post('documentos', 
         { 
           "emp_id":String(this.emp_cont),
           "dti_referencia_uso":""
-        },{ 
-          headers:{
-          "x-api-key":this.$store.state.api_key2
-          }
         })
         .then((resp) => {
           console.log(resp);  
@@ -320,15 +294,11 @@ export default {
         })
     },
     load_edit(id,rss) {
-      axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/"+String(id),
+      API
+      .post("entidad/"+String(id),
         {
           "emp_id":String(rss),
           "ext_id":this.var_type
-        },{ 
-          headers:{
-          "x-api-key":this.$store.state.api_key2
-          }
         })
         .then((resp) => {
           console.log(resp);
@@ -339,16 +309,12 @@ export default {
     send_delete() {
       this.$refs.mo_advertencia_eliim.hide();
       this.err_code=false;
-      axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/borrar/',
+      API
+        .post('entidad/borrar/',
         {
           "ent_id":String(this.editpointer),
           "emp_id":String(this.form_e.rs),
           "ext_id":this.var_type
-        },{ 
-          headers:{
-          "x-api-key":this.$store.state.api_key2
-          }
         })
         .then((resp) => {
           console.log(resp.data);
@@ -398,8 +364,8 @@ export default {
     },
 
     send_descarga() {
-      axios
-        .post('http://51.222.25.71:8080/garcal-report-api/api/clientescsv',{},{ 
+      REAPI
+        .post('clientescsv',{},{ 
           headers:{
           "x-api-key":this.$store.state.api_key1
           }
@@ -424,12 +390,8 @@ export default {
 
     api_get_all(){
       //llamada a API
-     axios
-        .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/cliente',{ 
-          headers:{
-          "x-api-key":this.$store.state.api_key2
-          }
-        })
+     API
+        .get('entidad/cliente')
         .then((resp) => {
           console.log(resp);
           this.datap = resp.data;
@@ -439,8 +401,8 @@ export default {
 
     api_get_filt(){
       console.log(this.form_b.rs);
-      axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad', 
+      API
+        .post('entidad', 
         {
           "emp_id": String(this.form_b.rs),
           "ext_id":this.var_type,
@@ -448,10 +410,6 @@ export default {
           "ent_nrodocumento":this.form_b.nro_doc,
           "fdp_id":this.form_b.f_pago,
           "pro_descripcion":""
-        },{ 
-          headers:{
-          "x-api-key":this.$store.state.api_key2
-          }
         })
         .then((resp) => {
           console.log(resp);
@@ -460,8 +418,8 @@ export default {
     },
     
     create_usr(){
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/nuevo', 
+      API
+      .post('entidad/nuevo', 
       { 
         "emp_id":parseInt(this.form_c.rs),
         "Ubi_codigo":"",
@@ -487,11 +445,7 @@ export default {
         "ent_estadocontribuyente":this.form_c.c_activo,
         "ent_condicioncontribuyente":this.form_c.c_habido,
         "pro_id":""
-      },{ 
-          headers:{
-          "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
       .then((resp) => {
         console.log(resp.data);
         this.succes=resp.data.status;
@@ -518,8 +472,8 @@ export default {
 
     editar_usr(){
       //llamada a API
-      axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/actualizar', 
+      API
+        .post('entidad/actualizar', 
         { 
           "ent_id" :this.editpointer,
           "emp_id":parseInt(this.form_e.rs),
@@ -546,10 +500,6 @@ export default {
           "ent_estadocontribuyente":this.form_e.c_activo,
           "ent_condicioncontribuyente":this.form_e.c_habido,
           "pro_id":""
-        },{ 
-          headers:{
-          "x-api-key":this.$store.state.api_key2
-          }
         })
         .then((resp) => {
           //console.log(resp.data.status);
@@ -573,8 +523,8 @@ export default {
       this.$refs.mo_editar_per.open();
       this.wait = true;
 
-      axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/"+String(number),
+      API
+      .post("entidad/"+String(number),
       {
         "emp_id":String(number2),
         "ext_id":this.var_type
@@ -614,7 +564,7 @@ export default {
     <el-collapse>
       <el-collapse-item title="Opciones">
 
-      <el-form @submit.prevent :inline="true" :model="formInline" label-width="auto" size="small">
+      <el-form @submit.prevent :inline="true" label-width="auto" size="small">
       <el-row justify="center">
           <el-form-item label="Razón social">
               <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
@@ -668,7 +618,7 @@ export default {
     </div>
 
     <div v-else>
-      <el-form @submit.prevent :inline="true" :model="formInline" label-width="auto">
+      <el-form @submit.prevent :inline="true" label-width="auto">
       <el-row>
         <el-col :span="21">
           <el-form-item label="Razón social">
@@ -827,7 +777,7 @@ export default {
 
 
 <modal ref="mo_editar_per" no-close-on-backdrop title="Editar datos de Cliente" width="500px" @ok="editar_usr" cancel-title="Cancelar" @cancel="closeedit"  centered>
-  <el-form @submit.prevent v-loading="wait" ref="form_edit_ref" :rules="rules" :model="form" label-width="150px" :size="$isMobile() ? 'small':'default'">
+  <el-form @submit.prevent v-loading="wait" ref="form_edit_ref" :rules="rules" label-width="150px" :size="$isMobile() ? 'small':'default'">
 
     <el-form-item  label="Razón soc. asoc.">
       <el-select style="width:300px" v-model="form_e.rs" @change="rs_changer" placeholder="Seleccionar">
@@ -902,7 +852,7 @@ export default {
       <el-checkbox v-model="form_e.c_habido" label="Contribuyente habido" />
     </el-form-item>
 
-    <el-row style="text-align=center">
+    <el-row style="text-align:center">
       <el-button style="margin-left: auto;margin-right: auto" color="#E21747" :icon="CloseBold" @click="open_confirmar('Realmente desea eliminar a este cliente?')">Eliminar</el-button>
     </el-row>
     

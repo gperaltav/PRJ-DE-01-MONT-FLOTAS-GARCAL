@@ -1,7 +1,9 @@
 <script lang="ts" setup>
 import { reactive,ref } from 'vue'
-import axios from 'axios'
 import { EditPen, Filter, Plus, Download, CloseBold} from '@element-plus/icons-vue'
+
+import {API}  from '@/API';
+import {REAPI} from '@/API/report.js'
 
 import type { FormInstance, FormRules } from 'element-plus'
 
@@ -180,12 +182,8 @@ export default {
       this.$refs.mo_create_per.hide();
     },
     load_rs() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas',{ 
-        headers:{
-          "x-api-key":this.$store.state.api_key2
-        }
-      })
+      API
+      .get('empresas')
       .then((resp) => {
         console.log(resp);
         this.opt_rs = resp.data;
@@ -194,8 +192,8 @@ export default {
 
     send_delete() {
       this.$refs.mo_advertencia_eliim.hide();
-      axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/controldocumentostripulacion/nuevo', 
+      API
+        .post('controldocumentostripulacion/nuevo', 
         { 
           "emp_id": String(this.edit_rs),
           "tri_id":String(this.editpointer),
@@ -204,10 +202,6 @@ export default {
           "txd_fechaemision":"",
           "txd_fechavencimiento":"",
           "txd_usucreacion":this.$store.state.username
-        },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
         })
         .then((resp) => {
           console.log(resp.data.status);
@@ -234,12 +228,8 @@ export default {
     },
 
     send_descarga() {
-      axios
-        .post('http://51.222.25.71:8080/garcal-report-api/api/controldocumentoschoferescsv',{},{ 
-          headers:{
-          "x-api-key":this.$store.state.api_key1
-          }
-        })
+      REAPI
+        .post('controldocumentoschoferescsv')
         .then((resp) => {
           console.log(resp.data);
           this.succes=resp.data.status;
@@ -260,15 +250,11 @@ export default {
 
     api_get_all(){
       //llamada a API
-     axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/controldocumentostripulacion',
+     API
+        .post('controldocumentostripulacion',
         {
           "emp_id": "",
           "veh_placa":""
-        },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
         })
         .then((resp) => {
           this.datap = resp.data;
@@ -277,15 +263,11 @@ export default {
     },
 
     api_get_filt(){
-      axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/controldocumentostripulacion',
+      API
+        .post('controldocumentostripulacion',
         {
            "emp_id": this.form_b.rs,
             "tri_nombre":this.form_b.nombre,
-        },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
         })
         .then((resp) => {
           console.log(resp);
@@ -295,8 +277,8 @@ export default {
 
     send_editar_doc(){
       //llamada a API
-      axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/controldocumentostripulacion/nuevo', 
+      API
+        .post('controldocumentostripulacion/nuevo', 
         { 
           "emp_id": String(this.edit_rs),
           "tri_id":String(this.editpointer),
@@ -305,10 +287,6 @@ export default {
           "txd_fechaemision":this.form_e.fech_emision,
           "txd_fechavencimiento":this.form_e.fech_venc,
           "txd_usucreacion":this.$store.state.username
-        },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
         })
         .then((resp) => {
           //console.log(resp.data.status);
@@ -328,15 +306,11 @@ export default {
     },
 
     load_edit() {
-      axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/controldocumentostripulacion/"+String(this.editpointer),
+      API
+      .post("controldocumentostripulacion/"+String(this.editpointer),
         {
           "tri_id": this.editpointer,
           "ttd_id": this.tipo_doc
-        },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
         })
         .then((resp) => {
           console.log(resp);
@@ -407,16 +381,12 @@ export default {
       }
       if(this.tipo_doc!=-1) {
         //this.load_edit();
-        axios
-        .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/controldocumentostripulacion/"+String(this.editpointer),
+        API
+        .post("controldocumentostripulacion/"+String(this.editpointer),
           {
             "tri_id": this.editpointer,
             "ttd_id": this.tipo_doc
-          },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+          })
           .then((resp) => {
             //console.log(resp);
             this.data_edit = resp.data;
@@ -627,7 +597,7 @@ export default {
   </div>
 
   <div v-else>
-    <el-form @submit.prevent  :inline="true" :model="form" label-width="auto" :size="small"  >
+    <el-form @submit.prevent  :inline="true"  label-width="auto" size="small"  >
     <el-row> 
       <el-col :span="21">
         <el-form-item label="Razón social">
@@ -700,15 +670,15 @@ export default {
 
 
 <modal ref="mo_editar_per" no-close-on-backdrop title="Detalles" width="500px" @ok="send_editar_doc" cancel-title="Atrás" @cancel="closeedit"  centered>
-  <el-form @submit.prevent v-loading="wait" ref="form_edit_ref" :rules="rules" :model="form" label-width="150px" >
-    <el-row style="text-align=center">
-    <div style="margin-left: auto;margin-right: auto;text-align=center">
+  <el-form @submit.prevent v-loading="wait" ref="form_edit_ref" :rules="rules" label-width="150px" >
+    <el-row style="text-align:center">
+    <div style="margin-left: auto;margin-right: auto;text-align:center">
       <h4>Nombre: {{tra_act}}</h4>
       <h4>Tipo de doc.: {{tipo_act}}</h4>
     </div>
     </el-row>
     <el-form-item  label="Nro. de licencia">
-      <el-input autosize style="width=10px" v-model="form_e.nro_lic" />
+      <el-input autosize style="width:10px" v-model="form_e.nro_lic" />
     </el-form-item>
     
     <el-form-item label="Fecha de emisión">
@@ -729,11 +699,11 @@ export default {
     </el-form-item>
 
     <el-form-item  label="Entidad emisora">
-      <el-input autosize style="width=10px" v-model="form_e.ent_emisora" />
+      <el-input autosize style="width:10px" v-model="form_e.ent_emisora" />
     </el-form-item>
 
 
-    <el-row style="text-align=center">
+    <el-row style="text-align:center">
       <el-button style="margin-left: auto;margin-right: auto" color="#E21747" :icon="CloseBold" @click="open_confirmar('Realmente desea eliminar los datos de este documento?')">Eliminar</el-button>
     </el-row>
 

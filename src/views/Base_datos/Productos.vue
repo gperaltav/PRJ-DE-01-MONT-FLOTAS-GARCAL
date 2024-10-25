@@ -3,6 +3,9 @@ import { reactive,ref } from 'vue'
 import axios from 'axios'
 import { EditPen, Filter, Plus, Download, CloseBold,Search,CreditCard ,Delete} from '@element-plus/icons-vue'
 
+import {API} from '@/API'
+import {REAPI} from '@/API/report.js'
+
 import type { FormInstance, FormRules } from 'element-plus'
 
 </script>
@@ -31,6 +34,7 @@ export default {
       pointer:'',
 
       form_b : reactive({
+        rs:null,
         nombre: '',
         descripcion: '',
         codigo: ''
@@ -60,12 +64,8 @@ export default {
     },
 
     send_descarga() {
-      axios
-        .post('http://51.222.25.71:8080/garcal-report-api/api/productoscsv',{},{ 
-          headers:{
-          "x-api-key":this.$store.state.api_key1
-          }
-        })
+      REAPI
+        .post('productoscsv')
         .then((resp) => {
           console.log(resp.data);
           this.succes=resp.data.status;
@@ -156,12 +156,8 @@ export default {
     },
     
     load_rs() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas',{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .get('empresas')
         .then((resp) => {
           console.log(resp);
           this.opt_rs = resp.data;
@@ -169,12 +165,8 @@ export default {
     },
     
     get_formas_cobro() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdecobro/'+String(this.emp_cont),{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .get('formasdecobro/'+String(this.emp_cont))
         .then((resp) => {
           console.log(resp);  
           this.opt_fcobro = resp.data;
@@ -182,12 +174,8 @@ export default {
     },
 
     get_tipos_doc() {
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprastipos/'+String(this.emp_cont),{},{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .post('comprobantescomprastipos/'+String(this.emp_cont))
       .then((resp) => {
         console.log(resp);
         this.opt_td = resp.data;
@@ -196,30 +184,22 @@ export default {
 
     get_estados_doc() {
       axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprasestados/'+String(this.emp_cont),{},{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      .post('comprobantescomprasestados/'+String(this.emp_cont))
       .then((resp) => {
         console.log(resp);
         this.opt_ed = resp.data;
       })
     },
 
-    api_get_all(){
+    api_get_all(){ 
       //llamada a API
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/productos',
+      API
+      .post('productos',
       {
         "emp_id": 0,
         "pro_descripcion":"",
         "pro_codigo":""
-      },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
       .then((resp) => {
         this.datap = resp.data;
         console.log(this.datap);
@@ -227,17 +207,13 @@ export default {
     },
 
     api_get_filt(){
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/productos',
+      API
+      .post('productos',
       {
         "emp_id": this.form_b.rs,
         "pro_descripcion":this.form_b.descripcion,
         "pro_codigo":this.form_b.codigo
-      },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
       .then((resp) => {
         this.datap = resp.data;
         console.log(this.datap);
@@ -252,12 +228,8 @@ export default {
 
     send_delete_master() {
       this.$refs.mo_advertencia.hide();
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/productos/borrar/'+String(this.editpointer),{},{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .post('productos/borrar/'+String(this.editpointer))
       .then((resp) => {
         console.log(resp.data);
         this.succes=resp.data.status;
@@ -278,8 +250,8 @@ export default {
     },
 
     api_nuevo(){
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/productos/nuevo', {
+      API
+      .post('productos/nuevo', {
         "emp_id": this.form_c.rs,
         "pro_codigo":this.form_c.codigo,
         "pro_descripcion":this.form_c.descripcion,
@@ -290,11 +262,7 @@ export default {
         "pro_preciocompra":0,
         "pro_codsunat":"",
         "pro_usucreacion":this.$store.state.username
-      },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
       .then((resp) => {
         console.log(resp.data);
         this.succes=resp.data.status;
@@ -335,7 +303,7 @@ export default {
   <div v-if="$isMobile()">
   <el-collapse>
     <el-collapse-item title="Opciones">
-      <el-form @submit.prevent :inline="true" :model="formInline" label-width="auto" size="small" >
+      <el-form @submit.prevent :inline="true" label-width="auto" size="small" >
     <el-row justify="center">
 
       <el-form-item label="Razón social">
@@ -373,7 +341,7 @@ export default {
   </div>
 
   <div v-else>
-    <el-form @submit.prevent :inline="true" :model="formInline" label-width="auto"  >
+    <el-form @submit.prevent :inline="true" label-width="auto"  >
     <el-row>
     <el-col :span="21">
       <el-form-item label="Razón social">
@@ -433,10 +401,10 @@ export default {
 
 
 <modal ref="mo_create_per" no-close-on-backdrop title="Agregar producto" width="500px" @ok="api_nuevo" @cancel="closecrear" cancel-title="Atras" centered>
-  <el-form @submit.prevent   ref="form_cref" :rules="rules" :model="form_c" label-width="150px" :size="$isMobile() ? 'small':'default'">
+  <el-form @submit.prevent   ref="form_cref"  :model="form_c" label-width="150px" :size="$isMobile() ? 'small':'default'">
     
     <el-form-item  label="Razón soc. asoc." prop="rs">
-      <el-select style="width:300px" v-model="form_c.rs" @change="rs_changer" placeholder="Seleccionar">
+      <el-select style="width:300px" v-model="form_c.rs" placeholder="Seleccionar">
         <el-option
           v-for="item in opt_rs"
           :key="item.emp_id"

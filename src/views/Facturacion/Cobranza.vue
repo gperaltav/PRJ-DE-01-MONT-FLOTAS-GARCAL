@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 import { reactive,ref } from 'vue'
-import axios from 'axios'
 import { EditPen, Filter, Plus, Download, CloseBold,Search} from '@element-plus/icons-vue'
+
+import {API}  from '@/API';
 
 import type { FormInstance, FormRules } from 'element-plus'
 
@@ -101,6 +102,8 @@ export default {
         nro_doc: '',
         condicion: '',
         nro_ref:'',
+        f_pago:null,
+        nombre:null,
         fech_ini: null,
         fech_fin: null
       }),
@@ -149,12 +152,8 @@ export default {
       })
     },
     get_descarga() {
-       axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdepago/'+String(this.emp_cont),{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+       API
+      .get('formasdepago/'+String(this.emp_cont))
         .then((resp) => {
           console.log(resp);  
           //Download(resp.data.message,"Descargar");
@@ -268,12 +267,8 @@ export default {
       this.search_rs_clear();
     },
     load_rs() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas',{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .get('empresas')
         .then((resp) => {
           console.log(resp);
           this.opt_rs = resp.data;
@@ -281,36 +276,24 @@ export default {
     },
     
     load_fcobro() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdecobro/'+String(this.emp_cont),{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .get('formasdecobro/'+String(this.emp_cont))
         .then((resp) => {
           console.log(resp);  
           this.opt_fp = resp.data;
         })
     },
     load_tdoc() {
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprastipos/'+String(this.emp_cont),{},{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .post('comprobantescomprastipos/'+String(this.emp_cont))
         .then((resp) => {
           console.log(resp);  
           this.opt_td = resp.data;
         })
     },
     load_prod() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/productos/'+String(this.emp_cont),{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .get('productos/'+String(this.emp_cont))
         .then((resp) => {
           console.log(resp);  
           this.opt_prod = resp.data;
@@ -319,12 +302,8 @@ export default {
     },
 
     load_edit(id) {
-      axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventascobros/"+String(id),{},{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .post("comprobantesventascobros/"+String(id))
         .then((resp) => {
           console.log(resp);
           this.data_edit = resp.data;
@@ -333,12 +312,8 @@ export default {
     },
 
     load_edit2(id) {
-      axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventacab/"+String(id),{},{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .post("comprobantesventacab/"+String(id))
         .then((resp) => {
           console.log(resp);
           this.data_edit2 = resp.data;
@@ -347,17 +322,13 @@ export default {
 
     get_clientes(query) {
       console.log(query);
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/buscarentidadnumero', 
+      API
+      .post('entidad/buscarentidadnumero', 
       {
         "emp_id": Number(this.emp_cont),
         "ent_nrodocumento": query,
         "ext_id": "cli"
-      },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
       .then((resp) => {
         console.log(resp);
         this.opt_cli = resp.data;
@@ -376,12 +347,8 @@ export default {
 
     send_delete() {
       this.$refs.mo_advertencia_eliim.hide();
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventascobros/borrar/'+String(this.editpointer),{},{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .post('comprobantesventascobros/borrar/'+String(this.editpointer))
       .then((resp) => {
         console.log(resp.data);
         this.succes=resp.data.status;
@@ -400,12 +367,8 @@ export default {
     },
 
     get_formas_pago() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdepago/'+String(this.form_c.rs),{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .get('formasdepago/'+String(this.form_c.rs))
       .then((resp) => {
         console.log(resp);
         this.opt_fp = resp.data;
@@ -413,12 +376,8 @@ export default {
     },
 
     get_formas_pago2() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdepago/'+String(this.form_b.rs),{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .get('formasdepago/'+String(this.form_b.rs))
       .then((resp) => {
         console.log(resp);
         this.opt_fp = resp.data;
@@ -433,24 +392,16 @@ export default {
     },
 
     get_tipos_doc() {
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprastipos/'+String(this.form_c.rs),{},{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .post('comprobantescomprastipos/'+String(this.form_c.rs))
       .then((resp) => {
         console.log(resp);
         this.opt_td = resp.data;
       })
     },
     get_tipos_doc2() {
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprastipos/'+String(this.form_b.rs),{},{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .post('comprobantescomprastipos/'+String(this.form_b.rs))
       .then((resp) => {
         console.log(resp);
         this.opt_td = resp.data;
@@ -503,12 +454,8 @@ export default {
 
     load_viaje_data(id) {
       console.log(id);
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes/'+String(id),{},{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .post('viajes/'+String(id))
       .then((resp) => {
         console.log(resp);
         this.data_aux = resp.data[0];
@@ -529,8 +476,8 @@ export default {
       var fech2=aa+"-"+mm+"-01";
 
       console.log(aa+mm+dd);
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventascobros',
+      API
+      .post('comprobantesventascobros',
       {
         "emp_id":"",
         "cvt_codigo":"",
@@ -539,11 +486,7 @@ export default {
         "vec_nroreferencia":"",
         "vec_fechacancelacioninicio": fech2,
         "vec_fechacancelacionfin": fech
-      },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
       .then((resp) => {
         console.log(resp);
         this.datap = resp.data;
@@ -558,16 +501,12 @@ export default {
 
     get_viajes() {
 
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajesfecha', 
+      API
+      .post('viajesfecha', 
       {
         "emp_id": this.emp_cont,
         "via_fechaviaje":this.form_c.fecha_via
-      },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
       .then((resp) => {
         console.log(resp);
         this.opt_via = resp.data;
@@ -575,8 +514,8 @@ export default {
     },
 
     api_get_filt(){
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventascobros',
+      API
+      .post('comprobantesventascobros',
       {
         "emp_id":this.form_b.rs,
         "cvt_codigo":this.form_b.tipo_gui,
@@ -585,11 +524,7 @@ export default {
         "vec_nroreferencia":this.form_b.nro_ref,
         "vec_fechacancelacioninicio": this.form_b.fech_ini,
         "vec_fechacancelacionfin": this.form_b.fech_fin
-      },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
       .then((resp) => {
         console.log(resp);
         this.datap = resp.data;
@@ -597,8 +532,8 @@ export default {
     },
     
     create_usr(){
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventascobros/nuevo', 
+      API
+      .post('comprobantesventascobros/nuevo', 
       { 
         "emp_id": Number(this.form_e.rs),
         "cvc_id": 21,
@@ -609,11 +544,7 @@ export default {
         "vec_descripcion":"VARIOS",
         "mon_codigo":"CAR",
         "vec_usucreacion":this.$store.state.username
-      },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
       .then((resp) => {
         console.log(resp.data);
         this.succes=resp.data.status;
@@ -640,8 +571,8 @@ export default {
 
     editar_usr(){
       //llamada a API
-      axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventascobros/actualizar', 
+      API
+        .post('comprobantesventascobros/actualizar', 
         {    
           "vec_id":this.editpointer,
           "emp_id":this.form_e.rs,
@@ -654,10 +585,6 @@ export default {
           "vec_tipocambio":18,
           "mon_codigo":this.form_e.moneda,
           "vec_usucreacion":this.$store.state.username
-        },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
         })
         .then((resp) => {
           console.log(resp.data.status);
@@ -701,21 +628,13 @@ export default {
       this.wait = true;
       //this.load_edit(number);
 
-      axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventascobros/"+String(number),{},{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .post("comprobantesventascobros/"+String(number))
       .then((resp) => {
         this.data_edit = resp.data;
 
-        axios
-        .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantesventacab/"+String(this.data_edit[0].cvc_id),{},{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+        API
+        .post("comprobantesventacab/"+String(this.data_edit[0].cvc_id))
           .then((resp) => {
             this.data_edit2 = resp.data;
 
@@ -760,7 +679,7 @@ export default {
   <el-collapse>
     <el-collapse-item title="Opciones">
       
-  <el-form @submit.prevent :inline="true" :model="formInline" label-width="auto" size="small" >
+  <el-form @submit.prevent :inline="true" label-width="auto" size="small" >
     <el-row justify="center">
 
       <el-form-item label="Razón social">
@@ -803,7 +722,7 @@ export default {
       <el-form-item label="Fecha de emisión">
         <el-col :span="11">
           <el-date-picker
-            v-model="form_b.fecha_i"
+            v-model="form_b.fech_ini"
             format="YYYY-MM-DD"
             value-format="YYYY-MM-DD"
             type="date"
@@ -816,7 +735,7 @@ export default {
         </el-col>
         <el-col :span="11">
           <el-date-picker
-            v-model="form_b.fecha_f"
+            v-model="form_b.fech_fin"
             format="YYYY-MM-DD"
             value-format="YYYY-MM-DD"
             type="date"
@@ -846,7 +765,7 @@ export default {
 
   <div v-else>
     
-  <el-form @submit.prevent :inline="true" :model="formInline" label-width="auto" :size="small" >
+  <el-form @submit.prevent :inline="true" label-width="auto" size="small" >
     <el-row>
     <el-col :span="21">
       <el-form-item label="Razón social">
@@ -889,7 +808,7 @@ export default {
       <el-form-item label="Fecha de emisión">
         <el-col :span="11">
           <el-date-picker
-            v-model="form_b.fecha_i"
+            v-model="form_b.fech_ini"
             format="YYYY-MM-DD"
             value-format="YYYY-MM-DD"
             type="date"
@@ -902,7 +821,7 @@ export default {
         </el-col>
         <el-col :span="11">
           <el-date-picker
-            v-model="form_b.fecha_f"
+            v-model="form_b.fech_fin"
             format="YYYY-MM-DD"
             value-format="YYYY-MM-DD"
             type="date"
@@ -971,8 +890,6 @@ export default {
       v-model="form_e.cli_id"
       filterable
       :remote-method="get_clientes"
-      @change="select_clientes"
-      @clear="clear_clientes"
       placeholder="Inserte ID de cliente"
       remote
       disabled
@@ -1061,7 +978,7 @@ export default {
       </el-col>
     </el-row>
   </el-form-item>
-  <el-row style="text-align=center" >
+  <el-row style="text-align:center" >
     <el-button style="margin-left: auto;margin-right: auto" color="#E21747" :icon="CloseBold" @click="open_confirmar('Realmente desea eliminar este comprobante?')">Eliminar</el-button>
   </el-row>
   

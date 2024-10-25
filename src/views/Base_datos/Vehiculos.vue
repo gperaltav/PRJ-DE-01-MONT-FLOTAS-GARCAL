@@ -3,9 +3,10 @@ import { reactive,ref } from 'vue'
 import axios from 'axios'
 import { EditPen, Filter, Plus, Download, CloseBold} from '@element-plus/icons-vue'
 
+import {API} from '@/API'
+import {REAPI} from '@/API/report.js'
+
 import type { FormInstance, FormRules } from 'element-plus'
-
-
 
 const checkyear = (rule: any, value: any, callback: any) => {
   if (!value) {
@@ -151,12 +152,8 @@ export default {
     },
 
     send_descarga() {
-      axios
-        .post(' http://51.222.25.71:8080/garcal-report-api/api/vehiculoscsv',{},{ 
-          headers:{
-          "x-api-key":this.$store.state.api_key1
-          }
-        })
+      REAPI
+        .post('vehiculoscsv')
         .then((resp) => {
           console.log(resp.data);
           this.succes=resp.data.status;
@@ -282,72 +279,48 @@ export default {
       this.search_rs_clear();
     },
     load_rs() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas',{ 
-        headers:{
-          "x-api-key":this.$store.state.api_key2
-        }
-      })
+      API
+      .get('empresas')
       .then((resp) => {
         console.log(resp);
         this.opt_rs = resp.data;
       })
     },
     load_mar() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api//vehiculosmarcas/'+String(this.emp_cont),{ 
-        headers:{
-          "x-api-key":this.$store.state.api_key2
-        }
-      })
+      API
+      .get('vehiculosmarcas/'+String(this.emp_cont))
         .then((resp) => {
           console.log(resp);
           this.opt_mar = resp.data;
         })
     },
     load_mod() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api//vehiculosmodelos/'+String(this.emp_cont),{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .get('vehiculosmodelos/'+String(this.emp_cont))
         .then((resp) => {
           console.log(resp);
           this.opt_mod = resp.data;
         })
     },
     load_cla() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api//vehiculosclases/'+String(this.emp_cont),{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .get('vehiculosclases/'+String(this.emp_cont))
         .then((resp) => {
           console.log(resp);
           this.opt_cla = resp.data;
         })
     },
     load_ti() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api//vehiculostipos/'+String(this.emp_cont),{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .get('vehiculostipos/'+String(this.emp_cont))
         .then((resp) => {
           console.log(resp);
           this.opt_ti = resp.data;
         })
     },
     load_esp() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/especialidad/'+String(this.emp_cont),{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .get('especialidad/'+String(this.emp_cont))
         .then((resp) => {
           console.log(resp);
           this.opt_esp = resp.data;
@@ -355,12 +328,8 @@ export default {
     },
 
     load_edit(id) {
-      axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos/"+String(id),{},{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .post("vehiculos/"+String(id))
         .then((resp) => {
           console.log(resp);
           this.data_edit = resp.data;
@@ -369,12 +338,8 @@ export default {
 
     send_delete() {
       this.$refs.mo_advertencia_eliim.hide();
-      axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos/borrar/'+String(this.editpointer),{},{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+        .post('vehiculos/borrar/'+String(this.editpointer))
         .then((resp) => {
           console.log(resp.data.status);
           this.succes=resp.data.status;
@@ -418,12 +383,8 @@ export default {
 
     api_get_all(){
       //llamada a API
-     axios
-        .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos',{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+     API
+        .get('vehiculos')
         .then((resp) => {
           console.log(resp);
           this.datap = resp.data;
@@ -433,8 +394,8 @@ export default {
 
     api_get_filt(){
       console.log(this.form_b.rs);
-      axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos', 
+      API
+        .post('vehiculos', 
         {
           "emp_id": String(this.form_b.rs),
           "veh_placa":this.form_b.placa,
@@ -442,10 +403,6 @@ export default {
           "vmo_nombre":this.form_b.modelo,
           "veh_anno_inicio":String(this.form_b.fecha_i),
           "veh_anno_fin":String(this.form_b.fecha_f)
-        },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
         })
         .then((resp) => {
           console.log(resp);
@@ -455,8 +412,8 @@ export default {
     
     create_usr(){
 
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos/nuevo', 
+      API
+      .post('vehiculos/nuevo', 
       { 
         "emp_id": String(this.form_c.rs),
         "veh_placa":this.form_c.placa,
@@ -470,11 +427,7 @@ export default {
         "veh_mtc":this.form_c.mtc,
         "veh_cargautil":String(this.form_c.carga_util),
         "veh_kilometraje":String(this.form_c.kilometraje)
-      },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
       .then((resp) => {
         console.log(resp.data);
         this.succes=resp.data.status;
@@ -503,9 +456,8 @@ export default {
 
     editar_usr(){
       //llamada a API
-    
     axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos/actualizar', 
+      .post('vehiculos/actualizar', 
       { 
         "veh_id":String(this.editpointer),
         "emp_id": String(this.form_e.rs),
@@ -520,10 +472,6 @@ export default {
         "veh_mtc":this.form_e.mtc,
         "veh_cargautil":String(this.form_e.carga_util),
         "veh_kilometraje":String(this.form_e.kilometraje)
-      },{ 
-        headers:{
-          "x-api-key":this.$store.state.api_key2
-        }
       })
       .then((resp) => {
         console.log(resp.data.status);
@@ -551,12 +499,8 @@ export default {
       this.wait = true;
       //this.load_edit(number);
 
-      axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculos/"+String(number),{},{ 
-        headers:{
-          "x-api-key":this.$store.state.api_key2
-        }
-      })
+      API
+      .post("vehiculos/"+String(number))
       .then((resp) => {
         this.data_edit = resp.data;
 
@@ -981,7 +925,7 @@ export default {
     </el-form-item>
     
     <hr>  
-    <el-row style="text-align=center">
+    <el-row style="text-align:center">
       <el-button style="margin-left: auto;margin-right: auto" color="#E21747" :icon="CloseBold" @click="open_confirmar('Realmente desea eliminar este vehiculo?')">Eliminar</el-button>
     </el-row>
     

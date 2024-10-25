@@ -1,7 +1,9 @@
 <script lang="ts" setup>
 import { reactive,ref } from 'vue'
-import axios from 'axios'
 import { EditPen, Filter, Plus, Download, CloseBold, Search} from '@element-plus/icons-vue'
+
+import { API} from '@/API'
+import {REAPI}  from '@/API/report.js'
 
 import type { FormInstance, FormRules } from 'element-plus'
 
@@ -152,12 +154,8 @@ export default {
     //funciones de carga
 
     load_rs() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas',{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .get('empresas')
         .then((resp) => {
           console.log(resp);
           this.opt_rs = resp.data;
@@ -166,15 +164,11 @@ export default {
 
 
     load_edit(id,rss) {
-      axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/"+String(id),
+      API
+      .post("entidad/"+String(id),
         {
           "emp_id":String(rss),
           "ext_id":this.var_type
-        },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
         })
         .then((resp) => {
           console.log(resp);
@@ -185,16 +179,12 @@ export default {
     send_delete() {
       this.$refs.mo_advertencia_eliim.hide();
       this.err_code=false;
-      axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/borrar/',
+      API
+        .post('entidad/borrar/',
         {
           "ent_id":String(this.editpointer),
           "emp_id":String(this.form_e.rs),
           "ext_id":this.var_type
-        },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
         })
         .then((resp) => {
           console.log(resp.data);
@@ -216,16 +206,12 @@ export default {
     },
 
     get_vehiculos(query) {
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/controldocumentosvehiculos', 
+      API
+      .post('controldocumentosvehiculos', 
       {
         "emp_id": this.form_c.rs,
         "via_fechaviaje":query
-      },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
       .then((resp) => {
         console.log(resp);
         this.opt_veh = resp.data;
@@ -257,12 +243,8 @@ export default {
     },
 
     send_descarga() {
-      axios
-        .post('http://51.222.25.71:8080/garcal-report-api/api/guiasconfiguracioncsv',{},{ 
-          headers:{
-          "x-api-key":this.$store.state.api_key1
-          }
-        })
+      REAPI
+        .post('guiasconfiguracioncsv')
         .then((resp) => {
           console.log(resp.data);
           this.succes=resp.data.status;
@@ -282,15 +264,11 @@ export default {
     },
 
     api_get_all(){
-     axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/guiasconfiguracion', 
+     API
+      .post('guiasconfiguracion', 
       {
         "veh_placa":""
-      },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
       .then((resp) => {
         console.log(resp);
         this.datap = resp.data;
@@ -300,8 +278,8 @@ export default {
 
     api_get_filt(){
       console.log(this.form_b.rs);
-      axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad', 
+      API
+        .post('entidad', 
         {
           "emp_id": String(this.form_b.rs),
           "ext_id":this.var_type,
@@ -309,10 +287,6 @@ export default {
           "ent_nrodocumento":this.form_b.nro_doc,
           "fdp_id":this.form_b.f_pago,
           "pro_descripcion":""
-        },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
         })
         .then((resp) => {
           console.log(resp);
@@ -321,8 +295,8 @@ export default {
     },
     
     create_usr(){
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/guiasconfiguracion/nuevo', 
+      API
+      .post('guiasconfiguracion/nuevo', 
       { 
         "emp_id": Number(this.form_c.rs),
         "gti_codigo":this.form_c.gti,
@@ -332,11 +306,7 @@ export default {
         "gco_numeromin": this.form_c.n_min,
         "gco_numeromax": this.form_c.n_max,
         "gco_usucreacion": this.$store.state.username
-      },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
       .then((resp) => {
         console.log(resp.data);
         this.succes=resp.data.status;
@@ -363,8 +333,8 @@ export default {
 
     editar_usr(){
       //llamada a API
-      axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/guiasconfiguracion/actualizar', 
+      API
+        .post('guiasconfiguracion/actualizar', 
         { 
           "gco_id": Number(this.editpointer),
           "emp_id": Number(this.form_e.rs),
@@ -375,10 +345,6 @@ export default {
           "gco_numeromin": this.form_e.n_min,
           "gco_numeromax": this.form_e.n_max,
           "gco_usucreacion": this.$store.state.username
-        },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
         })
         .then((resp) => {
           console.log(resp.data.status);
@@ -402,12 +368,8 @@ export default {
       this.editpointer=number;
       this.$refs.mo_editar_per.open();
       this.wait = true;
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/guiasconfiguracion/'+String(number),{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .get('guiasconfiguracion/'+String(number))
         .then((resp) => {
           this.data_edit = resp.data;
           this.load_data_edit();
@@ -438,11 +400,11 @@ export default {
   <div v-if="$isMobile()">
   <el-collapse>
     <el-collapse-item title="Opciones">
-      <el-form @submit.prevent :inline="true" :model="formInline" label-width="auto" size="small" >
+      <el-form @submit.prevent :inline="true" label-width="auto" size="small" >
     <el-row justify="center">
 
         <el-form-item label="Razón social">
-            <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
+            <el-select v-model="form_b.rs" placeholder="Seleccionar" clearable>
               <el-option
                 v-for="item in opt_rs"
                 :key="item.emp_id"
@@ -477,11 +439,11 @@ export default {
   </div>
 
   <div v-else>
-    <el-form @submit.prevent :inline="true" :model="formInline" label-width="auto" :size="small" >
+    <el-form @submit.prevent :inline="true" label-width="auto" >
     <el-row>
       <el-col :span="21">
         <el-form-item label="Razón social">
-            <el-select v-model="form_b.rs" @change="search_rs_ch" @clear="search_rs_clear" placeholder="Seleccionar" clearable>
+            <el-select v-model="form_b.rs" placeholder="Seleccionar" clearable>
               <el-option
                 v-for="item in opt_rs"
                 :key="item.emp_id"
@@ -552,7 +514,7 @@ export default {
 
 
 <modal ref="mo_create_per" no-close-on-backdrop title="Agregar guia de configuración" width="500px" @ok="create_usr()" @cancel="closecrear" cancel-title="Atras" centered>
-  <el-form @submit.prevent  ref="form_cref" :rules="rules" :model="form_c" label-width="150px" >
+  <el-form @submit.prevent  ref="form_cref" :model="form_c" label-width="150px" >
 
     <el-form-item  label="Razón soc. asoc." prop="rs">
       <el-select style="width:300px" v-model="form_c.rs" @change="rs_changer" placeholder="Seleccionar">

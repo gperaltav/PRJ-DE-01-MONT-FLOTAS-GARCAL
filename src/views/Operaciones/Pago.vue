@@ -1,7 +1,9 @@
 <script lang="ts" setup>
 import { reactive,ref } from 'vue'
-import axios from 'axios'
 import { EditPen, Filter, Plus, Download, CloseBold, List,Search} from '@element-plus/icons-vue'
+
+import {API} from '@/API'
+//import REAPI from '@/API/report.js';
 
 import type { FormInstance, FormRules } from 'element-plus'
 
@@ -207,12 +209,8 @@ export default {
     },
 
     load_rs() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas',{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .get('empresas')
         .then((resp) => {
           console.log(resp);
           this.opt_rs = resp.data;
@@ -221,8 +219,8 @@ export default {
 
     load_viajes() {
       
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajesfecha', 
+      API
+      .post('viajesfecha', 
       {
         "emp_id": Number(this.form_c.rs),
         "gui_fechaemision": this.form_c.fecha_em,
@@ -240,11 +238,7 @@ export default {
         "ubi_codigodestino":"010113",
         "gui_observacion":"",
         "gui_usucreacion":this.$store.state.username
-      },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
       .then((resp) => {
         console.log(resp.data);
         this.succes=resp.data.status;
@@ -261,17 +255,13 @@ export default {
     },
     
     get_proveedores(query) {
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/buscarentidadnumero', 
+      API
+      .post('entidad/buscarentidadnumero', 
       {
         "emp_id": Number(this.form_c.rs),
         "ent_nrodocumento": query,
         "ext_id": "prv"
-      },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
       .then((resp) => {
         console.log(resp);
         this.opt_prv = resp.data;
@@ -279,16 +269,12 @@ export default {
     },
 
     select_proveedores(idx) {
-      axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/" + String(idx),
+      API
+      .post("entidad/" + String(idx),
       {
         "emp_id":this.form_c.rs,
         "ext_id":"prv"
-      },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
         .then((resp) => {
           console.log(resp.data[0]);
           if (resp.data[0]) {
@@ -307,12 +293,8 @@ export default {
     },
 
     get_formas_pago() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdepago/'+String(this.form_c.rs),{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .get('formasdepago/'+String(this.form_c.rs))
       .then((resp) => {
         console.log(resp);
         this.opt_tp = resp.data;
@@ -320,12 +302,8 @@ export default {
     },
 
     get_tipos_doc() {
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprastipos/'+String(this.form_c.rs),{},{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .post('comprobantescomprastipos/'+String(this.form_c.rs),{})
       .then((resp) => {
         console.log(resp);
         this.opt_td = resp.data;
@@ -334,16 +312,12 @@ export default {
 
     get_viajes() {
 
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajesfecha', 
+      API
+      .post('viajesfecha', 
       {
         "emp_id": this.form_c.rs,
         "via_fechaviaje":this.form_c.fecha_via
-      },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
       .then((resp) => {
         console.log(resp);
         this.opt_via = resp.data;
@@ -351,8 +325,8 @@ export default {
     },
 
     insertar_comprobante() {
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprascab/nuevo', 
+      API
+      .post('comprobantescomprascab/nuevo', 
       {
         "emp_id": Number(this.form_c.rs),
         "ent_id": Number(this.form_c.prv_id),
@@ -373,11 +347,7 @@ export default {
         "ccc_periodoregistro":"",
         "usu_codigo": this.$store.state.username,
         "ccc_usucreacion":this.$store.state.username
-      },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
       .then((resp) => {
         console.log(resp.data);
         this.succes=resp.data.status;
@@ -392,8 +362,8 @@ export default {
     },
 
     insertar_guia() {
-      axios
-      .post('http://51.222.25.71:8080//garcal-erp-apiv1/api/guias/nuevo', 
+      API
+      .post('guias/nuevo', 
       {
         "emp_id": Number(this.form_c.rs),
         "gui_fechaemision": this.form_c.fecha_em,
@@ -411,11 +381,7 @@ export default {
         "ubi_codigodestino":"010113",
         "gui_observacion":"",
         "gui_usucreacion":this.$store.state.username
-      },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
       .then((resp) => {
         console.log(resp.data);
         this.succes=resp.data.status;
@@ -445,8 +411,8 @@ export default {
 
       console.log(fech);
 
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescompras/nuevo', 
+      API
+      .post('comprobantescompras/nuevo', 
       {
         "emp_id": Number(this.form_c.rs),
         "ent_id": Number(this.form_c.prv_id),
@@ -479,11 +445,7 @@ export default {
           "ccd_subtotal":this.form_c.total,
           "uni_unidad":"UNI"
         }]
-      },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
       .then((resp) => {
         console.log(resp.data);
         this.succes=resp.data.status;
@@ -567,12 +529,12 @@ export default {
   
   <div v-if="!$isMobile()" style="width:900px; margin-left:auto;margin-right:auto;padding-right:200px">
 
-    <el-row style="text-align=center;">
+    <el-row style="text-align:center;">
       <h1 style="margin-left: auto;margin-right: auto">Añadir pago</h1>
     </el-row>
 
   
-  <el-form @submit.prevent :model="form" :label-position="left" label-width="200px" >
+  <el-form @submit.prevent  label-width="200px" >
 
     <el-form-item  label="Razón social asociada">
       <el-select v-model="form_c.rs" @change="rs_changer" @clear="clear_c" placeholder="Seleccionar" style="width:600px" clearable>
@@ -597,7 +559,6 @@ export default {
           placeholder="Inserte ID de proveedor"
           remote
           clearable
-          :disabled="stop_cliente"
         >
           <template #prefix>
             <el-icon><Search /></el-icon>
@@ -681,7 +642,7 @@ export default {
         </el-col>
       </el-row>
     </el-form-item>
-    <el-row style="text-align=center;" >
+    <el-row style="text-align:center;" >
       <el-button  @click="transaccion_insertar" style="margin-left: auto;margin-right: auto" color="#0844a4" >Guardar</el-button>
     </el-row>   
     </el-form>
@@ -693,7 +654,7 @@ export default {
     </el-row>
 
   
-  <el-form @submit.prevent :model="form" :label-position="left" label-width="100px" :size="$isMobile() ? 'small':'default'">
+  <el-form @submit.prevent label-width="100px" :size="$isMobile() ? 'small':'default'">
 
     <el-form-item  label="Razón social asociada">
       <el-select v-model="form_c.rs" @change="rs_changer" @clear="clear_c" placeholder="Seleccionar" style="width:600px" clearable>
@@ -717,7 +678,6 @@ export default {
           placeholder="Inserte ID de proveedor"
           remote
           clearable
-          :disabled="stop_cliente"
         >
           <template #prefix>
             <el-icon><Search /></el-icon>
@@ -799,14 +759,14 @@ export default {
         </el-col>
       </el-row>
     </el-form-item>
-    <el-row style="text-align=center;" >
+    <el-row style="text-align:center;" >
       <el-button  @click="transaccion_insertar" style="margin-left: auto;margin-right: auto" color="#0844a4" >Guardar</el-button>
     </el-row>   
     </el-form>
   </div>
 
 
-<modal ref="mo_advertencia_eliim" title="Confirmar" centered @ok="send_delete" @cancel="close_confirmar" ok-title="Si" cancel-title="Cancelar" >
+<modal ref="mo_advertencia_eliim" title="Confirmar" centered @ok="" @cancel="close_confirmar" ok-title="Si" cancel-title="Cancelar" >
   {{alert_mo}}
 </modal>
 

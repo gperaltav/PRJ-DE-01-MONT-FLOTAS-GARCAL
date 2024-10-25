@@ -1,9 +1,11 @@
 <script lang="ts" setup>
-import { reactive,ref } from 'vue'
-import axios from 'axios'
-import { EditPen, Filter, Plus, Download, CloseBold,Search,CreditCard} from '@element-plus/icons-vue'
+import { reactive } from 'vue'
+import {  Filter, Download} from '@element-plus/icons-vue'
 
-import type { FormInstance, FormRules } from 'element-plus'
+import {API} from '@/API'
+import {REAPI} from '@/API/report.js';
+
+import type { FormInstance } from 'element-plus'
 
 </script>
 
@@ -52,12 +54,8 @@ export default {
     },
 
     send_descarga() {
-      axios
-        .post('http://51.222.25.71:8080/garcal-report-api/api/facturacionpagoscsv',{},{ 
-          headers:{
-          "x-api-key":this.$store.state.api_key1
-          }
-        })
+      REAPI
+        .post('facturacionpagoscsv')
         .then((resp) => {
           console.log(resp.data);
           this.succes=resp.data.status;
@@ -119,12 +117,8 @@ export default {
     },
     
     load_rs() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas',{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .get('empresas')
         .then((resp) => {
           console.log(resp);
           this.opt_rs = resp.data;
@@ -132,12 +126,8 @@ export default {
     },
     
     get_formas_cobro() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/formasdecobro/'+String(this.emp_cont),{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .get('formasdecobro/'+String(this.emp_cont))
         .then((resp) => {
           console.log(resp);  
           this.opt_fcobro = resp.data;
@@ -145,12 +135,8 @@ export default {
     },
 
     get_tipos_doc() {
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprastipos/'+String(this.emp_cont),{},{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .post('comprobantescomprastipos/'+String(this.emp_cont))
       .then((resp) => {
         console.log(resp);
         this.opt_td = resp.data;
@@ -158,12 +144,8 @@ export default {
     },
 
     get_estados_doc() {
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescomprasestados/'+String(this.emp_cont),{},{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .post('comprobantescomprasestados/'+String(this.emp_cont))
       .then((resp) => {
         console.log(resp);
         this.opt_ed = resp.data;
@@ -183,8 +165,8 @@ export default {
       var fech2=aa+"-"+mm+"-01";
 
       console.log(aa+mm+dd);
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescompraspagos', {
+      API
+      .post('comprobantescompraspagos', {
         "emp_id":"",
         "cct_codigo":"",
         "ccc_serienumero":"",
@@ -192,11 +174,7 @@ export default {
         "ccp_nroreferencia":"",
         "ccp_fechacancelacioninicio": null,
         "ccp_fechacancelacionfin": null
-      },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
       .then((resp) => {
         this.datap = resp.data;
         console.log(this.datap);
@@ -204,8 +182,8 @@ export default {
     },
 
     api_get_filt(){
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/comprobantescompraspagos', {
+      API
+      .post('comprobantescompraspagos', {
         "emp_id": this.form_b.rs,
         "cct_codigo":this.form_b.tipo_gui,
         "ccc_serienumero":this.form_b.codigo,
@@ -213,11 +191,7 @@ export default {
         "ccp_nroreferencia":this.form_b.nro_referencia,
         "ccp_fechacancelacioninicio": this.form_b.fech_inicio,
         "ccp_fechacancelacionfin": this.form_b.fech_fin
-      },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
       .then((resp) => {
         this.datap = resp.data;
         console.log(this.datap);
@@ -245,7 +219,7 @@ export default {
   <div v-if="$isMobile()">
   <el-collapse>
     <el-collapse-item title="Opciones">
-      <el-form @submit.prevent :inline="true" :model="formInline" label-width="auto" size="small" >
+      <el-form @submit.prevent :inline="true" label-width="auto" size="small" >
         <el-row justify="center">
 
           <el-form-item label="Razón social">
@@ -331,7 +305,7 @@ export default {
   </div>
 
   <div v-else>
-    <el-form @submit.prevent :inline="true" :model="formInline" label-width="auto" :size="small" >
+    <el-form @submit.prevent :inline="true"  label-width="auto"  >
     <el-row>
     <el-col :span="21">
       <el-form-item label="Razón social">

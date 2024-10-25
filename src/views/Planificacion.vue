@@ -1,7 +1,10 @@
 <script lang="ts" setup>
 import { reactive,ref } from 'vue'
-import axios from 'axios'
+
 import { EditPen, Filter, Plus, Download, CloseBold, List, Search, Flag} from '@element-plus/icons-vue'
+
+import {API} from '@/API'
+import {REAPI} from '@/API/report.js';
 
 import type { FormInstance, FormRules } from 'element-plus'
 
@@ -372,36 +375,24 @@ export default {
       this.search_rs_clear();
     },
     load_rs() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/empresas',{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .get('empresas')
         .then((resp) => {
           console.log(resp);
           this.opt_rs = resp.data;
         })
     },
     load_mar() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api//vehiculosmarcas/'+String(this.emp_cont),{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .get('/vehiculosmarcas/'+String(this.emp_cont))
         .then((resp) => {
           console.log(resp);
           this.opt_mar = resp.data;
         })
     },
     load_mod() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api//vehiculosmodelos/'+String(this.emp_cont),{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .get('/vehiculosmodelos/'+String(this.emp_cont))
         .then((resp) => {
           console.log(resp);
           this.opt_mod = resp.data;
@@ -409,24 +400,16 @@ export default {
     },
     
     load_ti() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api//vehiculostipos/'+String(this.emp_cont),{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .get('/vehiculostipos/'+String(this.emp_cont))
         .then((resp) => {
           console.log(resp);
           this.opt_ti = resp.data;
         })
     },
     load_esp() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/especialidad/'+String(this.emp_cont),{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .get('especialidad/'+String(this.emp_cont))
         .then((resp) => {
           console.log(resp);
           this.opt_esp = resp.data;
@@ -434,12 +417,8 @@ export default {
     },
 
     load_edit(id) {
-      axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes/"+String(id),{},{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .post("viajes/"+String(id),{})
         .then((resp) => {
           console.log(resp);
           this.data_edit = resp.data;
@@ -447,12 +426,8 @@ export default {
     },
 
     load_flete() {
-      axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/flete",{},{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .post("flete",{})
         .then((resp) => {
           console.log(resp);
           this.opt_flete = resp.data;
@@ -460,12 +435,8 @@ export default {
     },
 
     load_prod() {
-      axios
-      .get('http://51.222.25.71:8080/garcal-erp-apiv1/api/productos/'+String(this.emp_cont),{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .get('productos/'+String(this.emp_cont))
         .then((resp) => {
           console.log(resp);
           this.data_prods = resp.data;
@@ -480,12 +451,8 @@ export default {
     },
 
     send_descarga() {
-      axios
-        .post('http://51.222.25.71:8080/garcal-report-api/api/viajescsv',{},{ 
-          headers:{
-          "x-api-key":this.$store.state.api_key1
-          }
-        })
+      REAPI
+        .post('viajescsv')
         .then((resp) => {
           console.log(resp.data);
           this.succes=resp.data.status;
@@ -506,16 +473,12 @@ export default {
 
     get_productos(query) {
       console.log(query);
-      axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/productos/buscarnombre" ,
+      API
+      .post("productos/buscarnombre" ,
       {
         "emp_id":this.emp_cont,
         "ent_nrodocumento":query,
-      },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
         .then((resp) => {
           console.log(resp);
           this.data_prods = resp.data;
@@ -524,15 +487,11 @@ export default {
 
     get_ubigeos(query) {
       console.log(query);
-      axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/ubigeo" ,
+      API
+      .post("ubigeo" ,
       {
         "ubi_nombre":query,
-      },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
       .then((resp) => {
         console.log(resp);
         this.data_ubi = resp.data;
@@ -541,17 +500,13 @@ export default {
 
     get_clientes(query) {
       console.log(query);
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/buscarentidadnumero', 
+      API
+      .post('entidad/buscarentidadnumero', 
       {
         "emp_id": Number(this.emp_cont),
         "ent_nrodocumento": query,
         "ext_id": "cli"
-      },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
         .then((resp) => {
           console.log(resp);
           this.data_clis = resp.data;
@@ -559,16 +514,12 @@ export default {
     },
     
     select_clientes(idx) {
-      axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/" + String(idx),
+      API
+      .post("entidad/" + String(idx),
       {
         "emp_id":Number(this.emp_cont),
         "ext_id":"cli"
-      },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
         .then((resp) => {
           console.log(resp.data[0]);
           if (resp.data[0]) {
@@ -583,12 +534,8 @@ export default {
     },
 
     get_estados() {
-      axios
-      .get("http://51.222.25.71:8080/garcal-erp-apiv1/api/viajesestados/"+String(this.emp_cont),{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .get("viajesestados/"+String(this.emp_cont))
         .then((resp) => {
           console.log(resp);
           this.opt_estados = resp.data;
@@ -596,12 +543,8 @@ export default {
     },
 
     set_estados() {
-      axios
-      .get("http://51.222.25.71:8080/garcal-erp-apiv1/api/viajesestados/"+String(this.emp_cont),{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .get("viajesestados/"+String(this.emp_cont))
         .then((resp) => {
           console.log(resp);
           this.opt_estados = resp.data;
@@ -613,16 +556,12 @@ export default {
     },
 
     select_clientes2(idx) {
-      axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/entidad/" + String(idx),
+      API
+      .post("entidad/" + String(idx),
       {
         "emp_id":this.form_e.rs,
         "ext_id":"cli"
-      },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
         .then((resp) => {
           console.log(resp.data[0]);
           if (resp.data[0]) {
@@ -649,8 +588,8 @@ export default {
 
     get_operarios(query) {
       console.log(query);
-      axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/tripulacionpendientesviajes" ,
+      API
+      .post("tripulacionpendientesviajes" ,
       {
         "emp_id": this.emp_cont,
         "tra_nrodocumento":query,
@@ -658,11 +597,7 @@ export default {
         "tra_nombre":"",
         "via_fechaviaje":this.form_c.fecha,
         "via_horaviaje":this.form_c.hora
-      },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
         .then((resp) => {
           console.log(resp);
           this.data_op = resp.data;
@@ -671,8 +606,8 @@ export default {
 
     get_operarios2(query) {
       console.log(query);
-      axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/tripulacionpendientesviajes" ,
+      API
+      .post("tripulacionpendientesviajes" ,
       {
         "emp_id": this.emp_cont,
         "tra_nrodocumento":query,
@@ -680,11 +615,7 @@ export default {
         "tra_nombre":"",
         "via_fechaviaje":this.form_e.fecha,
         "via_horaviaje":this.form_e.hora
-      },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
         .then((resp) => {
           console.log(resp);
           this.data_op = resp.data;
@@ -703,12 +634,8 @@ export default {
     },
 
     select_operarios3(idx) {
-      axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/trabajadores/"+String(idx),{},{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .post("trabajadores/"+String(idx),{})
         .then((resp) => {
           console.log(resp);
           if (resp.data[0]) {
@@ -738,19 +665,15 @@ export default {
 
     get_vehiculo1(query) {
       console.log(query);
-      axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculospendientesviajes" ,
+      API
+      .post("vehiculospendientesviajes" ,
       {
         "emp_id": this.form_c.rs,
         "veh_placa":query,
         "vcl_id":"TRA",
         "via_fechaviaje":this.form_c.fecha,
         "via_horaviaje":this.form_c.hora
-      },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
         .then((resp) => {
           console.log(resp);
           this.data_vh1 = resp.data;
@@ -759,19 +682,15 @@ export default {
 
     get_vehiculo12(query) {
       console.log(query);
-      axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculospendientesviajes" ,
+      API
+      .post("vehiculospendientesviajes" ,
       {
         "emp_id": this.form_e.rs,
         "veh_placa":query,
         "vcl_id":"TRA",
         "via_fechaviaje":this.form_e.fecha,
         "via_horaviaje":this.form_e.hora
-      },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
         .then((resp) => {
           console.log(resp);
           this.data_vh1 = resp.data;
@@ -780,19 +699,15 @@ export default {
 
     get_vehiculo2(query) {
       console.log(query);
-      axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculospendientesviajes" ,
+      API
+      .post("vehiculospendientesviajes" ,
       {
         "emp_id": this.form_c.rs,
         "veh_placa":query,
         "vcl_id":"SEM",
         "via_fechaviaje":this.form_c.fecha,
         "via_horaviaje":this.form_c.hora
-      },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
         .then((resp) => {
           console.log(resp);
           this.data_vh2 = resp.data;
@@ -801,19 +716,15 @@ export default {
 
     get_vehiculo22(query) {
       console.log(query);
-      axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/vehiculospendientesviajes" ,
+      API
+      .post("vehiculospendientesviajes" ,
       {
         "emp_id": this.form_e.rs,
         "veh_placa":query,
         "vcl_id":"SEM",
         "via_fechaviaje":this.form_e.fecha,
         "via_horaviaje":this.form_e.hora
-      },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
         .then((resp) => {
           console.log(resp);
           this.data_vh2 = resp.data;
@@ -822,12 +733,8 @@ export default {
 
     send_delete() {
       this.$refs.mo_advertencia_eliim.hide();
-      axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes/borrar/'+String(this.editpointer),{},{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+        .post('viajes/borrar/'+String(this.editpointer),{})
         .then((resp) => {
           console.log(resp.data);
           this.succes=resp.data.status;
@@ -880,12 +787,8 @@ export default {
     },
 
     get_estado(id) {
-      axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes/codigo/"+String(id),{},{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .post("viajes/codigo/"+String(id),{})
       .then((resp) => {
         console.log(resp);
         this.via_estado= resp.data[0].vie_codigo;
@@ -893,16 +796,12 @@ export default {
     },
 
     set_estado() {
-      axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes/actualizarcodigo" ,
+      API
+      .post("viajes/actualizarcodigo" ,
       {
         "via_id":this.editpointer,
         "vie_codigo":this.via_estado
-      },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
       .then((resp) => {
         console.log(resp.data);
         this.succes=resp.data.status;
@@ -935,8 +834,8 @@ export default {
 
       console.log(aa+"-"+mm+"-"+dd);
 
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes/filtro', 
+      API
+      .post('viajes/filtro', 
       {
         "emp_id":"",
         "via_fechaviajeinicio":fech2,
@@ -944,11 +843,7 @@ export default {
         "veh_placa":"",
         "ubi_nombreorigen":"",
         "ubi_nombredestino":"",
-      },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
       .then((resp) => {
         console.log(resp);
         this.datap = resp.data;
@@ -965,8 +860,8 @@ export default {
           "ubi_nombreorigen":this.form_b.origen,
           "ubi_nombredestino":this.form_b.destino,
     });
-      axios
-        .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes/filtro', 
+      API
+        .post('viajes/filtro', 
         {
           "emp_id":String(this.form_b.rs),
           "via_fechaviajeinicio":String(this.form_b.fecha_i),
@@ -974,10 +869,6 @@ export default {
           "veh_placa":this.form_b.placa,
           "ubi_nombreorigen":this.form_b.origen,
           "ubi_nombredestino":this.form_b.destino,
-        },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
         })
         .then((resp) => {
           console.log(resp);
@@ -1013,8 +904,8 @@ export default {
       });
       
 
-      axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes/nuevo', 
+      API
+      .post('viajes/nuevo', 
       { 
         "emp_id": Number(this.form_c.rs),
         "rut_id":"",
@@ -1037,11 +928,7 @@ export default {
         "pro_id":Number(this.form_c.producto_tipo),
         "via_usucreacion":this.$store.state.username,
         "via_cantidad":Number(this.form_c.cantidad_flete)
-      },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
       .then((resp) => {
         console.log(resp.data);
         this.succes=resp.data.status;
@@ -1070,8 +957,8 @@ export default {
     editar_usr(){
       //llamada a API
     
-    axios
-      .post('http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes/actualizar', 
+    API
+      .post('viajes/actualizar', 
       { 
         "via_id":this.editpointer,
         "emp_id":Number(this.form_e.rs),
@@ -1095,11 +982,7 @@ export default {
         "pro_id":Number(this.form_e.producto_tipo),
         "tri_id":this.form_e.oper_id,
         "via_cantidad":Number(this.form_e.cantidad_flete)
-      },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      })
         .then((resp) => {
           console.log(resp.data.status);
           this.succes=resp.data.status;
@@ -1142,12 +1025,8 @@ export default {
       this.editpointer=number;
       //this.get_estado(number);
 
-      axios
-      .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes/codigo/"+String(number),{},{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+      API
+      .post("viajes/codigo/"+String(number),{})
       .then((resp) => {
         this.via_estado= resp.data[0].vie_codigo;
         if(this.via_estado=="TER") {
@@ -1157,12 +1036,8 @@ export default {
         this.$refs.mo_editar_per.open();
         this.wait = true;
         //this.load_edit(number);
-        axios
-        .post("http://51.222.25.71:8080/garcal-erp-apiv1/api/viajes/"+String(number),{},{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+        API
+        .post("viajes/"+String(number),{})
         .then((resp) => {
           this.data_edit = resp.data;
 
@@ -1619,7 +1494,6 @@ export default {
           placeholder="Inserte ID de conductor"
           remote
           clearable
-          :disabled="stop_conductor"
           style="width:250px"
         >
           <template #prefix>
@@ -1896,7 +1770,7 @@ export default {
     </el-col>
     </el-row>
 
-    <el-row style="text-align=center" >
+    <el-row style="text-align:center" >
       <el-form-item label="Observacion">
         <el-input 
           style="width:100%" 
@@ -1906,7 +1780,7 @@ export default {
       </el-form-item>
     </el-row>
 
-    <el-row style="text-align=center" >
+    <el-row style="text-align:center" >
       <el-button style="margin-left: auto;margin-right: auto" color="#E21747" :icon="CloseBold" @click="open_confirmar('Realmente desea eliminar este viaje pendiente?')">Eliminar</el-button>
     </el-row>
   </el-form>

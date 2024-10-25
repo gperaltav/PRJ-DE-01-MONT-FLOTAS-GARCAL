@@ -34,15 +34,11 @@
       
       login_api() {
         API
-        .post('garcal-erp-apiv1/api/usuarios/comprobar', 
+        .post('usuarios/comprobar2', 
           { 
             "usu_codigo": String(this.input.username),
             "usu_clave": String(this.input.password)
-          },{ 
-          headers:{
-            "x-api-key":this.$store.state.api_key2
-          }
-        })
+          })
         .then((resp) => {
           console.log(resp);  
           var logg=resp.data[0].usu_existe;
@@ -52,7 +48,7 @@
               username: resp.data[0].usu_codigo
             });
             API
-            .post('garcal-erp-apiv1/api/menusxusuarios', 
+            .post('/menusxusuarios', 
             { 
               "usu_codigo":resp.data[0].usu_codigo
             },{ 
